@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="server_list">
+        <item>安卓</item>
+        <item>ios</item>
+        <item>台服</item>
+        <item>国际</item>
+    </string-array>
+</resources>
