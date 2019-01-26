@@ -90,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
                             hostArray[i] = serverList.valueAt(i).host;
                         }
                         final List<String> hostList = Arrays.asList(hostArray);
-
+                        // 弹出服务器选项
                         AlertDialog.Builder dialog = new AlertDialog.Builder(LoginActivity.this);
                         dialog.setTitle("选择服务器");
                         dialog.setIcon(R.mipmap.icon);

@@ -8,8 +8,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import ink.z31.liverprotector.bean.original.*;
-import ink.z31.liverprotector.bean.finish.*;
+
+import ink.z31.liverprotector.bean.apiInitGame.FleetVo;
+import ink.z31.liverprotector.bean.apiInitGame.Levels;
+import ink.z31.liverprotector.bean.apiInitGame.PackageVo;
+import ink.z31.liverprotector.bean.apiInitGame.RepairDockVo;
+import ink.z31.liverprotector.bean.apiInitGame.UserShipVO;
 
 public class UserData {
     private static UserData userData = new UserData();
@@ -34,6 +38,15 @@ public class UserData {
     public long steel;
     public long aluminium;
     public int shipNumTop;
+    // ------------------- 解析用户数据 ----------------------
+    public void parseUserData(String data){
+
+
+    }
+
+    // ----------------- 点数数据 --------------------------
+
+
 
     // -------------------用户舰队------------------
     public SparseArray<List<Integer>> fleet = new SparseArray<>();

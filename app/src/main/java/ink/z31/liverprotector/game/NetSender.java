@@ -63,6 +63,13 @@ public class NetSender {
         return requests.text;
     }
 
+
+    /**
+     * 第一次登录由token获取serverList
+     * @param token token
+     * @return String 服务数据
+     * @throws HmException 错误信息
+     */
     public String gameLogin(String token) throws HmException {
         String url = Config.loginHead + "index/hmLogin/" + token + this.getUrlEnd();
         Requests requests = new Requests.Builder()
@@ -75,6 +82,161 @@ public class NetSender {
         HmException.errorFind(data);
         return data;
     }
+
+
+    /**
+     * 第一次登录向服务器发送设备信息
+     * @param userId 用户的uid
+     * @param phoneType 设备信息
+     * @return String 服务数据
+     * @throws HmException 错误代码
+     */
+    public String indexHmLogin(String userId,  String phoneType) throws HmException {
+        String url = Config.host + String.format("index/login/%s?&%s", userId, phoneType) + this.getUrlEnd();
+        Requests requests = new Requests.Builder()
+                .url(url)
+                .post("")
+                .zlib()
+                .build()
+                .execute();
+        String data = requests.text;
+        HmException.errorFind(data);
+        return data;
+    }
+
+
+    /**
+     * 游戏启动时候初始化数据
+     * @return 用户等级,uid,船只,装备等一大堆信息
+     * @throws HmException 错误信息
+     */
+    public String apiInitGame() throws HmException {
+        String url = Config.host + "api/initGame?&crazy=0" + this.getUrlEnd();
+        Requests requests = new Requests.Builder()
+                .url(url)
+                .post("")
+                .zlib()
+                .build()
+                .execute();
+        String data = requests.text;
+        HmException.errorFind(data);
+        return data;
+    }
+
+
+    /**
+     * 获取pve的点数信息
+     * @return pve的关卡编号,每个点的配置信息
+     * @throws HmException 错误信息
+     */
+    public String pveGetPveData() throws HmException {
+        String url = Config.host + "pve/getPveData/" + this.getUrlEnd();
+        Requests requests = new Requests.Builder()
+                .url(url)
+                .post("")
+                .zlib()
+                .build()
+                .execute();
+        String data = requests.text;
+        HmException.errorFind(data);
+        return data;
+    }
+
+
+    /**
+     * 不知道干什么的,可能是活动关卡
+     * @return 未知
+     * @throws HmException 错误信息
+     */
+    public String bseaGetData() throws HmException {
+        String url = Config.host + "bsea/getData/" + this.getUrlEnd();
+        Requests requests = new Requests.Builder()
+                .url(url)
+                .post("")
+                .zlib()
+                .build()
+                .execute();
+        String data = requests.text;
+        HmException.errorFind(data);
+        return data;
+    }
+
+
+    /**
+     * 食堂食谱信息
+     * @return 厨房的各种信息
+     * @throws HmException 错误信息
+     */
+    public String liveGetUserInfo() throws HmException {
+        String url = Config.host + "live/getUserInfo" + this.getUrlEnd();
+        Requests requests = new Requests.Builder()
+                .url(url)
+                .post("")
+                .zlib()
+                .build()
+                .execute();
+        String data = requests.text;
+        HmException.errorFind(data);
+        return data;
+    }
+
+
+    /**
+     * 活动信息以及签到信息
+     * @return 活动信息以及签到信息
+     * @throws HmException 错误信息
+     */
+    public String activeGetUserData() throws HmException {
+        String url = Config.host + "active/getUserData/" + this.getUrlEnd();
+        Requests requests = new Requests.Builder()
+                .url(url)
+                .post("")
+                .zlib()
+                .build()
+                .execute();
+        String data = requests.text;
+        HmException.errorFind(data);
+        return data;
+    }
+
+    /**
+     * 貌似是哪些点已经走过了
+     * @return pveLevel/passedNodes点数信息
+     * @throws HmException 错误信息
+     */
+    public String pveGetUserData() throws HmException {
+        String url = Config.host + "pve/getUserData/" + this.getUrlEnd();
+        Requests requests = new Requests.Builder()
+                .url(url)
+                .post("")
+                .zlib()
+                .build()
+                .execute();
+        String data = requests.text;
+        HmException.errorFind(data);
+        return data;
+    }
+
+
+    /**
+     * 可以进行的战役点数,以及剩余的战役数量
+     * @return canCampaignChallengeLevel/passInfo
+     * @throws HmException 错误信息
+     */
+    public String campaignGetUserData() throws HmException {
+        String url = Config.host + "campaign/getUserData/" + this.getUrlEnd();
+        Requests requests = new Requests.Builder()
+                .url(url)
+                .post("")
+                .zlib()
+                .build()
+                .execute();
+        String data = requests.text;
+        HmException.errorFind(data);
+        return data;
+    }
+
+
 
 
     private String getUrlEnd(){

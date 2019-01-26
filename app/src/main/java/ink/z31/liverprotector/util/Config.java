@@ -11,7 +11,7 @@ public class Config {
     public static int serverType = 0;  // 游戏国籍
     public static String resVersion = "";  // res的版本
     public static String host = "";
-
+    public static String userId;
     public static String loginHead;
     public static String loginApiHead;
 }

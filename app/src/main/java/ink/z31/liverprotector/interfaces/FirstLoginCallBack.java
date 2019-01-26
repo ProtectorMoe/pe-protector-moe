@@ -4,7 +4,7 @@ import android.util.SparseArray;
 
 import java.util.List;
 
-import ink.z31.liverprotector.bean.original.ServerList;
+import ink.z31.liverprotector.bean.indexHmlogin.ServerList;
 import ink.z31.liverprotector.game.FirstLogin;
 
 public interface FirstLoginCallBack {

@@ -11,11 +11,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import ink.z31.liverprotector.activity.LoginActivity;
-import ink.z31.liverprotector.bean.finish.LoginBean;
-import ink.z31.liverprotector.bean.finish.LoginServerList;
-import ink.z31.liverprotector.bean.finish.LoginUserInfoBean;
-import ink.z31.liverprotector.bean.finish.LoginVersion;
-import ink.z31.liverprotector.bean.original.ServerList;
+import ink.z31.liverprotector.bean.getLogin.LoginBean;
+import ink.z31.liverprotector.bean.getUserInfo.LoginUserInfoBean;
+import ink.z31.liverprotector.bean.indexCheckVer.LoginVersion;
+import ink.z31.liverprotector.bean.indexHmlogin.LoginServerList;
+import ink.z31.liverprotector.bean.indexHmlogin.ServerList;
 import ink.z31.liverprotector.exception.HmException;
 import ink.z31.liverprotector.interfaces.FirstLoginCallBack;
 import ink.z31.liverprotector.util.App;
@@ -157,6 +157,7 @@ public class FirstLogin  {
         String server = netSender.gameLogin(token);
         LoginServerList list = (new Gson()).fromJson(server, LoginServerList.class);
         FirstLoginResult result = new FirstLoginResult();
+        Config.userId = list.userId;
         if (list.serverList != null){
             for (ServerList s: list.serverList){
                 result.serverList.append(Integer.valueOf(s.id), s);
