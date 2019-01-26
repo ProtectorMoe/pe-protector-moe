@@ -161,17 +161,17 @@ public class LoginActivity extends AppCompatActivity {
     private void secondLogin(){
         // 第二次登录
         SecondLogin secondLogin = SecondLogin.getInstance();
-        UserData userData = UserData.getInstance();
-        final String username = userData.username;
-        final long oil = userData.oil;
-        final long ammo = userData.ammo;
-        final long steel = userData.steel;
-        final long aluminium = userData.aluminium;
+        final UserData userData = UserData.getInstance();
         secondLogin.login(new SecondLoginCallBack() {
             @Override
             public void onFinish() {
-                Log.i(TAG, "登录成功!");
-                Log.i(TAG, username);
+                final String username = userData.username;
+                final long oil = userData.oil;
+                final long ammo = userData.ammo;
+                final long steel = userData.steel;
+                final long aluminium = userData.aluminium;
+                Log.i(TAG, "第二次登录成功!");
+                Log.i(TAG, "用户名" + username);
                 Log.i(TAG, "油" + oil);
                 Log.i(TAG, "弹" + ammo);
                 Log.i(TAG, "钢" + steel);

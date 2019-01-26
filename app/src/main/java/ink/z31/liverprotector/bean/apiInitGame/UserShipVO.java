@@ -9,10 +9,6 @@ public class UserShipVO {
     public int exp;
     public int energy;
     public int max_ammo;
-    public List<String> equipment;
-    public List<Integer> equipment0;
-    public List<Integer> equipment1;
-    public List<Integer> equipment2;
     public String missile_slot;
     public int fleet_id;
     public int status;
