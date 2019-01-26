@@ -32,17 +32,22 @@ public class Requests {
 
     // 私有的构建器
     private Requests(){}
-    private static final HashMap<String, List<Cookie>> cookieStore = new HashMap<>();
+    private static List<Cookie> cookieStore = new ArrayList<>();
     private static OkHttpClient okHttpClient = new OkHttpClient.Builder()
             .cookieJar(new CookieJar() {
                 @Override
                 public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
-                    cookieStore.put(url.host(), cookies);
+                    if (url.host().contains("login")){
+                        cookieStore = cookies;
+                    }
                 }
-
                 @Override
                 public List<Cookie> loadForRequest(HttpUrl url) {
-                    List<Cookie> cookies = cookieStore.get(url.host());
+                    List<Cookie> cookies = cookieStore;
+                    String host = url.host();
+                    if (host.contains("passport") || host.contains("login")){
+                        return new ArrayList<>();
+                    }
                     return cookies != null ? cookies : new ArrayList<Cookie>();
                 }
             })

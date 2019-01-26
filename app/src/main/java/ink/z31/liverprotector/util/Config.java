@@ -14,4 +14,5 @@ public class Config {
     public static String userId;
     public static String loginHead;
     public static String loginApiHead;
+    public static String cookie = "";
 }

@@ -33,6 +33,9 @@ public class HeaderInterceptor  implements Interceptor {
         } else {
             builder.header("User-Agent", "Dalvik/2.1.0 (Linux; U; Android 5.1.1; mi max Build/LMY48Z)");
             builder.header("Accept-Encoding", "identity");
+//            if (Config.cookie.length() < 10){
+//                builder.header("Cookie", Config.cookie);
+//            }
         }
         return chain.proceed(builder.build());
     }
