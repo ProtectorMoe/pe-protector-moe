@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 
 import java.util.HashMap;
 
-import ink.z31.liverprotector.bean.finish.Eid;
+import ink.z31.liverprotector.bean.Eid;
 
 
 public class HmException extends Exception {

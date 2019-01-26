@@ -24,24 +24,14 @@ public class UserVo {
     public int exploreWinNum;
     public String sign;
     public String pveLevelId;
-    public String package ink.z31.liverprotector.bean.apiInitGame;
+    public String packageSlot;
     public List<Long> resourceRecoveryTimes;
     public List<Integer> resourcesTops;
     public int equipmentNumTop;
     public int shipNumTop;
-    public List<int> systemOpen;
+    public List<Integer> systemOpen;
     public DetailInfo detailInfo;
     public String crazy;
     public String zone_name;
-    public String zoneid;     public long getNextExp() {
-         return nextExp;
-     }     public long getOil() {
-         return oil;
-     }     public long getAmmo() {
-         return ammo;
-     }     public long getSteel() {
-         return steel;
-     }     public long getAluminium() {
-         return aluminium;
-     }
+    public String zoneid;
 }

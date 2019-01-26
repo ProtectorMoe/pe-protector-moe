@@ -1,0 +1,40 @@
+
+package ink.z31.liverprotector.bean.pveGetPveData;
+import java.util.List;
+public class PveNode {
+    public String id;
+    public String roundabout;
+    public List<String> node_miss;
+    public String unlock_miss_node;
+    public String flag;
+    public String bg_sea;
+    public String bg_sea2;
+    public List<String> formation;
+    public String formation2;
+    public String formation2_effect;
+    public String spoils_rate;
+    public boolean award;
+    public String award2;
+    public String show_condtion;
+    public Position position;
+    public Position_letter position_letter;
+    public String node_step;
+    public String support_atk;
+    public String support_icon;
+    public String unlock_node_id;
+    public String guard_npc;
+    public String bubble_icon;
+    public String boss_hp_type;
+    public String surp_attack;
+    public String night_atk;
+    public List<Integer> nextNode;
+    public int mapId;
+    public String nodeAttribute;
+    public String nodeType;
+    public String pveLevelId;
+    public String shipExp;
+    public String userExp;
+    public List<String> nodeRounter;
+    public List<String> nodeHide;
+    public List<String> routeNum;
+}

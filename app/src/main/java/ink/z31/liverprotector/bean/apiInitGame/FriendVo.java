@@ -16,10 +16,10 @@ public class FriendVo {
     public String bathhouse;
     public int main_music;
     public List<Integer> room_display;
-    public List<int> wall_display;
+    public List<Integer> wall_display;
     public List<String> fleetShips;
     public int userMedalNum;
-    public List<int> medal;
+    public List<Integer> medal;
     public int newFirend;
     public int newApply;
 }

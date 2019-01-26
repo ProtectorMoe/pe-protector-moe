@@ -13,7 +13,10 @@ import ink.z31.liverprotector.bean.apiInitGame.FleetVo;
 import ink.z31.liverprotector.bean.apiInitGame.Levels;
 import ink.z31.liverprotector.bean.apiInitGame.PackageVo;
 import ink.z31.liverprotector.bean.apiInitGame.RepairDockVo;
+import ink.z31.liverprotector.bean.apiInitGame.UserDataBean;
 import ink.z31.liverprotector.bean.apiInitGame.UserShipVO;
+import ink.z31.liverprotector.bean.pveGetPveData.PveDataBean;
+import ink.z31.liverprotector.bean.pveGetPveData.PveNode;
 
 public class UserData {
     private static UserData userData = new UserData();
@@ -39,15 +42,37 @@ public class UserData {
     public long aluminium;
     public int shipNumTop;
     // ------------------- 解析用户数据 ----------------------
-    public void parseUserData(String data){
-
-
+    public void parseUserData(String user_data){
+        UserDataBean userBaseData = (new Gson()).fromJson(user_data, UserDataBean.class);
+        //获取用户基础数据
+        this.uid = userBaseData.userVo.uid;
+        this.username = userBaseData.userVo.username;
+        this.level = userBaseData.userVo.level;
+        this.oil = userBaseData.userVo.oil;
+        this.ammo =  userBaseData.userVo.ammo;
+        this.steel = userBaseData.userVo.steel;
+        this.aluminium = userBaseData.userVo.aluminium;
+        this.shipNumTop = userBaseData.userVo.shipNumTop;
+        //用户舰队
+        this.setFleet(userBaseData.fleetVo);
+        //用户船只
+        this.setAllShip(userBaseData.userShipVO);
+        //远征数据
+        this.setAllExplore(userBaseData.pveExploreVo.levels);
+        // 包裹信息
+        this.setPackage(userBaseData.packageVo);
+        // 澡堂信息
+        this.setRepairDockVo(userBaseData.repairDockVo);
     }
-
-    // ----------------- 点数数据 --------------------------
-
-
-
+    // ----------------- 点数数据 -----------------
+    public HashMap<String, PveNode> pveData = new HashMap<>();
+    public void getPveNode(String pveStringData){
+        pveData.clear();
+        PveDataBean pveDataBean = (new Gson()).fromJson(pveStringData, PveDataBean.class);
+        for(PveNode node: pveDataBean.pveNode){
+            this.pveData.put(node.id, node);
+        }
+    }
     // -------------------用户舰队------------------
     public SparseArray<List<Integer>> fleet = new SparseArray<>();
     //刷新船只的舰队信息

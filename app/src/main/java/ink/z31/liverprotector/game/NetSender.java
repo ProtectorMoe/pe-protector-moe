@@ -91,7 +91,7 @@ public class NetSender {
      * @return String 服务数据
      * @throws HmException 错误代码
      */
-    public String indexHmLogin(String userId,  String phoneType) throws HmException {
+    public String indexLogin(String userId,  String phoneType) throws HmException {
         String url = Config.host + String.format("index/login/%s?&%s", userId, phoneType) + this.getUrlEnd();
         Requests requests = new Requests.Builder()
                 .url(url)

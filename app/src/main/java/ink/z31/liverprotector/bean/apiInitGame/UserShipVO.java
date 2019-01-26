@@ -11,8 +11,8 @@ public class UserShipVO {
     public int max_ammo;
     public List<String> equipment;
     public List<Integer> equipment0;
-    public List<int> equipment1;
-    public List<int> equipment2;
+    public List<Integer> equipment1;
+    public List<Integer> equipment2;
     public String missile_slot;
     public int fleet_id;
     public int status;
@@ -45,23 +45,15 @@ public class UserShipVO {
     public StrengthenAttribute strengthenAttribute;
     public int fleetId;
     public int isLocked;
-    public List<int> capacitySlot;
-    public List<int> capacitySlotMax;
-    public List<int> capacitySlotExist;
-    public List<int> missileSlot;
-    public List<int> missileSlotMax;
-    public List<int> missileSlotExist;
+    public List<Integer> capacitySlot;
+    public List<Integer> capacitySlotMax;
+    public List<Integer> capacitySlotExist;
+    public List<Integer> missileSlot;
+    public List<Integer> missileSlotMax;
+    public List<Integer> missileSlotExist;
     public List<String> equipmentArr;
     public int use_equipment;
     public BattlePropsBasic battlePropsBasic;
     public BattleProps battleProps;
-    public BattlePropsMax battlePropsMax;     public long getUid() {
-         return uid;
-     }     public long getHurt_ship_num() {
-         return hurt_ship_num;
-     }     public long getNextExp() {
-         return nextExp;
-     }     public long getShipCid() {
-         return shipCid;
-     }
+    public BattlePropsMax battlePropsMax;
 }
