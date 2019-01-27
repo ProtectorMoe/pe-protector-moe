@@ -48,9 +48,11 @@ public class SecondLogin {
                     }
                     data = data.substring(0, data.length() - 1);
                     netSender.indexLogin(Config.userId, data);
-                    // 开始初始化游戏内容
+                    // 初始化用户基本信息
                     String apiInitGame = netSender.apiInitGame();
                     userData.parseUserData(apiInitGame);
+                    // 初始化点数信息
+
                     //  测试
                     callBack.onFinish();
                 }catch (HmException e){
