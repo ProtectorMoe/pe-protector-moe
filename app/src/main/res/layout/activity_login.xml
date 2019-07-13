@@ -1,131 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.LoginActivity">
+    tools:context=".MainActivity"
+    android:background="@mipmap/l2"
+    android:fitsSystemWindows="true">
 
-    <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/coordinatorLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+    <android.support.v7.widget.CardView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_centerInParent="true"
+        app:cardCornerRadius="6.0dip"
+        app:cardElevation="3.0dip"
+        app:cardUseCompatPadding="true">
+
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_marginTop="0dp"
-            android:background="?attr/colorPrimary"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fat_login"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="16dp"
-            android:src="@android:drawable/ic_menu_send"
-            app:backgroundTint="@color/colorPrimary"
-            app:elevation="8dp" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_marginTop="10.0dip">
+                <View
+                    android:background="#124B7D"
+                    android:layout_width="8dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentStart="true"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18.0sp"
+                    android:textStyle="bold"
+                    android:textColor="#296AA3"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="50.0dip"
+                    android:text="登录"/>
 
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            </RelativeLayout>
 
-            <ImageView
-                android:id="@+id/imageView3"
-                android:layout_width="107dp"
-                android:layout_height="98dp"
-                android:contentDescription="@string/app_name"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="80dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.498"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@mipmap/icon" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="50.0dip"
+                android:layout_marginTop="10.0dip"
+                android:paddingStart="50.0dip"
+                android:paddingEnd="30.0dip">
+                <android.support.design.widget.TextInputLayout
+                    android:textColorHint="#ffc5c5c5"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+                    <EditText
+                        android:textSize="13.0sp"
+                        android:hint="用户名"
+                        android:id="@+id/ed_username"
+                        android:textColor="#ff2fa881"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
+                </android.support.design.widget.TextInputLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="50.0dip"
+                android:paddingStart="50.0dip"
+                android:paddingEnd="30.0dip">
+                <android.support.design.widget.TextInputLayout
+                    android:textColorHint="#ffc5c5c5"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+                    <EditText
+                        android:id="@+id/ed_pwd"
+                        android:textSize="13.0sp"
+                        android:hint="密码"
+                        android:textColor="#ff2fa881"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword" />
+                </android.support.design.widget.TextInputLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="50.0dip"
+                android:paddingEnd="30.0dip">
+                <org.angmarch.views.NiceSpinner
+                    android:id="@+id/sp_server"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="1dp"
+                    app:textTint="#ff2fa881" />
+            </LinearLayout>
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="125dp"
-                android:layout_height="27dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
+            <RelativeLayout
                 android:gravity="center"
-                android:text="@string/app_name"
-                android:textSize="20sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView3" />
-
-            <EditText
-                android:id="@+id/ed_username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="32dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:ems="10"
-                android:hint="@string/login_username_hint"
-                android:inputType="textPersonName"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView2" />
-
-            <EditText
-                android:id="@+id/ed_pwd"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:ems="10"
-                android:hint="@string/login_pwd_hint"
-                android:inputType="textPassword"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ed_username" />
-
-            <Spinner
-                android:id="@+id/sp_server"
-                android:layout_width="395dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:entries="@array/server_list"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ed_pwd" />
-
-        </android.support.constraint.ConstraintLayout>
+                android:layout_width="fill_parent"
+                android:layout_height="40.0dip"
+                android:layout_marginTop="10.0dip">
+                <Button
+                    android:textColor="#ffd3d3d3"
+                    android:id="@+id/bt_login"
+                    android:background="@drawable/bt_shape"
+                    android:layout_width="150.0dip"
+                    android:layout_height="50.0dip"
+                    android:text="登录" />
+            </RelativeLayout>
 
 
 
-    </android.support.design.widget.CoordinatorLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
 
 
 
 
-
-
-
-
-
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

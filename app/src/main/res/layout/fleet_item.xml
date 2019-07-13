@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="52dp"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="2dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/fleet_item_photo"
+            android:layout_width="50dp"
+            android:layout_height="31.25dp"
+            android:src="@drawable/s196" />
+
+        <TextView
+            android:id="@+id/fleet_item_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fleet_item_photo"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:text="M1" />
+
+        <TextView
+            android:id="@+id/fleet_item_level"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fleet_item_name"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:text="Lv.110" />
+
+        <TextView
+            android:id="@+id/fleet_item_hp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fleet_item_level"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:text="10/10" />
+
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

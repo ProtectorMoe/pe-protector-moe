@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>任务管理文件</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<link href="css/mui.min.css" rel="stylesheet" />
+</head>
+<body>
+<script src="js/mui.min.js"></script>
+<script src="js/vue.min.js"></script>
+<script type="text/javascript">
+			mui.init();
+		</script>
+
+<div id="app">
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-icon mui-icon-left-nav" @click="onCancel"></a>
+		<h1 class="mui-title">护肝宝 配置列表</h1>
+	</header>
+	<div class="mui-content">
+		<div class="mui-input-group">
+			<div class="mui-button-row">
+				<button class="mui-btn mui-icon mui-btn-blue" @click="onAddPath()">添加配置</button>
+				<button class="mui-btn mui-icon" @click="onRefresh()">刷新</button>
+			</div>
+		</div>
+		<div class="mui-table-view">
+			<li class="mui-table-view-cell" v-for="item in task_list">
+				<div class="mui-slider-right mui-disabled">
+					<a class="mui-btn mui-btn-blue mui-icon mui-icon-gear" @click="onPathEdit(item)"></a>
+					<a class="mui-btn mui-btn-red mui-icon mui-icon-trash" @click="onPathDel(item)"></a>
+				</div>
+				<div class="mui-slider-handle">
+					{{item}}
+				</div>
+			</li>
+		</div>
+	</div>
+</div>
+
+<script>
+			var app = new Vue({
+				el: "#app",
+				data: {
+					task_list: ["测试1", "测试2", "测试3"]
+				},
+				methods: {
+					onPathDel: function(task_name) {
+						console.log("用户请求删除任务:" + task_name);
+						var path_list = window.android && window.android.onPathDel(task_name);
+						if (path_list) {
+							app.task_list = JSON.parse(path_list);
+						}
+					},
+					onPathEdit: function(task_name) {
+						console.log("用户请求编辑任务:" + task_name);
+						window.android  && window.android.onPathEdit(task_name);
+					},
+					onAddPath: function() {
+						console.log("用户请求添加配置");
+						window.android && window.android.onAddPath();
+					},
+					onCancel: function() {
+						onCancel();
+					},
+					onRefresh: function() {
+						var path_list = window.android && window.android.onRefresh();
+						if (path_list) {
+							app.task_list = JSON.parse(path_list);
+						}
+					}
+				},
+			});
+
+			var onLoad = function(str) {  // 初始化任务列表
+				app.task_list = JSON.parse(str);
+			};
+
+			var onCancel = function() {
+				console.log("用户取消操作");
+				window.android && window.android.onCancel();
+			};
+
+
+
+		</script>
+
+
+</body>
+</html>

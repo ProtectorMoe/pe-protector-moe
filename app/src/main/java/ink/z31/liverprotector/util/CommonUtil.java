@@ -24,12 +24,16 @@ public class CommonUtil {
         }
     }
 
-    public void delay(long time)
+    public static void delay(long time)
     {
         try {
             Thread.sleep(time);
         }catch (Exception e) {
             Log.e(TAG, e.getLocalizedMessage());
         }
+    }
+
+    public static int randomInt(int min, int max) {
+        return (int) (min + Math.random() * (max - min + 1));
     }
 }

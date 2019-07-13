@@ -15,4 +15,9 @@ public class Config {
     public static String loginHead;
     public static String loginApiHead;
     public static String cookie = "";
+
+    public static boolean isExplore = true;
+    public static boolean isRepair = false;
+    public static boolean isRepairFleet = false;
+    public static final double [] RAND = {Math.random(), Math.random(), Math.random(), Math.random()};
 }

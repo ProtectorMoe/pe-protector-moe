@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<litepal>
+    <dbname value="init" />
+    <version value="2" />
+    <list>
+        <mapping class="ink.z31.liverprotector.bean.common.ShipCard"/>
+        <mapping class="ink.z31.liverprotector.bean.common.ShipCardWu"/>
+        <mapping class="ink.z31.liverprotector.bean.common.ShipEquipmnt"/>
+        <mapping class="ink.z31.liverprotector.bean.common.Database"/>
+
+        <mapping class="ink.z31.liverprotector.sqlite.MapConfigBean"/>
+    </list>
+</litepal>

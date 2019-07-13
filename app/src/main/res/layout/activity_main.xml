@@ -3,34 +3,98 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="match_parent"                                                               
     tools:context=".MainActivity"
     android:id="@+id/drawer_layout">
-    <android.support.constraint.ConstraintLayout
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-    </android.support.constraint.ConstraintLayout>
 
-    <TextView
+        <com.github.florent37.materialviewpager.MaterialViewPager
+            android:id="@+id/materialViewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:viewpager_animatedHeaderImage="false"
+            app:viewpager_color="@color/colorPrimary"
+            app:viewpager_disableToolbar="false"
+            app:viewpager_displayToolbarWhenSwipe="true"
+            app:viewpager_enableToolbarElevation="true"
+            app:viewpager_headerAdditionalHeight="20dp"
+            app:viewpager_headerAlpha="1.0"
+            app:viewpager_headerHeight="200dp"
+            app:viewpager_hideLogoWithFade="false"
+            app:viewpager_hideToolbarAndTitle="false"
+            app:viewpager_logo="@layout/header_logo"
+            app:viewpager_logoMarginTop="100dp"
+            app:viewpager_parallaxHeaderFactor="1.5"
+            app:viewpager_transparentToolbar="true"/>
+
+
+        <com.getbase.floatingactionbutton.FloatingActionsMenu
+            android:id="@+id/multiple_actions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_anchor="@+id/materialViewPager"
+            app:layout_anchorGravity="right|bottom"
+            fab:fab_addButtonColorNormal="@color/colorPrimary"
+            fab:fab_addButtonColorPressed="@color/accent_color"
+            fab:fab_addButtonPlusIconColor="@color/white"
+            fab:fab_labelStyle="@style/menu_labels_style"
+            fab:fab_size="mini">
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/action_add_task"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="@color/white"
+                fab:fab_colorPressed="@color/white_pressed"
+                fab:fab_size="mini"
+                app:fab_icon="@drawable/add"
+                fab:fab_title="新任务" />
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/action_set_task"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="@color/white"
+                fab:fab_colorPressed="@color/white_pressed"
+                fab:fab_size="mini"
+                app:fab_icon="@drawable/renwu"
+                fab:fab_title="配置列表" />
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/action_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="@color/white"
+                fab:fab_size="mini"
+                app:fab_icon="@drawable/shezhi"
+                fab:fab_colorPressed="@color/white_pressed"
+                fab:fab_title="设置" />
+
+        </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+
+
+
+    </android.support.design.widget.CoordinatorLayout>
+
+    <android.support.design.widget.NavigationView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:text="HELLO"
-        android:background="#FFF"
-        android:textSize="20sp" />
-
-
-
+        app:itemTextColor="@color/black_semi_transparent"
+        app:menu="@menu/main_left"
+        app:headerLayout="@layout/nav_header"
+        />
 
 </android.support.v4.widget.DrawerLayout>

@@ -2,17 +2,15 @@ package ink.z31.liverprotector.util;
 
 import android.util.Log;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import ink.z31.liverprotector.interceptor.HeaderInterceptor;
 import ink.z31.liverprotector.interceptor.LoggingInterceptor;
+
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.FormBody;
@@ -134,7 +132,7 @@ public class Requests {
     // 执行
     public Requests execute(){
         try {
-            final okhttp3.Request.Builder requestBuilder = new Request.Builder();
+            final Request.Builder requestBuilder = new Request.Builder();
             requestBuilder.url(this.url);
             // 获取请求模式
             if (this.method == GET){
@@ -148,7 +146,7 @@ public class Requests {
                     requestBuilder.post(RequestBody.create(mediaType, this.data_string));
                 }else if (this.post_method == MAP_DATA){
                     // post模式且数据为Map
-                    okhttp3.FormBody.Builder formBody = new FormBody.Builder();
+                    FormBody.Builder formBody = new FormBody.Builder();
                     for (String key: this.data_map.keySet()){
                         formBody.add(key, this.data_map.get(key));
                     }
@@ -164,7 +162,7 @@ public class Requests {
             }
             // 执行
             Request request = requestBuilder.build();
-            okhttp3.Response okResponse = okHttpClient.newCall(request).execute();
+            Response okResponse = okHttpClient.newCall(request).execute();
             // 取出流
             InputStream io = okResponse.body().byteStream();
             // 获取byte

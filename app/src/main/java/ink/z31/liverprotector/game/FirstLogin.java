@@ -5,19 +5,15 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.google.gson.Gson;
+import com.alibaba.fastjson.JSON;
 
-import java.util.HashMap;
-import java.util.List;
-
-import ink.z31.liverprotector.activity.LoginActivity;
-import ink.z31.liverprotector.bean.getLogin.LoginBean;
-import ink.z31.liverprotector.bean.getUserInfo.LoginUserInfoBean;
-import ink.z31.liverprotector.bean.indexCheckVer.LoginVersion;
-import ink.z31.liverprotector.bean.indexHmlogin.LoginServerList;
-import ink.z31.liverprotector.bean.indexHmlogin.ServerList;
+import ink.z31.liverprotector.bean.LoginBean;
+import ink.z31.liverprotector.bean.LoginServerListBean;
+import ink.z31.liverprotector.bean.LoginUserInfoBean;
+import ink.z31.liverprotector.bean.LoginVersionBean;
 import ink.z31.liverprotector.exception.HmException;
 import ink.z31.liverprotector.interfaces.FirstLoginCallBack;
+import ink.z31.liverprotector.interfaces.ResProgressCallBack;
 import ink.z31.liverprotector.util.App;
 import ink.z31.liverprotector.util.Config;
 import ink.z31.liverprotector.util.Requests;
@@ -35,9 +31,11 @@ public class FirstLogin  {
     private static Context context = App.getContext();
     // 要用的对象
     private static NetSender netSender = NetSender.getInstance();
+    private static GameConstant gameConstant = GameConstant.getInstance();
 
     private String username;
     private String pwd;
+
 
     /**
      * 初始化登陆数据
@@ -86,20 +84,18 @@ public class FirstLogin  {
      * 正式进行登录请求
      * @param callBack 请求回调事件
      */
-    public void readLogin(final FirstLoginCallBack callBack){
+    public void readLogin(final FirstLoginCallBack callBack, final ResProgressCallBack callBack2){
         final FirstLogin login = getInstance();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    login.getVersion();
-                    FirstLoginResult result = login.firstLogin();
-                    callBack.onFinish(result.serverList, result.defaultServer);
-                } catch (HmException e){
-                    callBack.onError(e.message);
-                } catch (Exception e){
-                    callBack.onError(e.getMessage());
-                }
+        new Thread(() -> {
+            try {
+                login.getVersion();
+                FirstLoginResult result = login.firstLogin(callBack2);
+                callBack.onFinish(result.serverList, result.defaultServer);
+            } catch (HmException e){
+                callBack.onError(e.getMessage());
+            } catch (Exception e){
+                callBack.onError(e.getMessage());
+                e.printStackTrace();
             }
         }).start();
     }
@@ -108,14 +104,17 @@ public class FirstLogin  {
     /**
      * 获取游戏的版本号和地址
      */
-    private void getVersion(){
+    private void getVersion() throws HmException{
         String url = Config.urlVersion;
         Requests requests = new Requests.Builder()
                 .get()
                 .url(url)
                 .build()
                 .execute();
-        LoginVersion version = (new Gson()).fromJson(requests.text, LoginVersion.class);
+        LoginVersionBean version = JSON.parseObject(requests.text, LoginVersionBean.class);
+        if (version.eid != null && version.eid.equals("-9999")) {
+            throw new HmException("-9999");
+        }
         Config.version = version.version.newVersionId;
         Config.resVersion = version.version.DataVersion;
         Config.loginHead = version.loginServer;
@@ -123,7 +122,7 @@ public class FirstLogin  {
     }
 
     class FirstLoginResult{
-        SparseArray<ServerList> serverList = new SparseArray<>();
+        SparseArray<LoginServerListBean.ServerList> serverList = new SparseArray<>();
         int defaultServer = 0;
     }
 
@@ -131,8 +130,10 @@ public class FirstLogin  {
      * 第一次登录游戏
      * 验证token/
      */
-    private FirstLoginResult firstLogin() throws HmException{
+    private FirstLoginResult firstLogin(ResProgressCallBack callBack) throws HmException {
         // 获取没有卵用的init数据
+
+        getResData(callBack);
         netSender.loginInitConfig();
 
         // 读取token
@@ -155,11 +156,11 @@ public class FirstLogin  {
         }
         // 验证成功后登陆游戏
         String server = netSender.gameLogin(token);
-        LoginServerList list = (new Gson()).fromJson(server, LoginServerList.class);
+        LoginServerListBean list = JSON.parseObject(server, LoginServerListBean.class);
         FirstLoginResult result = new FirstLoginResult();
         Config.userId = list.userId;
         if (list.serverList != null){
-            for (ServerList s: list.serverList){
+            for (LoginServerListBean.ServerList s: list.serverList){
                 result.serverList.append(Integer.valueOf(s.id), s);
             }
             result.defaultServer = Integer.valueOf(list.defaultServer);
@@ -187,7 +188,7 @@ public class FirstLogin  {
                     "}", this.pwd, this.username);
         }
         String tokenString = netSender.loginLogin(data);
-        LoginBean loginBean = (new Gson()).fromJson(tokenString, LoginBean.class);
+        LoginBean loginBean = JSON.parseObject(tokenString, LoginBean.class);
         // 检测帐号密码是否错误
         if (loginBean.error != 0){
             throw new HmException("-113");
@@ -210,12 +211,82 @@ public class FirstLogin  {
             data = String.format("{\"token\": \"%s\"}", token);
         }
         String checkTokenString = netSender.loginUserInfo(data);
-        LoginUserInfoBean loginUserInfoBean = (new Gson()).fromJson(checkTokenString, LoginUserInfoBean.class);
+        LoginUserInfoBean loginUserInfoBean = JSON.parseObject(checkTokenString, LoginUserInfoBean.class);
         if (loginUserInfoBean.error != null){
             return loginUserInfoBean.error == 0;
         } else {
             return false;
         }
     }
+
+    private void getResData(ResProgressCallBack callBack){
+        String initData;
+        try {
+            // 读取版本号
+            Log.i(TAG, "加载init数据...");
+            long dataVersion = Long.valueOf(gameConstant.getVersion());
+            if(Long.valueOf(Config.resVersion) > dataVersion){
+                // 开始下载资料
+                Log.i(TAG, "数据过期, 加载新数据...");
+                callBack.onChange("加载新Res数据....");
+                initData = netSender.getInitData();
+                gameConstant.parseJson(initData, callBack);
+            }
+            Log.i(TAG, "成功解析所有数据");
+        } catch (Exception e){
+            Log.e(TAG, "获取init数据错误!" + e.getMessage());
+            e.printStackTrace();
+        }
+
+        /*
+        try{
+            File file = new File(path);
+            if(!file.exists()){  // 不存在文件,从网上请求
+                if(!file.createNewFile()){
+                    Log.i(TAG, "创建init文件");
+                }
+                needDownload = true;
+            }else {  // 存在文件,读取文件
+                try {
+                    Log.d(TAG, "开始解析init数据...");
+                    initData = FileUtil.readFile(litePath);
+                    InitDataBean initDataBean = JSON.parseObject(initData, InitDataBean.class);
+                    Log.d(TAG, "检测init的数据是否过期...");
+                    if (initDataBean != null && initDataBean.DataVersion != null){
+                        long dataVersion = Long.valueOf(initDataBean.DataVersion);
+                        if(Long.valueOf(Config.resVersion) > dataVersion){  // 如果需要下载新资料
+                            needDownload = true;
+                        }
+                    }else {
+                        needDownload = true;
+                    }
+                }catch (Exception e) {
+                    Log.e(TAG, "第一次的json解析出现问题!");
+                    e.printStackTrace();
+                }
+            }
+            if (needDownload){
+                initData = netSender.getInitData();
+                if (!FileUtil.writeFile(litePath, initData)){
+                    Log.e(TAG, "写入init数据错误!");
+                }
+            }
+
+            try {
+                gameConstant.initData = JSON.parseObject(initData, InitDataBean.class);
+                gameConstant.init();
+            }catch (Exception e) {
+                Log.e(TAG, "init的json解析出现问题!" + e.getMessage());
+                e.printStackTrace();
+            }
+        }catch (Exception e){
+            Log.e(TAG, "获取init数据错误!" + e.getMessage());
+            e.printStackTrace();
+        }
+        */
+
+    }
+
+
 
 }

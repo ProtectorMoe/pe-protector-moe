@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v4.widget.NestedScrollView
+    android:id="@+id/nestedScrollView"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginLeft="@dimen/cardMarginHorizontal"
+        android:layout_marginRight="@dimen/cardMarginHorizontal">
+        <include layout="@layout/material_view_pager_placeholder"/>
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            app:cardCornerRadius="5dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tv_award"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="资源数量"/>
+
+                <RelativeLayout
+                    android:id="@+id/ly_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_award"
+                    android:layout_marginTop="5dp">
+
+                    <ImageView
+                        android:id="@+id/img_oil"
+                        android:src="@drawable/oil"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginBottom="5dp" />
+
+                    <TextView
+                        android:id="@+id/tv_oil"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/img_oil"
+                        android:text="10000" />
+
+
+                    <ImageView
+                        android:id="@+id/img_ammo"
+                        android:src="@drawable/ammo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/tv_oil"
+                        android:layout_marginStart="10dp"
+                        />
+
+                    <TextView
+                        android:id="@+id/tv_ammo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/img_ammo"
+                        android:text="10000" />
+
+
+                    <ImageView
+                        android:id="@+id/img_steel"
+                        android:src="@drawable/steel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/tv_ammo"
+                        android:layout_marginStart="10dp"
+                        />
+
+                    <TextView
+                        android:id="@+id/tv_steel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/img_steel"
+                        android:text="10000" />
+
+
+                    <ImageView
+                        android:id="@+id/img_aluminium"
+                        android:src="@drawable/aluminium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/tv_steel"
+                        android:layout_marginStart="10dp"
+                        />
+
+                    <TextView
+                        android:id="@+id/tv_aluminium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/img_aluminium"
+                        android:text="10000" />
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/ly_package"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/ly_main">
+                    <ImageView
+                        android:id="@+id/img_qz"
+                        android:src="@drawable/qz"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginBottom="5dp" />
+
+                    <TextView
+                        android:id="@+id/tv_qz"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/img_qz"
+                        android:text="10000" />
+
+
+                    <ImageView
+                        android:id="@+id/img_xy"
+                        android:src="@drawable/xy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/tv_qz"
+                        android:layout_marginStart="10dp"
+                        />
+
+                    <TextView
+                        android:id="@+id/tv_xy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/img_xy"
+                        android:text="10000" />
+
+
+                    <ImageView
+                        android:id="@+id/img_zl"
+                        android:src="@drawable/zl"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/tv_xy"
+                        android:layout_marginStart="10dp"
+                        />
+
+                    <TextView
+                        android:id="@+id/tv_zl"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/img_zl"
+                        android:text="10000" />
+
+
+                    <ImageView
+                        android:id="@+id/img_hm"
+                        android:src="@drawable/hm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/tv_zl"
+                        android:layout_marginStart="10dp"
+                        />
+
+                    <TextView
+                        android:id="@+id/tv_hm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/img_hm"
+                        android:text="10000" />
+
+                    <ImageView
+                        android:id="@+id/img_qt"
+                        android:src="@drawable/qt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/tv_hm"
+                        android:layout_marginStart="10dp"
+                        />
+
+                    <TextView
+                        android:id="@+id/tv_qt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/img_qt"
+                        android:text="10000" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/ly_package">
+                    <ImageView
+                        android:id="@+id/img_ship"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ship"
+                        android:layout_marginStart="5dp"/>
+                    <TextView
+                        android:id="@+id/tv_ship"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/img_ship"
+                        android:text="100/120"/>
+
+                    <ImageView
+                        android:id="@+id/img_equipment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/equipment"
+                        android:layout_toEndOf="@id/tv_ship"
+                        android:layout_marginStart="5dp"/>
+                    <TextView
+                        android:id="@+id/tv_equipment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/img_equipment"
+                        android:text="500/500"/>
+
+                    <ImageView
+                        android:id="@+id/img_repair"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/p541"
+                        android:layout_toEndOf="@id/tv_equipment"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginStart="5dp"/>
+                    <TextView
+                        android:id="@+id/tv_repair"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1000"
+                        android:layout_toEndOf="@+id/img_repair"/>
+
+
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:cardCornerRadius="5dp">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/title_fleet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="舰队部署"
+                    android:gravity="center"/>
+
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/view_page_fleet"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="20dp">
+                </android.support.v4.view.ViewPager>
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

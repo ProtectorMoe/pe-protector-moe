@@ -1,0 +1,5 @@
+<resources>
+    <style name="LoginActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowTranslucentStatus">true</item>
+</style>
+</resources>
