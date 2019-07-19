@@ -293,6 +293,30 @@ public class NetSender {
     }
 
     /**
+     * 锁定船只
+     * @param id 需要补给船只的List
+     * @return boat/lock
+     * @throws HmException 错误信息
+     */
+    public String boatLock(int id) throws HmException {
+        try {
+            String url = Config.host + String.format("boat/lock/%s/", id) + this.getUrlEnd();
+            Requests requests = new Requests.Builder()
+                    .url(url)
+                    .get()
+                    .zlib()
+                    .build()
+                    .execute();
+            String data = requests.text;
+            HmException.errorFind(data);
+            return data;
+        }catch (HmException e){
+            Log.e(TAG,"boat/lock错误:" + e.toString());
+            throw new HmException(e.getCode());
+        }
+    }
+
+    /**
      * 分解船只
      * @param boats 需要分解的List
      * @param isUnload 是否需要卸装备
@@ -472,7 +496,7 @@ public class NetSender {
      */
     public String boatInstantRepairShips(List<Integer> ships) throws HmException {
         try {
-            String url = Config.host + String.format(Locale.CHINA, "boat/instantRepairShips/[]%s/", ListUtil.listJoinInt(ships, ",")) + this.getUrlEnd();
+            String url = Config.host + String.format(Locale.CHINA, "boat/instantRepairShips/[%s]/", ListUtil.listJoinInt(ships, ",")) + this.getUrlEnd();
             Requests requests = new Requests.Builder()
                     .url(url)
                     .get()

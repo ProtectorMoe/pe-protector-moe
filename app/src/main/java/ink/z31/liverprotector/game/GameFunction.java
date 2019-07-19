@@ -1,16 +1,19 @@
 package ink.z31.liverprotector.game;
 
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.alibaba.fastjson.JSON;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import ink.z31.liverprotector.bean.DismantleBean;
 import ink.z31.liverprotector.bean.FastRepairBean;
 import ink.z31.liverprotector.bean.GetExploreBean;
+import ink.z31.liverprotector.bean.LoginServerListBean;
 import ink.z31.liverprotector.bean.RepairCompleteBean;
 import ink.z31.liverprotector.bean.RubdownBean;
 import ink.z31.liverprotector.bean.StartExploreBean;
@@ -18,10 +21,15 @@ import ink.z31.liverprotector.bean.SupplyBean;
 import ink.z31.liverprotector.bean.common.PveExploreVo;
 import ink.z31.liverprotector.bean.common.RepairDockVo;
 import ink.z31.liverprotector.bean.common.UserShipVO;
+import ink.z31.liverprotector.bean.common.UserVo;
 import ink.z31.liverprotector.exception.HmException;
+import ink.z31.liverprotector.interfaces.FirstLoginCallBack;
+import ink.z31.liverprotector.interfaces.ReloginCallBack;
+import ink.z31.liverprotector.interfaces.SecondLoginCallBack;
 import ink.z31.liverprotector.util.CommonUtil;
 import ink.z31.liverprotector.util.Config;
 import ink.z31.liverprotector.util.DateUtil;
+import ink.z31.liverprotector.util.StringUtil;
 
 
 public class GameFunction {
@@ -44,7 +52,6 @@ public class GameFunction {
      * @throws HmException Hm游戏服务器问题
      */
     public void checkExplore() throws HmException {
-        Log.i(TAG, "检测远征信息...");
         List<String> finish = new ArrayList<>();
         long time = new Date().getTime() / 1000;
         for (String exploreId: userData.allExplore.keySet()) {
@@ -65,26 +72,22 @@ public class GameFunction {
                 GetExploreBean exploreJson = JSON.parseObject(exploreData, GetExploreBean.class);
                 if (exploreJson.bigSuccess == 1)
                 {
-                    Log.i(TAG,"远征大成功 " + key);
-                    // UIContend.setLog("远征大成功 " + key.replace("000", "-"));
+                    Log.i(TAG,"[远征] 远征大成功 " + key);
+                    UIUpdate.log("[远征] 远征大成功 " + key.replace("000", "-"));
                 }else {
-                    Log.i(TAG,"远征成功 " + key);
-                    // UIContend.setLog("远征成功 " + key.replace("000", "-"));
+                    Log.i(TAG,"[远征] 远征成功 " + key);
+                    UIUpdate.log("[远征] 远征成功 " + key.replace("000", "-"));
                 }
                 //分析远征数据
-                userData.userBaseData.userVo.oil = exploreJson.userResVo.oil;
-                userData.userBaseData.userVo.ammo = exploreJson.userResVo.ammo;
-                userData.userBaseData.userVo.steel = exploreJson.userResVo.steel;
-                userData.userBaseData.userVo.aluminium = exploreJson.userResVo.aluminium;
+                userData.userVoUpdate((UserVo) exploreJson.userResVo);
                 CommonUtil.delay(3000);
                 //重新派出远征
                 PveExploreVo.Levels levels = userData.allExplore.get(key);
                 if (levels != null){
                     String fleet = levels.fleetId;
-                    String startExploreData = netSender.exploreStart(key, fleet);
+                    String startExploreData = netSender.exploreStart(fleet, key);
                     startExploreJson = JSON.parseObject(startExploreData, StartExploreBean.class);
-                    Log.i(TAG,"开始远征 " + startExploreJson.exploreId);
-                    // UIContend.setLog("开始远征 " + startExploreJson.exploreId.replace("000", "-"));
+                    Log.i(TAG,"[远征] 开始远征 " + startExploreJson.exploreId);
                 }
             }
             //更新远征信息
@@ -105,12 +108,13 @@ public class GameFunction {
         for (RepairDockVo d: userData.repairDockVo){
             if (d.locked == 0){
                 int endTime = Integer.valueOf(d.endTime);
-                if (endTime != 0 && endTime > 0 && endTime < nowTime && d.shipId != null){
+                if (endTime > 0 && endTime < nowTime && d.shipId != null){
                     // 说明需要出浴
                     String repairCompleteString = netSender.repairComplete(d.id, d.shipId);
                     repairCompleteBean = JSON.parseObject(repairCompleteString, RepairCompleteBean.class);
-                    Log.i(TAG, "出浴:" + gameConstant.getShipName(userData.allShip.get(Integer.valueOf(d.shipId)).shipCid));
-                    // UIContend.setLog("出浴:" + userData.allShip.get(Integer.valueOf(d.shipId)).title);
+                    String data = "[修理] 出浴:" + gameConstant.getShipName(userData.allShip.get(Integer.valueOf(d.shipId)).shipCid);
+                    Log.i(TAG, data);
+                    UIUpdate.log(data);
                     // 更新出浴船只信息
                     userData.allShip.put(repairCompleteBean.shipVO.id, repairCompleteBean.shipVO);
                     CommonUtil.delay(3000);
@@ -144,7 +148,7 @@ public class GameFunction {
                     ableDock++;
                 }else if((endTime < nowTime && endTime > 0)){
                     netSender.repairComplete(d.id, d.shipId);
-                    // UIContend.setLog("出浴:" + userData.allShip.get(Integer.valueOf(d.shipId)).title);
+                    UIUpdate.log("[修理] 泡澡船只: " + userData.allShip.get(Integer.valueOf(d.shipId)).title);
                     CommonUtil.delay(3000);
                     ableDock++;
                 }
@@ -175,15 +179,14 @@ public class GameFunction {
             CommonUtil.delay(2000);
             int ship = waitShowerShip.get(i);
             netSender.boatRepair(ship);
-            Log.d(TAG, "泡澡:" + gameConstant.getShipName(userData.allShip.get(ship).shipCid));
-            // UIContend.setLog("泡澡:" + userData.allShip.get(ship).title);
+            Log.d(TAG, "[修理] 泡澡:" + gameConstant.getShipName(userData.allShip.get(ship).shipCid));
+            UIUpdate.log("[修理] 泡澡:" + userData.allShip.get(ship).title);
             CommonUtil.delay(3000);
             String rubdownString = netSender.boatRubdown(ship);
             rubdownBean = JSON.parseObject(rubdownString, RubdownBean.class);
             for (RepairDockVo repairDockVo: rubdownBean.repairDockVo){
                 if (repairDockVo.shipId != null && Integer.valueOf(repairDockVo.shipId) == ship){
-                    Log.i(TAG, "搓澡:" + userData.allShip.get(ship).title + " 到 " + DateUtil.timeStamp2Date(String.valueOf(repairDockVo.endTime), "HH:mm"));
-                    // UIContend.setLog("搓澡:" + userData.allShip.get(ship).title + " 到 " + DateUtil.timeStamp2Date(String.valueOf(repairDockVo.endTime), "HH:mm"));
+                    Log.i(TAG, "[修理] 搓澡:" + userData.allShip.get(ship).title + " 到 " + DateUtil.timeStamp2Date(String.valueOf(repairDockVo.endTime), "HH:mm"));
                 }
             }
         }
@@ -194,7 +197,7 @@ public class GameFunction {
 
     public void checkSupply(List<Integer> ships) throws HmException {
         try {
-            Log.i(TAG, "检测船只补给情况...");
+            Log.i(TAG, "[出征] 检测船只补给情况...");
             List<Integer> needSupply = new ArrayList<>();
             // 寻找需要补给的船只
             for (int ship: ships) {
@@ -215,13 +218,11 @@ public class GameFunction {
             }
             // 整合需要补给的船只
             if (needSupply.size() != 0){
+                CommonUtil.delay(2000);
                 String supplyData = netSender.boatSupplyBoats(needSupply);
                 SupplyBean supplyBean = JSON.parseObject(supplyData, SupplyBean.class);
                 // 更新船只信息
-                userData.userBaseData.userVo.oil = supplyBean.userVo.oil;
-                userData.userBaseData.userVo.ammo = supplyBean.userVo.ammo;
-                userData.userBaseData.userVo.steel = supplyBean.userVo.steel;
-                userData.userBaseData.userVo.aluminium = supplyBean.userVo.aluminium;
+                userData.userVoUpdate(supplyBean.userVo);
                 userData.allShipSetAllShipVO(supplyBean.shipVO);
             }
         }catch (Exception e){
@@ -232,40 +233,55 @@ public class GameFunction {
 
     /**
      * 检测分解
-     * @param type 需要分解的类型
-     * @param saveStar 需要保留的星级
-     * @param isSave 是否卸装备
      * @throws HmException 错误信息
      */
-    public void checkDismantle (List<Integer> type, int saveStar,boolean isSave) throws HmException {
-        List<Integer> needDismantle = new ArrayList<>();
-        for (int i=0; i < userData.allShip.size(); i++) {
-            UserShipVO userShipVO = userData.allShip.valueAt(i);
-            // 分析船只信息
-            if (!type.contains(userShipVO.type)) {
-                continue;
-            }
-            if (gameConstant.getStar(userShipVO.shipCid) >= saveStar) {
-                continue;
-            }
-            needDismantle.add(userShipVO.id);
+    public boolean checkDismantle() throws HmException {
+        if (userData.allShip.size() < userData.shipNumTop) {
+            return true;
         }
-        if (needDismantle.size() != 0) {
-            String dismantleData = netSender.dismantleBoat(needDismantle, isSave);
-            DismantleBean dismantleBean = JSON.parseObject(dismantleData, DismantleBean.class);
-            // 更新信息
-            userData.userBaseData.userVo.oil = dismantleBean.userVo.oil;
-            userData.userBaseData.userVo.ammo = dismantleBean.userVo.ammo;
-            userData.userBaseData.userVo.steel = dismantleBean.userVo.steel;
-            userData.userBaseData.userVo.aluminium = dismantleBean.userVo.aluminium;
-            if (dismantleBean.equipmentVo != null) {
-                userData.equipmentSetAll(dismantleBean.equipmentVo);
+        if (Setting.getInstance().isDismantleSwitch()) {
+            List<Integer> needDismantle = new ArrayList<>();
+            Set<String> type = Setting.getInstance().getDismantleType();
+            Set<String> saveStar = Setting.getInstance().getDismantleStar();
+            boolean isSave = Setting.getInstance().isDismantleEquipment();
 
+            for (int i=0; i < userData.allShip.size(); i++) {
+                UserShipVO userShipVO = userData.allShip.valueAt(i);
+                // 分析船只信息
+                if (!type.contains("0") && !type.contains(String.valueOf(userShipVO.type))) {
+                    continue;
+                }
+                if (!saveStar.contains(String.valueOf(gameConstant.getStar(userShipVO.shipCid)))) {
+                    continue;
+                }
+                if (userShipVO.isLocked == 1 || userShipVO.fleet_id != 0) {
+                    continue;
+                }
+                needDismantle.add(userShipVO.id);
             }
-            for (int del: dismantleBean.delShips) {
-                userData.allShip.delete(del);
+            if (needDismantle.size() != 0) {
+                // 输出消息
+                List<String> shipNames = new ArrayList<>();
+                for (int i: needDismantle) {
+                    shipNames.add(userData.getShipName(i));
+                }
+                String shipName = StringUtil.listJoinString(" ", shipNames);
+                // 开始分解
+                String dismantleData = netSender.dismantleBoat(needDismantle, isSave);
+                DismantleBean dismantleBean = JSON.parseObject(dismantleData, DismantleBean.class);
+                // 更新信息
+                userData.userVoUpdate(dismantleBean.userVo);
+                if (dismantleBean.equipmentVo != null) {
+                    userData.equipmentSetAll(dismantleBean.equipmentVo);
+                }
+                for (int del: dismantleBean.delShips) {
+                    userData.allShipDel(del);
+                }
+                UIUpdate.log("[分解] 分解船只:" + shipName);
             }
         }
+        // 判断是否可以出去
+        return userData.allShip.size() < userData.shipNumTop;
     }
 
     /**
@@ -274,6 +290,7 @@ public class GameFunction {
      * @param present 修理血量百分比
      */
     public void checkFastRepair(List<Integer> shipList, int present) throws HmException {
+        Log.i(TAG, "[修理] 进行修理检测");
         List<Integer> needRepair = new ArrayList<>();
         for (int ship: shipList) {
             UserShipVO userShipVO = userData.allShip.get(ship);
@@ -282,20 +299,54 @@ public class GameFunction {
                     needRepair.add(userShipVO.id);
                 }
             }
-            if (needRepair.size() != 0) {
-                String repairData = netSender.boatInstantRepairShips(needRepair);
-                FastRepairBean fastRepairBean = JSON.parseObject(repairData, FastRepairBean.class);
-                // 更新快修信息
-                userData.packageSet(fastRepairBean.packageVo);
-                // 更新船只信息
-                userData.allShipSetAllShipVO(fastRepairBean.shipVOS);
-                // 更新用户信息
-                userData.userBaseData.userVo.oil = fastRepairBean.userVo.oil;
-                userData.userBaseData.userVo.ammo = fastRepairBean.userVo.ammo;
-                userData.userBaseData.userVo.steel = fastRepairBean.userVo.steel;
-                userData.userBaseData.userVo.aluminium = fastRepairBean.userVo.aluminium;
-            }
         }
+        if (needRepair.size() != 0) {
+            CommonUtil.delay(2000);
+            String repairData = netSender.boatInstantRepairShips(needRepair);
+            FastRepairBean fastRepairBean = JSON.parseObject(repairData, FastRepairBean.class);
+            // 更新快修信息
+            userData.packageSet(fastRepairBean.packageVo);
+            // 更新船只信息
+            userData.allShipSetAllShipVO(fastRepairBean.shipVOS);
+            // 更新用户信息
+            userData.userVoUpdate(fastRepairBean.userVo);
+            // 获取快修船只
+            List<String> shipNames = new ArrayList<>();
+            for (int i: needRepair) {
+                shipNames.add(userData.getShipName(i));
+            }
+            String shipName = StringUtil.listJoinString(" ", shipNames);
+            Log.i(TAG, "[修理] 修理船只:" + shipName);
+            UIUpdate.log("[修理] 修理船只:" + shipName);
+        }
+    }
+
+
+
+    public void reLogin(final ReloginCallBack callBack) {
+        FirstLogin firstLogin = FirstLogin.getInstance();
+        SecondLogin secondLogin = SecondLogin.getInstance();
+        firstLogin.readLogin(new FirstLoginCallBack() {
+            @Override
+            public void onFinish(SparseArray<LoginServerListBean.ServerList> serverList, int defaultServer) {
+                secondLogin.login(new SecondLoginCallBack() {
+                    @Override
+                    public void onFinish() {
+                        callBack.onFinish();
+                    }
+
+                    @Override
+                    public void onError(String errMsg) {
+                        callBack.onError(errMsg);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String errMsg) {
+                callBack.onError(errMsg);
+            }
+        }, (data) -> {});
     }
 
 

@@ -36,7 +36,7 @@ public class MapPathHtml {
                 super.onPageFinished(view, url);
                 if (f != null) {
                     String code = String.format("javascript:onLoad(\'%s\', \'%s\')", name, f);
-                    Log.i(TAG, "执行脚本" + code);
+                    Log.i(TAG, "[Javascript] 执行脚本" + code);
                     view.loadUrl(code);
                 }
             }
@@ -48,6 +48,14 @@ public class MapPathHtml {
 
     @JavascriptInterface
     public void onFinish(String name, String obj) {
+        name = name.replace(" ", "");
+        // 检测是否有重复的
+        List<MapConfigBean> list = LitePal.select("*")
+                .where("name=?", name)
+                .find(MapConfigBean.class);
+        for (MapConfigBean b: list) {
+            b.delete();
+        }
         MapConfigBean bean = new MapConfigBean();
         bean.name = name;
         bean.data = obj;

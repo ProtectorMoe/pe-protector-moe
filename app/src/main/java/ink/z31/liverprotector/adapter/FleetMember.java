@@ -47,7 +47,7 @@ public class FleetMember {
         this.hp = userShipVO.battleProps.hp;
         this.hpMax = userShipVO.battlePropsMax.hp;
         this.level = userShipVO.level;
-        this.photo = "head_portrait/" + this.index + ".png";
+        this.photo = "html/images/head_portrait/" + this.index + ".png";
     }
 
 }

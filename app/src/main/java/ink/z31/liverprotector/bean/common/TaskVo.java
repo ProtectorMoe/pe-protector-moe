@@ -4,15 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 
 public class TaskVo {
-    String taskCid;
-    String status;
-    String title;
-
-    HashMap<String, Integer> award;
-
-    class Condition {
-        int totalAmount;
-        int finishedAmount;
-    }
-    List<Condition> conditions;
+    public String taskCid;
+    public String status;
+    public String title;
+    public HashMap<String, Integer> award;
+    public List<Condition> condition;
 }

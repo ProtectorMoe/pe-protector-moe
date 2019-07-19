@@ -63,7 +63,7 @@ public class TaskFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.i(TAG, "任务界面初始化");
+        Log.i(TAG, "[初始化] 任务界面初始化");
         initTaskList();
     }
 
@@ -73,7 +73,7 @@ public class TaskFragment extends Fragment {
 
 
     public void initTaskList() {
-        Log.d(TAG, "刷新任务界面");
+        Log.d(TAG, "[初始化] 刷新任务界面");
         View view = getView();
         if (view != null) {
             RecyclerView recyclerView = view.findViewById(R.id.task_list);
@@ -96,7 +96,7 @@ public class TaskFragment extends Fragment {
 
                 @Override
                 public void onItemDragMoving(RecyclerView.ViewHolder source, int from, RecyclerView.ViewHolder target, int to) {
-                    manager.swap(from, to);
+                    manager.writeFile();
                     Log.i(TAG, String.format("交换任务次序 from: %d  to: %d", from, to));
                 }
 
@@ -114,40 +114,17 @@ public class TaskFragment extends Fragment {
                             .setConfirmText("删除")
                             .showCancelButton(true)
                             .setCancelClickListener(sweetAlertDialog -> {
-                                Log.i(TAG, "删除取消");
+                                Log.i(TAG, "[任务] 删除取消");
                                 sweetAlertDialog.cancel();
                             })
                             .setConfirmClickListener(sweetAlertDialog -> {
-                                Log.i(TAG, "删除确认");
+                                Log.i(TAG, "[任务] 删除确认");
                                 manager.delTask(position);
                                 updateTask();
                                 sweetAlertDialog.cancel();
                             })
                             .show();
                 }
-            });
-            adapter.setOnItemLongClickListener((adapter1, view1, position) -> {
-                Activity activity = getActivity();
-                if (activity != null) {
-                    new SweetAlertDialog(activity, SweetAlertDialog.WARNING_TYPE)
-                            .setTitleText("任务")
-                            .setContentText("确定删除此任务?")
-                            .setCancelText("取消")
-                            .setConfirmText("删除")
-                            .showCancelButton(true)
-                            .setCancelClickListener(sweetAlertDialog -> {
-                                Log.i(TAG, "删除取消");
-                                sweetAlertDialog.cancel();
-                            })
-                            .setConfirmClickListener(sweetAlertDialog -> {
-                                Log.i(TAG, "删除确认");
-                                manager.delTask(position);
-                                updateTask();
-                                sweetAlertDialog.cancel();
-                            })
-                            .show();
-                }
-                return true;
             });
             recyclerView.setAdapter(adapter);
 

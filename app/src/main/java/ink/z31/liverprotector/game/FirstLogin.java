@@ -86,18 +86,16 @@ public class FirstLogin  {
      */
     public void readLogin(final FirstLoginCallBack callBack, final ResProgressCallBack callBack2){
         final FirstLogin login = getInstance();
-        new Thread(() -> {
-            try {
-                login.getVersion();
-                FirstLoginResult result = login.firstLogin(callBack2);
-                callBack.onFinish(result.serverList, result.defaultServer);
-            } catch (HmException e){
-                callBack.onError(e.getMessage());
-            } catch (Exception e){
-                callBack.onError(e.getMessage());
-                e.printStackTrace();
-            }
-        }).start();
+        try {
+            login.getVersion();
+            FirstLoginResult result = login.firstLogin(callBack2);
+            callBack.onFinish(result.serverList, result.defaultServer);
+        } catch (HmException e){
+            callBack.onError(e.getMessage());
+        } catch (Exception e){
+            callBack.onError(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 
@@ -223,68 +221,20 @@ public class FirstLogin  {
         String initData;
         try {
             // 读取版本号
-            Log.i(TAG, "加载init数据...");
+            Log.i(TAG, "[登录] 加载init数据...");
             long dataVersion = Long.valueOf(gameConstant.getVersion());
             if(Long.valueOf(Config.resVersion) > dataVersion){
                 // 开始下载资料
-                Log.i(TAG, "数据过期, 加载新数据...");
+                Log.i(TAG, "[登录] 数据过期, 加载新数据...");
                 callBack.onChange("加载新Res数据....");
                 initData = netSender.getInitData();
                 gameConstant.parseJson(initData, callBack);
             }
-            Log.i(TAG, "成功解析所有数据");
+            Log.i(TAG, "[登录] 成功解析所有数据");
         } catch (Exception e){
-            Log.e(TAG, "获取init数据错误!" + e.getMessage());
+            Log.e(TAG, "[登录] 获取init数据错误!" + e.getMessage());
             e.printStackTrace();
         }
-
-        /*
-        try{
-            File file = new File(path);
-            if(!file.exists()){  // 不存在文件,从网上请求
-                if(!file.createNewFile()){
-                    Log.i(TAG, "创建init文件");
-                }
-                needDownload = true;
-            }else {  // 存在文件,读取文件
-                try {
-                    Log.d(TAG, "开始解析init数据...");
-                    initData = FileUtil.readFile(litePath);
-                    InitDataBean initDataBean = JSON.parseObject(initData, InitDataBean.class);
-                    Log.d(TAG, "检测init的数据是否过期...");
-                    if (initDataBean != null && initDataBean.DataVersion != null){
-                        long dataVersion = Long.valueOf(initDataBean.DataVersion);
-                        if(Long.valueOf(Config.resVersion) > dataVersion){  // 如果需要下载新资料
-                            needDownload = true;
-                        }
-                    }else {
-                        needDownload = true;
-                    }
-                }catch (Exception e) {
-                    Log.e(TAG, "第一次的json解析出现问题!");
-                    e.printStackTrace();
-                }
-            }
-            if (needDownload){
-                initData = netSender.getInitData();
-                if (!FileUtil.writeFile(litePath, initData)){
-                    Log.e(TAG, "写入init数据错误!");
-                }
-            }
-
-            try {
-                gameConstant.initData = JSON.parseObject(initData, InitDataBean.class);
-                gameConstant.init();
-            }catch (Exception e) {
-                Log.e(TAG, "init的json解析出现问题!" + e.getMessage());
-                e.printStackTrace();
-            }
-        }catch (Exception e){
-            Log.e(TAG, "获取init数据错误!" + e.getMessage());
-            e.printStackTrace();
-        }
-        */
-
     }
 
 

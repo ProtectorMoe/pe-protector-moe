@@ -47,9 +47,9 @@
 					<div class="mui-switch-handle"></div>
 				</div>
 			</div>
-			<div id="sw-sl" class="mui-input-row">
+			<div class="mui-input-row">
 				<label>回港</label>
-				<div class="mui-switch">
+				<div id="sw-sl" class="mui-switch">
 					<div class="mui-switch-handle"></div>
 				</div>
 			</div>
@@ -262,6 +262,13 @@
 						children1.push({
 							value: i,
 							text: "≥" + i,
+							children: children2
+						});
+					}
+					for (var i=1; i<=6; i++) {
+						children1.push({
+							value: i,
+							text: "≤" + i,
 							children: children2
 						});
 					}

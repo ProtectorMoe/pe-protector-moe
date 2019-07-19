@@ -14,7 +14,7 @@
         <MultiSelectListPreference
             android:title="保留星级"
             android:summary="向上保留, 重要船只请先上锁"
-            android:key="pref_dismantle_type"
+            android:key="pref_dismantle_star"
             android:entries="@array/dismantle_star"
             android:entryValues="@array/dismantle_star_value"
             android:icon="@drawable/star"/>
@@ -22,7 +22,7 @@
             android:icon="@drawable/leixing"
             android:title="分解船只"
             android:summary="点击勾选要分解的船只"
-            android:key="pref_dismantle_star"
+            android:key="pref_dismantle_type"
             android:entries="@array/dismantle_type"
             android:entryValues="@array/dismantle_type_value" />
     </PreferenceCategory>

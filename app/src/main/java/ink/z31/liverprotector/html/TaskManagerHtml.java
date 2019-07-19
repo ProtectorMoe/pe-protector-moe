@@ -39,7 +39,7 @@ public class TaskManagerHtml {
                     name.add(bean.name);
                 }
                 String code = String.format("javascript:onLoad(\'%s\')", JSON.toJSONString(name));
-                Log.i(TAG, "执行javascript:" + code);
+                Log.i(TAG, "[Javascript] 执行javascript:" + code);
                 view.loadUrl(code);
             }
         });

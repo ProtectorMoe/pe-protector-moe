@@ -1,6 +1,7 @@
 package ink.z31.liverprotector.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
@@ -12,6 +13,10 @@ import android.widget.TextView;
 
 import com.github.florent37.materialviewpager.MaterialViewPagerHelper;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,11 +24,11 @@ import ink.z31.liverprotector.R;
 import ink.z31.liverprotector.adapter.FleetViewPagerAdapter;
 import ink.z31.liverprotector.bean.common.FleetVo;
 import ink.z31.liverprotector.game.UserData;
-import ink.z31.liverprotector.interfaces.UpdateUiMainInterface;
+import ink.z31.liverprotector.util.EventBusUtil;
 import ink.z31.liverprotector.view.FleetRecyclerView;
 
 
-public class MainFragment extends Fragment implements UpdateUiMainInterface {
+public class MainFragment extends Fragment {
     private UserData userData = UserData.getInstance();
     private static MainFragment mainFragment;
     private static final String TAG = "MainFragment";
@@ -41,6 +46,16 @@ public class MainFragment extends Fragment implements UpdateUiMainInterface {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
+        if (savedInstanceState != null) {
+            View view = getView();
+            if (view == null) return;
+            TextView textView;
+            textView= view.findViewById(R.id.tv_now_task);
+            textView.setText(savedInstanceState.getString("tv_now_task"));
+            textView = view.findViewById(R.id.tv_now_log);
+            textView.setText(savedInstanceState.getString("tv_now_log"));
+        }
     }
 
     @Override
@@ -61,22 +76,25 @@ public class MainFragment extends Fragment implements UpdateUiMainInterface {
         super.onStart();
         NestedScrollView mScrollView = getView().findViewById(R.id.nestedScrollView);
         MaterialViewPagerHelper.registerScrollView(getActivity(), mScrollView);
-        onFleetChange();
-        onResChange();
+        onFleetChange(null);
+        onResChange(null);
     }
 
-    @Override
-    public void onFleetChange() {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFleetChange(EventBusUtil util) {
+        if (util != null && util.getCode() != EventBusUtil.EVENT_FLEET_CHANGE) return;
         try {
-            ViewPager viewPager = getView().findViewById(R.id.view_page_fleet);
-            final TextView textView = getView().findViewById(R.id.title_fleet);
+            View view = getView();
+            if (view == null) return;
+            ViewPager viewPager = view.findViewById(R.id.view_page_fleet);
+            final TextView textView = view.findViewById(R.id.title_fleet);
             FleetVo fleetVo = userData.fleet.get(String.valueOf(viewPager.getCurrentItem()+1));
             textView.setText(fleetVo != null? fleetVo.title: "");
             List<FleetRecyclerView> views = new ArrayList<>();
             for (int i=1; i<=8; i++) {
-                FleetRecyclerView view = new FleetRecyclerView(getContext());
-                view.setFleet(String.valueOf(i));
-                views.add(view);
+                FleetRecyclerView recyclerView = new FleetRecyclerView(getContext());
+                recyclerView.setFleet(String.valueOf(i));
+                views.add(recyclerView);
             }
             FleetViewPagerAdapter adapter = new FleetViewPagerAdapter(views);
             viewPager.setAdapter(adapter);
@@ -105,21 +123,24 @@ public class MainFragment extends Fragment implements UpdateUiMainInterface {
         }
     }
 
-    @Override
-    public void onResChange() {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onResChange(EventBusUtil util) {
+        if (util != null && util.getCode() != EventBusUtil.EVENT_RES_CHANGE) return;
         try {
-            TextView oil = getView().findViewById(R.id.tv_oil);
-            TextView ammo = getView().findViewById(R.id.tv_ammo);
-            TextView steel = getView().findViewById(R.id.tv_steel);
-            TextView aluminium = getView().findViewById(R.id.tv_aluminium);
-            TextView qz = getView().findViewById(R.id.tv_qz);
-            TextView xy = getView().findViewById(R.id.tv_xy);
-            TextView zl = getView().findViewById(R.id.tv_zl);
-            TextView hm = getView().findViewById(R.id.tv_hm);
-            TextView qt = getView().findViewById(R.id.tv_qt);
-            TextView ship = getView().findViewById(R.id.tv_ship);
-            TextView equipment = getView().findViewById(R.id.tv_equipment);
-            TextView repair = getView().findViewById(R.id.tv_repair);
+            View view = getView();
+            if (view == null) return;
+            TextView oil = view.findViewById(R.id.tv_oil);
+            TextView ammo = view.findViewById(R.id.tv_ammo);
+            TextView steel = view.findViewById(R.id.tv_steel);
+            TextView aluminium = view.findViewById(R.id.tv_aluminium);
+            TextView qz = view.findViewById(R.id.tv_qz);
+            TextView xy = view.findViewById(R.id.tv_xy);
+            TextView zl = view.findViewById(R.id.tv_zl);
+            TextView hm = view.findViewById(R.id.tv_hm);
+            TextView qt = view.findViewById(R.id.tv_qt);
+            TextView ship = view.findViewById(R.id.tv_ship);
+            TextView equipment = view.findViewById(R.id.tv_equipment);
+            TextView repair = view.findViewById(R.id.tv_repair);
             oil.setText(String.valueOf(userData.userBaseData.userVo.oil));
             ammo.setText(String.valueOf(userData.userBaseData.userVo.ammo));
             steel.setText(String.valueOf(userData.userBaseData.userVo.steel));
@@ -139,7 +160,42 @@ public class MainFragment extends Fragment implements UpdateUiMainInterface {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNowTaskChange(EventBusUtil util) {
+        if (util !=  null && util.getCode() == EventBusUtil.EVENT_NOW_TASK_CHANGE) {
+            View view = getView();
+            if (view == null) return;
+            TextView textView = view.findViewById(R.id.tv_now_task);
+            textView.setText("当前任务: " + util.getMessage());
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDetailLog(EventBusUtil util) {
+        if (util !=  null && (util.getCode() == EventBusUtil.EVENT_DETAIL_LOG_ADD || util.getCode() == EventBusUtil.EVENT_LOG_ADD)) {
+            View view = getView();
+            if (view == null) return;
+            TextView textView = view.findViewById(R.id.tv_now_log);
+            textView.setText(util.getMessage());
+        }
+    }
 
 
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        View view = getView();
+        if (view == null) return;
+        TextView textView = view.findViewById(R.id.tv_now_task);
+        outState.putString("tv_now_task", String.valueOf(textView.getText()));
+        textView = view.findViewById(R.id.tv_now_log);
+        outState.putString("tv_now_log", String.valueOf(textView.getText()));
+    }
 }

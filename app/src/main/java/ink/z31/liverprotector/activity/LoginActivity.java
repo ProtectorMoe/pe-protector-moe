@@ -17,7 +17,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-
 import org.angmarch.views.NiceSpinner;
 
 import java.util.Arrays;
@@ -83,7 +82,7 @@ public class  LoginActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Config.host = hostArray[serverIndex];
-                        Log.i(TAG, "选择服务器:" + Config.host);
+                        Log.i(TAG, "[登录] 选择服务器:" + Config.host);
                         loginAlertDialog.show();
                         secondLogin();
                     }
@@ -164,14 +163,14 @@ public class  LoginActivity extends AppCompatActivity {
         edit.putInt("server", server);
         edit.apply();
         // 正式进行登录
-        Log.i(TAG,"第一次登录准备开始");
+        Log.i(TAG,"[登录] 第一次登录准备开始");
         FirstLogin login = FirstLogin.getInstance();
         login.initialize(username, pwd, server);
-        login.readLogin(new FirstLoginCallBack() {
+        new Thread(() -> login.readLogin(new FirstLoginCallBack() {
             @Override
             public void onFinish(SparseArray<LoginServerListBean.ServerList> serverList, int defaultServer) {
                 // 登录成功, 获取项目
-                Log.i(TAG,"第一次登录成功, 显示服务器");
+                Log.i(TAG,"[登录] 第一次登录成功, 显示服务器");
                 Message message = new Message();
                 message.what = LOGIN_SHOW_SERVER;
 
@@ -192,7 +191,7 @@ public class  LoginActivity extends AppCompatActivity {
             }
             @Override
             public void onError(String errMsg) {
-                Log.i(TAG, "第一次登陆失败!" + errMsg);
+                Log.i(TAG, "[登录] 第一次登陆失败!" + errMsg);
                 // 取消登录框
                 stopLoginDialog();
                 // 弹出错误通知
@@ -203,21 +202,21 @@ public class  LoginActivity extends AppCompatActivity {
             message.what = LOGIN_RES;
             message.obj = data;
             loginHandler.sendMessage(message);
-        });
+        })).start();
     }
 
     private void secondLogin(){
         // 第二次登录
-        Log.i(TAG,"第二次登录准备开始...");
+        Log.i(TAG,"[登录] 第二次登录准备开始...");
         Message message = new Message();
         message.what = LOGIN_RES;
         message.obj = "登录中, 请稍候...";
         loginHandler.sendMessage(message);
         SecondLogin secondLogin = SecondLogin.getInstance();
-        secondLogin.login(new SecondLoginCallBack() {
+        new Thread(() -> secondLogin.login(new SecondLoginCallBack() {
             @Override
             public void onFinish() {
-                Log.i(TAG,"登录成功, 开始跳转主界面...");
+                Log.i(TAG,"[登录] 登录成功, 开始跳转主界面...");
                 Config.hasLogin = true;
                 stopLoginDialog();
                 setResult(RESULT_OK);
@@ -233,7 +232,7 @@ public class  LoginActivity extends AppCompatActivity {
                 // 显示错误信息
                 showMessageDialog(errMsg);
             }
-        });
+        })).start();
     }
 
     private void showLoginDialog(){

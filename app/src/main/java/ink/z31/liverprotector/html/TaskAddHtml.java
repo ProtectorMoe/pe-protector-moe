@@ -39,7 +39,7 @@ public class TaskAddHtml {
 
     @JavascriptInterface
     public void onFinish(String obj) {
-        Log.i(TAG, "用户请求添加任务" + obj);
+        Log.i(TAG, "[任务] 用户请求添加任务" + obj);
         TaskManager manager = TaskManager.getInstance();
         manager.addTask(obj);
         callBack.onFinish(null);

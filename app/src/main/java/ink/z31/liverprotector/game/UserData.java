@@ -20,8 +20,12 @@ import ink.z31.liverprotector.bean.common.PveExploreVo;
 import ink.z31.liverprotector.bean.common.PveNode;
 import ink.z31.liverprotector.bean.common.RepairDockVo;
 import ink.z31.liverprotector.bean.common.ShipVO;
+import ink.z31.liverprotector.bean.common.TaskVo;
+import ink.z31.liverprotector.bean.common.UpdateTaskVo;
 import ink.z31.liverprotector.bean.common.UserShipVO;
 import ink.z31.liverprotector.bean.common.UserVo;
+import ink.z31.liverprotector.util.Config;
+import ink.z31.liverprotector.util.EventBusUtil;
 
 
 public class UserData {
@@ -50,6 +54,7 @@ public class UserData {
     public int equipmentNumTop;
     public UserDataBean userBaseData = null;
 
+
     // ------------------- 解析用户数据 ----------------------
     public void parseUserData(String user_data) {
         userBaseData = JSON.parseObject(user_data, UserDataBean.class);
@@ -71,18 +76,30 @@ public class UserData {
         this.setRepairDockVo(userBaseData.repairDockVo);
         // 解锁船只信息
         for (Object o : userBaseData.unlockShip) {
-            this.addUnlockedShip(Integer.valueOf(String.valueOf(o)).longValue());
+            this.addUnlockedShip(Integer.valueOf(String.valueOf(o)));
         }
+        // 任务信息
+        this.setTaskVo(userBaseData.taskVo);
         // 装备信息
         this.equipmentSetAll(userBaseData.equipmentVo);
+        // 记录数据
+        if (Config.isFirstLogin) {
+            Counter counter = Counter.getInstance();
+            counter.init(userBaseData.userVo.oil,
+                    userBaseData.userVo.ammo,
+                    userBaseData.userVo.steel,
+                    userBaseData.userVo.aluminium);
+            Config.isFirstLogin = false;
+        }
     }
 
     // ----------------- 更新用户数据--------------
-    public void UserVoUpdata(UserVo userVo) {
+    public void userVoUpdate(UserVo userVo) {
         userBaseData.userVo.ammo = userVo.ammo;
         userBaseData.userVo.oil = userVo.oil;
         userBaseData.userVo.aluminium = userVo.aluminium;
         userBaseData.userVo.steel = userVo.steel;
+        new EventBusUtil(EventBusUtil.EVENT_RES_CHANGE).post();
     }
 
     // ----------------- 装备信息 -----------------
@@ -160,6 +177,11 @@ public class UserData {
         return shipVO != null ? shipVO.battleProps.hp : 0;
     }
 
+    public int getShipMaxHp(int id) {
+        UserShipVO shipVO = userData.allShip.get(id);
+        return shipVO != null ? shipVO.battlePropsMax.hp : 0;
+    }
+
     public String getShipName(int id) {
         UserShipVO shipVO = userData.allShip.get(id);
         return gameConstant.getShipName(shipVO.shipCid);
@@ -191,7 +213,9 @@ public class UserData {
      * @param ship 传过来的信息需要反射复制
      */
     public void allShipAdd(UserShipVO ship) {
-        allShip.put(ship.id, ship);
+        if (ship != null) {
+            allShip.put(ship.id, ship);
+        }
     }
 
     //删除一个船只数据
@@ -233,14 +257,14 @@ public class UserData {
     }
 
     // ---------------------已经拥有船只信息-------------------
-    public List<Long> unlockedShip = new ArrayList<>();
+    public List<Integer> unlockedShip = new ArrayList<>();
 
     /**
      * 添加一个船只信息
      *
      * @param shipCid
      */
-    public void addUnlockedShip(Long shipCid) {
+    public void addUnlockedShip(int shipCid) {
         unlockedShip.add(shipCid);
     }
 
@@ -252,8 +276,12 @@ public class UserData {
     public void unlockedShipSet(List<Object> s) {
         unlockedShip.clear();
         for (Object e : s) {
-            unlockedShip.add(Long.valueOf(String.valueOf(e)));
+            unlockedShip.add(Integer.valueOf(String.valueOf(e)));
         }
+    }
+
+    public boolean isUnlock(int cid) {
+        return this.unlockedShip.contains(cid);
     }
 
     // -----------------------澡堂数据-------------------------
@@ -290,12 +318,32 @@ public class UserData {
      * @param packageVo
      */
     public void packageSet(List<PackageVo> packageVo) {
-        for (PackageVo packageVo1 : packageVo) {
-            packages.put(packageVo1.itemCid, packageVo1.num);
+        if (packageVo != null) {
+            for (PackageVo packageVo1 : packageVo) {
+                packages.put(packageVo1.itemCid, packageVo1.num);
+            }
         }
     }
 
     public int packageGet(int cid) {
         return packages.get(cid);
     }
+
+    // ------------------------ 任务数据 --------------------------
+    private HashMap<String, TaskVo> taskVo = new HashMap<>();
+    public void setTaskVo(List<TaskVo> vo) {
+        for (TaskVo o: vo) {
+            taskVo.put(o.taskCid, o);
+        }
+    }
+    public void updateTaskVo(List<UpdateTaskVo> updateTaskVo) {
+        for (UpdateTaskVo vo: updateTaskVo) {
+            TaskVo t = taskVo.get(vo.taskCid);
+            if (t != null) {
+                t.condition = vo.condition;
+            }
+        }
+    }
+
+
 }

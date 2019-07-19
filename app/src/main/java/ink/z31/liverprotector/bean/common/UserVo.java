@@ -1,6 +1,6 @@
 package ink.z31.liverprotector.bean.common;
 
-public class UserVo {
+public class UserVo extends UserResVo{
     public String uid;
     public String username;
 
@@ -9,9 +9,4 @@ public class UserVo {
 
     public int shipNumTop;
     public int equipmentNumTop;
-
-    public int oil;
-    public int ammo;
-    public int steel;
-    public int aluminium;
 }

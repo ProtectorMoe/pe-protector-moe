@@ -10,12 +10,13 @@ public class Config {
     public static String urlVersion = "";  // 游戏获取version的网址
     public static int serverType = 0;  // 游戏国籍
     public static String resVersion = "";  // res的版本
+
     public static String host = "";
     public static String userId;
     public static String loginHead;
     public static String loginApiHead;
-    public static String cookie = "";
 
+    public static boolean isFirstLogin = true;
     public static boolean isExplore = true;
     public static boolean isRepair = false;
     public static boolean isRepairFleet = false;

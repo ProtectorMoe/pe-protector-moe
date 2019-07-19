@@ -1,8 +1,10 @@
 package ink.z31.liverprotector;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -13,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -21,6 +24,8 @@ import com.github.florent37.materialviewpager.MaterialViewPager;
 import com.github.florent37.materialviewpager.header.HeaderDesign;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Date;
 import java.util.List;
@@ -31,11 +36,17 @@ import ink.z31.liverprotector.activity.LoginActivity;
 import ink.z31.liverprotector.fragment.LogFragment;
 import ink.z31.liverprotector.fragment.MainFragment;
 import ink.z31.liverprotector.fragment.TaskFragment;
+import ink.z31.liverprotector.game.Setting;
+import ink.z31.liverprotector.game.TaskManager;
 import ink.z31.liverprotector.game.UserData;
-import ink.z31.liverprotector.interfaces.UpdateUiMainInterface;
-import ink.z31.liverprotector.util.App;
+import ink.z31.liverprotector.service.MainService;
 import ink.z31.liverprotector.util.Config;
 import ink.z31.liverprotector.util.EventBusUtil;
+
+import static ink.z31.liverprotector.util.EventBusUtil.EVENT_FLEET_CHANGE;
+import static ink.z31.liverprotector.util.EventBusUtil.EVENT_LOGIN_FINISH;
+import static ink.z31.liverprotector.util.EventBusUtil.EVENT_RES_CHANGE;
+import static ink.z31.liverprotector.util.EventBusUtil.EVENT_TASK_CHANGE;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
@@ -43,37 +54,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private DrawerLayout mDrawerLayout;
     private MaterialViewPager materialViewPager;
     private List<Fragment> fragmentList;
-    private App app;
+    private boolean isConnected = false;
 
-    public static final int ON_RES_CHANGE = 0;
-    public static final int ON_FLEET_CHANGE = 1;
+    private MainService.MainBinder mainBinder;
+
 
     public static final int TASK_CHANGE = 1;
 
-    public Handler handler = new Handler(msg -> {
-        switch (msg.what) {
-            case ON_RES_CHANGE:
-                updateRes();
-                break;
-            case ON_FLEET_CHANGE:
-                updateFleet();
-                break;
-
-        }
-        return true;
-    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        app = (App)getApplication();
-        app.setHandler(App.HANDLER_MAIN_ACTIVITY, handler);
         setContentView(R.layout.activity_main);
+        // 服务绑定
+        // 绑定服务
+        Intent bindIntent = new Intent(this, MainService.class);
+        isConnected = bindService(bindIntent, serviceConnection, BIND_AUTO_CREATE);
+        // 初始化设置
+        Setting.getInstance().init();
         // 设置侧滑菜单
         setTitle("");
         mDrawerLayout = findViewById(R.id.drawer_layout);
         // 注册EventBus
-        // EventBus.getDefault().register(this);
+        EventBus.getDefault().register(this);
         // 设置主页面
         materialViewPager = findViewById(R.id.materialViewPager);
         materialViewPager.getViewPager().setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
@@ -172,17 +175,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.action_add_task:
+                Log.i(TAG, "[UI] 开启任务界面");
                 Intent intent = new Intent(MainActivity.this, HtmlActivity.class);
                 intent.putExtra("type", HtmlActivity.HTML_TASK);
                 startActivityForResult(intent, HtmlActivity.REQUEST_CODE);
                 break;
             case R.id.action_set_task:
+                Log.i(TAG, "[UI] 开启路径界面");
                 Intent intent2 = new Intent(MainActivity.this, HtmlActivity.class);
                 intent2.putExtra("type", HtmlActivity.HTML_TASK_MANAGER);
                 startActivity(intent2);
                 break;
             case R.id.action_setting:
-                Log.i(TAG, "开启设置界面");
+                Log.i(TAG, "[UI] 开启设置界面");
                 Intent intent1 = new Intent(MainActivity.this, FragmentActivity.class);
                 intent1.putExtra("type", FragmentActivity.SETTING_FRAGMENT);
                 startActivity(intent1);
@@ -195,12 +200,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (requestCode){
             case LoginActivity.REQUEST_CODE: // 登录界面的返回值
                 if (resultCode == RESULT_OK){
-
+                    new EventBusUtil(EVENT_LOGIN_FINISH, "登录完成").post();
+                    new EventBusUtil(EVENT_RES_CHANGE).post();
+                    new EventBusUtil(EVENT_FLEET_CHANGE).post();
+                    new EventBusUtil(EVENT_TASK_CHANGE).post();
                 }
                 break;
             case HtmlActivity.REQUEST_CODE:  // h5界面返回值
-                if (resultCode == TASK_CHANGE) {  // 更新任务界面
-                    EventBus.getDefault().post(new EventBusUtil(EventBusUtil.EVENT_TASK_CHANGE, "任务发生更新, 更新ui"));
+                if (resultCode == TASK_CHANGE) {  // 更新任务界面, 更新ui"));
+                    new EventBusUtil(EVENT_TASK_CHANGE, "任务发生更新, 更新ui").post();
                 }
                 break;
 
@@ -209,47 +217,78 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     long lastPressTime = 0;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
     @Override
     public void onBackPressed() {
         if (new Date().getTime() - lastPressTime < 1000) {
-            finish();
+            moveTaskToBack(false);
         } else {
             lastPressTime = new Date().getTime();  // 重置lastPressTime
             View v = getWindow().getDecorView().findViewById(R.id.coordinatorLayout);
             Snackbar.make(v, "再按一次返回桌面", Snackbar.LENGTH_SHORT)
                     .setAction("退出程序", v1 -> {
+                        mainBinder.cancelNotification();
+                        Intent intent = new Intent(this, MainService.class);
+                        stopService(intent);
                         finish();
-                        System.exit(0);
                     })
                     .show();
         }
     }
 
-    public void updateRes() {
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_main);
-        UpdateUiMainInterface mainInterface = (UpdateUiMainInterface)fragment;
-        mainInterface.onResChange();
-    }
-
-    public void updateFleet() {
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_main);
-        UpdateUiMainInterface mainInterface = (UpdateUiMainInterface)fragment;
-        mainInterface.onFleetChange();
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
+            case android.R.id.home:  // 点击home键
                 mDrawerLayout.openDrawer(Gravity.START);
+                break;
+            case R.id.menu_play:
+                TaskManager.isRun = !TaskManager.isRun;
+                item.setIcon(TaskManager.isRun? R.drawable.play: R.drawable.stop);
+                View v = getWindow().getDecorView().findViewById(R.id.coordinatorLayout);
+                Snackbar.make(v, "已" + (TaskManager.isRun? "开始": "停止") + "任务", Snackbar.LENGTH_SHORT)
+                .show();
                 break;
         }
         return true;
     }
 
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mainBinder = (MainService.MainBinder)service;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLoginFinish(EventBusUtil util) {
+        if (util.getCode() == EVENT_LOGIN_FINISH) {
+            // 启动服务
+            Intent intent = new Intent(MainActivity.this, MainService.class);
+            startService(intent);
+        }
+    }
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // EventBus.getDefault().unregister(this);
+        if (isConnected) {
+            unbindService(serviceConnection);
+            isConnected = false;
+        }
+        EventBus.getDefault().unregister(this);
     }
 }

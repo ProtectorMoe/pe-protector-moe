@@ -19,7 +19,7 @@ public class FragmentActivity extends AppCompatActivity {
         Intent intent = getIntent();
         switch (intent.getIntExtra("type", SETTING_FRAGMENT)) {
             case SETTING_FRAGMENT:
-                Log.i(TAG, "准备设置界面");
+                Log.i(TAG, "[初始化] 准备设置界面");
                 setContentView(R.layout.activity_fragment);
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.replace(android.R.id.content,new SettingFragment());

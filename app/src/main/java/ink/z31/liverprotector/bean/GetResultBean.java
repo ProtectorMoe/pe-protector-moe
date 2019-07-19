@@ -6,7 +6,7 @@ import ink.z31.liverprotector.bean.common.ShipVO;
 import ink.z31.liverprotector.bean.common.UpdateTaskVo;
 
 public class GetResultBean {
-    public UpdateTaskVo updateTaskVo;
+    public List<UpdateTaskVo> updateTaskVo;
     public int bossHp;
     public List<ShipVO> newShipVO;
     public List<ShipVO> shipVO;
@@ -24,5 +24,6 @@ public class GetResultBean {
         public int hp;
         public int isMvp;
     }
+
 
 }

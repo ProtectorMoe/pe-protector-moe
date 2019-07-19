@@ -91,6 +91,16 @@ public abstract class GameBattle {
         }
     }
 
+    public void backToPort() throws HmException{
+        netSender.bseaGetData();
+        netSender.liveGetUserInfo();
+        netSender.activeGetUserData();
+        netSender.pveGetUserData();
+        netSender.campaignGetUserData();
+    }
+
+
+
 
 }
 

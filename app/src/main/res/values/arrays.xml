@@ -34,11 +34,12 @@
     </string-array>
 
     <string-array name="dismantle_star">
-        <item>保留6星</item>
-        <item>保留5星</item>
-        <item>保留4星</item>
-        <item>保留3星</item>
-        <item>保留2星</item>
+        <item>6星</item>
+        <item>5星</item>
+        <item>4星</item>
+        <item>3星</item>
+        <item>2星</item>
+        <item>1星</item>
     </string-array>
 
     <string-array name="dismantle_star_value">
@@ -47,5 +48,6 @@
         <item>4</item>
         <item>3</item>
         <item>2</item>
+        <item>1</item>
     </string-array>
 </resources>

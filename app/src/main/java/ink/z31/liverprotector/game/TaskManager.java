@@ -8,15 +8,20 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import ink.z31.liverprotector.bean.TaskBean;
 import ink.z31.liverprotector.util.App;
+import ink.z31.liverprotector.util.DateUtil;
+import ink.z31.liverprotector.util.EventBusUtil;
 
 public class TaskManager {
     private static final String TAG = "TaskManager";
     private static TaskManager taskManager;
+
+    public static boolean isRun = true;
+
     public static TaskManager getInstance() {
         if (taskManager == null) {
             taskManager = new TaskManager();
@@ -45,14 +50,10 @@ public class TaskManager {
 
     }
 
-    public void swap(int o, int n) {
-        Collections.swap(taskBeanList, o, n);
-        this.writeFile();
-    }
-
-
     public void writeFile() {
+        Log.i(TAG, "[任务] 写入任务配置");
         String data = JSON.toJSONString(taskBeanList);
+        Log.d(TAG, data);
         SharedPreferences.Editor editor = App.getContext().getSharedPreferences("task",Context.MODE_PRIVATE).edit();
         editor.putString("list", data);
         editor.apply();
@@ -61,6 +62,7 @@ public class TaskManager {
     private void readFile() {
         SharedPreferences preferences = App.getContext().getSharedPreferences("task", Context.MODE_PRIVATE);
         String data = preferences.getString("list","[]");
+        Log.d(TAG, data);
         try {
             Log.d(TAG, "用户任务:" + data);
             JSONArray array = JSON.parseArray(data);
@@ -77,5 +79,35 @@ public class TaskManager {
 
     public void delTask(int p) {
         taskBeanList.remove(p);
+    }
+
+    public TaskBean getAvailableTask() {
+        if (!isRun) {return null;}
+        String time = DateUtil.timeStamp();
+        Iterator<TaskBean> iterator = taskBeanList.iterator();
+        while (iterator.hasNext()) {
+            TaskBean bean = iterator.next();
+            // 完成的任务
+            if (bean.isFinish()) {
+                iterator.remove();
+                new EventBusUtil(EventBusUtil.EVENT_TASK_CHANGE).post();
+                continue;
+            }
+            // 解冻
+            if (Integer.valueOf(time) > bean.locked && bean.locked != -1) {
+                bean.locked = -1;
+            }
+            // 剔除做完的任务
+            if (bean.num >= bean.num_max) {
+                iterator.remove();
+                UIUpdate.log("[任务] 完成任务:" + bean.name);
+                continue;
+            }
+            // 合条件, 返回任务
+            if (bean.locked == -1) {
+                return bean;
+            }
+        }
+        return null;
     }
 }
