@@ -60,20 +60,20 @@ public class Counter {
     }
 
     public void battleNumAdd() {
-        new EventBusUtil(EventBusUtil.EVENT_RES_CHANGE).post();
         battleNum++;
+        new EventBusUtil(EventBusUtil.EVENT_RES_CHANGE).post();
     }
     public void slNumAdd() {
-        new EventBusUtil(EventBusUtil.EVENT_RES_CHANGE).post();
         slNum++;
+        new EventBusUtil(EventBusUtil.EVENT_RES_CHANGE).post();
     }
     public void nodeNumAdd() {
-        new EventBusUtil(EventBusUtil.EVENT_RES_CHANGE).post();
         nodeNum++;
+        new EventBusUtil(EventBusUtil.EVENT_RES_CHANGE).post();
     }
     public void finishNumAdd() {
-        new EventBusUtil(EventBusUtil.EVENT_RES_CHANGE).post();
         finishNum++;
+        new EventBusUtil(EventBusUtil.EVENT_RES_CHANGE).post();
     }
 
 

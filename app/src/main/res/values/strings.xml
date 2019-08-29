@@ -3,7 +3,6 @@
     <string name="login_username_hint">请输入账号</string>
     <string name="login_pwd_hint">请输入密码</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="ship_num">%d/%d</string>
     <string name="equipment_num">%d/%d</string>

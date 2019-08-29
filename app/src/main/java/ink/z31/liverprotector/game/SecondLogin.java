@@ -9,6 +9,7 @@ import java.util.Random;
 import ink.z31.liverprotector.exception.HmException;
 import ink.z31.liverprotector.interfaces.SecondLoginCallBack;
 import ink.z31.liverprotector.util.Config;
+import ink.z31.liverprotector.util.Util;
 
 public class SecondLogin {
     private static final String TAG = "SecondLogin";
@@ -49,8 +50,13 @@ public class SecondLogin {
             String apiInitGame = netSender.apiInitGame();
             userData.parseUserData(apiInitGame);
             // 初始化点数信息
-            String pveData = netSender.pveGetPveData();
-            userData.pveNodeGet(pveData);
+            userData.pveNodeGet(netSender.pveGetPveData());
+            String pveData = netSender.peventGetPveData();
+            if (pveData.length() > 10) {
+                userData.peventNodeGet(pveData);
+            }
+
+
             //  测试
             callBack.onFinish();
         }catch (HmException e){
@@ -58,7 +64,7 @@ public class SecondLogin {
             callBack.onError(e.getMessage());
         }catch (Exception e){
             Log.e(TAG, e.getMessage());
-            callBack.onError(e.getMessage());
+            callBack.onError(Util.getErrMsg(e));
         }
     }
 }

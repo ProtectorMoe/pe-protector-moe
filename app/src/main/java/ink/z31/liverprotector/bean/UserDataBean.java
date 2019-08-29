@@ -24,10 +24,17 @@ public class UserDataBean {
     public List<String> unlockEquipment;
     public List<TaskVo> taskVo;
     public PveExploreVo pveExploreVo;
+    public FriendVo friendVo;
 
     public static class CurrentPveVo {
         public int pveId;
         public int pveLevelId;
+    }
+
+    public static class FriendVo {
+        public String sign;
+        public String avatar_cid;
+        public String username;
     }
     public CurrentPveVo currentPveVo;
 }

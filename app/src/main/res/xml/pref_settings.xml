@@ -12,8 +12,8 @@
             android:title="卸装备"
             android:icon="@drawable/zhuangbei"/>
         <MultiSelectListPreference
-            android:title="保留星级"
-            android:summary="向上保留, 重要船只请先上锁"
+            android:title="分解星级"
+            android:summary="重要船只请先上锁"
             android:key="pref_dismantle_star"
             android:entries="@array/dismantle_star"
             android:entryValues="@array/dismantle_star_value"

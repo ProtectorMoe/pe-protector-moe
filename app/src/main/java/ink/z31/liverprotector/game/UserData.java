@@ -11,17 +11,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ink.z31.liverprotector.bean.PeventBean;
 import ink.z31.liverprotector.bean.PveDataBean;
 import ink.z31.liverprotector.bean.UserDataBean;
 import ink.z31.liverprotector.bean.common.EquipmentVo;
 import ink.z31.liverprotector.bean.common.FleetVo;
 import ink.z31.liverprotector.bean.common.PackageVo;
 import ink.z31.liverprotector.bean.common.PveExploreVo;
+import ink.z31.liverprotector.bean.common.PveLevel;
 import ink.z31.liverprotector.bean.common.PveNode;
 import ink.z31.liverprotector.bean.common.RepairDockVo;
 import ink.z31.liverprotector.bean.common.ShipVO;
 import ink.z31.liverprotector.bean.common.TaskVo;
 import ink.z31.liverprotector.bean.common.UpdateTaskVo;
+import ink.z31.liverprotector.bean.common.UserResVo;
 import ink.z31.liverprotector.bean.common.UserShipVO;
 import ink.z31.liverprotector.bean.common.UserVo;
 import ink.z31.liverprotector.util.Config;
@@ -75,9 +78,7 @@ public class UserData {
         // 澡堂信息
         this.setRepairDockVo(userBaseData.repairDockVo);
         // 解锁船只信息
-        for (Object o : userBaseData.unlockShip) {
-            this.addUnlockedShip(Integer.valueOf(String.valueOf(o)));
-        }
+        this.unlockedShipSet(userBaseData.unlockShip);
         // 任务信息
         this.setTaskVo(userBaseData.taskVo);
         // 装备信息
@@ -95,6 +96,14 @@ public class UserData {
 
     // ----------------- 更新用户数据--------------
     public void userVoUpdate(UserVo userVo) {
+        userBaseData.userVo.ammo = userVo.ammo;
+        userBaseData.userVo.oil = userVo.oil;
+        userBaseData.userVo.aluminium = userVo.aluminium;
+        userBaseData.userVo.steel = userVo.steel;
+        new EventBusUtil(EventBusUtil.EVENT_RES_CHANGE).post();
+    }
+
+    public void userVoUpdate(UserResVo userVo) {
         userBaseData.userVo.ammo = userVo.ammo;
         userBaseData.userVo.oil = userVo.oil;
         userBaseData.userVo.aluminium = userVo.aluminium;
@@ -129,6 +138,7 @@ public class UserData {
 
     // ----------------- 点数数据 -----------------
     private HashMap<String, PveNode> pveData = new HashMap<>();
+    private HashMap<String, PveLevel> pveLevel = new HashMap<>();
 
     /**
      * 获取最新的点数信息
@@ -136,16 +146,36 @@ public class UserData {
      * @param pveStringData String类型的数据,由登录传过来
      */
     public void pveNodeGet(String pveStringData) {
-        pveData.clear();
         PveDataBean pveDataBean = JSON.parseObject(pveStringData, PveDataBean.class);
         for (PveNode node : pveDataBean.pveNode) {
             this.pveData.put(node.id, node);
         }
+        for (PveLevel level : pveDataBean.pveLevel) {
+            this.pveLevel.put(level.id, level);
+        }
+    }
+
+    public void peventNodeGet(String data) {
+        PeventBean pveDataBean = JSON.parseObject(data, PeventBean.class);
+        if (pveDataBean.pveNode != null) {
+            for (PveNode node : pveDataBean.pveNode) {
+                this.pveData.put(node.id, node);
+            }
+        }
+        if (pveDataBean.pveEventLevel != null) {
+            for (PveLevel level : pveDataBean.pveEventLevel) {
+                this.pveLevel.put(level.id, level);
+            }
+        }
+
     }
 
 
     public PveNode getNode(String id) {
         return pveData.get(id);
+    }
+    public PveLevel getLevel(String id) {
+        return pveLevel.get(id);
     }
 
 
@@ -238,23 +268,6 @@ public class UserData {
         }
     }
 
-    /**
-     * 添加一个远征数据
-     *
-     * @param explore
-     */
-    public void addExplore(PveExploreVo.Levels explore) {
-        allExplore.put(explore.exploreId, explore);
-    }
-
-    /**
-     * 删除一个远征数据
-     *
-     * @param exploreId
-     */
-    public void delExplore(String exploreId) {
-        allExplore.remove(exploreId);
-    }
 
     // ---------------------已经拥有船只信息-------------------
     public List<Integer> unlockedShip = new ArrayList<>();
@@ -273,10 +286,10 @@ public class UserData {
      *
      * @param s
      */
-    public void unlockedShipSet(List<Object> s) {
+    public void unlockedShipSet(List<String> s) {
         unlockedShip.clear();
-        for (Object e : s) {
-            unlockedShip.add(Integer.valueOf(String.valueOf(e)));
+        for (String e : s) {
+            unlockedShip.add(Integer.valueOf(e));
         }
     }
 

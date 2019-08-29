@@ -21,4 +21,6 @@ public class Config {
     public static boolean isRepair = false;
     public static boolean isRepairFleet = false;
     public static final double [] RAND = {Math.random(), Math.random(), Math.random(), Math.random()};
+
+    public static final StringBuilder errMsg = new StringBuilder();
 }

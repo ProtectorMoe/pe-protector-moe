@@ -28,21 +28,21 @@ var PveMap;
 (function (map) {
     var _maps = {};
     map.getMap = function (index) {
-        return _maps[String(index)]
+        return _maps[String(index)];
     };
     map.getEnemy = function (index, node) {
-        return _maps && _maps[index] && _maps[index]["node"][node] && _maps[index]["node"][node]["enemy"]
+        return _maps && _maps[index] && _maps[index]["node"][node] && _maps[index]["node"][node]["enemy"];
     };
     map.getDrop = function (index, node) {
-        return _maps && _maps[index] && _maps[index]["node"][node] && _maps[index]["node"][node]["drop"]
+        return _maps && _maps[index] && _maps[index]["node"][node] && _maps[index]["node"][node]["drop"];
     };
 	map.getSrc = function (index, node) {
-	    return _maps && _maps[index] && _maps[index]["img"]
+	    return _maps && _maps[index] && _maps[index]["img"];
 	};
 	map.getText = function (index, node) {
-	    return _maps && _maps[index] && _maps[index]["text"]
+	    return _maps && _maps[index] && _maps[index]["text"];
 	};
-	
+
 	map.getNode = function(index) {
         var nodes = [];
         var maps = this.getMap(index);
@@ -53,6 +53,16 @@ var PveMap;
         }
         return nodes;
     };
+
+	map.getAllMap = function() {
+		var data = [];
+		for (var i in _maps) {
+			if (_maps.hasOwnProperty(i)) {
+				data.push({"value": i, "text": _maps[i]["text"]});
+			}
+		}
+		return data;
+	};
 
     var init = function () {
         _maps = {};
@@ -10981,20 +10991,5 @@ var PveMap;
         };
 
     }();
-})(PveMap || (PveMap = {}))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+})(PveMap || (PveMap = {}));
 

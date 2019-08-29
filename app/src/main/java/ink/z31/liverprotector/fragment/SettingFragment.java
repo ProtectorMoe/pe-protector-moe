@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v14.preference.PreferenceFragment;
 
 import ink.z31.liverprotector.R;
+import ink.z31.liverprotector.game.Setting;
 
 public class SettingFragment extends PreferenceFragment {
     private static final String TAG = "SettingFragment";
@@ -19,4 +20,9 @@ public class SettingFragment extends PreferenceFragment {
         addPreferencesFromResource(R.xml.pref_settings);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Setting.getInstance().init();
+    }
 }

@@ -79,6 +79,7 @@ public class TaskManager {
 
     public void delTask(int p) {
         taskBeanList.remove(p);
+        writeFile();
     }
 
     public TaskBean getAvailableTask() {

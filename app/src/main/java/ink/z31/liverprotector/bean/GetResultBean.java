@@ -11,6 +11,7 @@ public class GetResultBean {
     public List<ShipVO> newShipVO;
     public List<ShipVO> shipVO;
     public WarResult warResult;
+    public String dropSpoils;
 
     public static class WarResult {
         public int resultLevel;

@@ -11,3 +11,5 @@
 /build
 /captures
 .externalNativeBuild
+
+/app/src/main/assets/html/images/*

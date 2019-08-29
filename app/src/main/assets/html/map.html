@@ -70,7 +70,7 @@
 					<a class="mui-btn mui-btn-red mui-icon mui-icon-trash" @click="onDelDetail(index)"></a>
 				</div>
 				<div class="mui-slider-handle">
-					遇{{em_list[sl.enemy]}} ≥ {{sl.num}} 则 {{deal_list[sl.deal]}}
+					遇{{em_list[sl.enemy]}} {{onGetNum(sl.num)}} 则 {{deal_list[sl.deal]}}
 				</div>
 			</li>
 		</ul>
@@ -92,7 +92,7 @@
 			</div>
 			<!--地图图片显示-->
 			<div class="mui-card-content">
-				<img v-bind:src="map_src" style="width: 100%; height: 100%;" alt="地图图片">
+				<img v-bind:src="map_src" style="width: 100%; height: 100%;" alt="无图片">
 			</div>
 			<!--页脚 三个功能-->
 			<div class="mui-card-footer">
@@ -148,7 +148,6 @@
             el : "#app",
 			data : {
 				version: 1,
-				maps: [{'value': '101', 'text': '1-1 | 母港附近海域'}, {'value': '102', 'text': '1-2 | 东北防线海域'}, {'value': '103', 'text': '1-3 | 仁州附近海域'}, {'value': '104', 'text': '1-4 | 深海仁州基地'}, {'value': '201', 'text': '2-1 | 扶桑西部海域'}, {'value': '202', 'text': '2-2 | 扶桑西南海域'}, {'value': '203', 'text': '2-3 | 扶桑南部海域'}, {'value': '204', 'text': '2-4 | 深海扶桑基地'}, {'value': '205', 'text': '2-5 | 深海前哨核心地区'}, {'value': '206', 'text': '2-6 | 深海前哨北方地区'}, {'value': '301', 'text': '3-1 | 母港南部海域'}, {'value': '302', 'text': '3-2 | 东南群岛（1）'}, {'value': '303', 'text': '3-3 | 东南群岛（2）'}, {'value': '304', 'text': '3-4 | 星洲海峡'}, {'value': '401', 'text': '4-1 | 克拉代夫东部海域'}, {'value': '402', 'text': '4-2 | 克拉代夫西部海域'}, {'value': '403', 'text': '4-3 | 泪之扉附近海域'}, {'value': '404', 'text': '4-4 | 泪之扉防线'}, {'value': '501', 'text': '5-1 | 塞浦路斯附近海域'}, {'value': '502', 'text': '5-2 | 克里特附近海域'}, {'value': '503', 'text': '5-3 | 马耳他附近海域'}, {'value': '504', 'text': '5-4 | 直布罗陀东部海域'}, {'value': '505', 'text': '5-5 | 直布罗陀要塞'}, {'value': '601', 'text': '6-1 | 洛里昂南部海域'}, {'value': '602', 'text': '6-2 | 英吉利海峡'}, {'value': '603', 'text': '6-3 | 斯卡帕湾'}, {'value': '604', 'text': '6-4 | 丹麦海峡'}, {'value': '701', 'text': '7-1 | 比斯开湾'}, {'value': '702', 'text': '7-2 | 马德拉海域'}, {'value': '703', 'text': '7-3 | 亚速尔海域'}, {'value': '704', 'text': '7-4 | 百慕大三角附近海域'}, {'value': '705', 'text': '7-5 | 百慕大三角防波堤'}, {'value': '801', 'text': '8-1 | 百慕大中心区域'}],
 				map_name: "",
 
 				config_name: "",
@@ -173,7 +172,7 @@
 				// 点击换图时加载数据
 				onMapChangeClick: function() {
 					var picker = new mui.PopPicker();
-					picker.setData(this.maps);
+					picker.setData(PveMap.getAllMap());
 					picker.pickers[0].setSelectedValue('fourth', 100);
 					picker.show(function(SelectedItem) {
 						var index = SelectedItem[0]["value"];
@@ -267,8 +266,8 @@
 					}
 					for (var i=1; i<=6; i++) {
 						children1.push({
-							value: i,
-							text: "≤" + i,
+							value: i+6,
+							text: "<" + i,
 							children: children2
 						});
 					}
@@ -364,13 +363,14 @@
 								return;
 							}
 
-							if (e.value.length === 0 && app.config_name.length === 0) {
+							var name = e.value.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+							if (name === 0 && app.config_name.length === 0) {
 								s = false;
 								mui.alert('名字为空','错误','返回',function (e) {
 								},'div');
 								return;
 							}
-							onFinish(e.value || app.config_name, obj);
+							onFinish(name || app.config_name, obj);
 						}
 					},'div');
 				},
@@ -380,6 +380,9 @@
 							onCancel();
 						}
 					},'div');
+				},
+				onGetNum: function(num) {
+					return num<=6? (" ≥ " + num + " "): (" < " + String(num-6) + " ");
 				}
 
 			}

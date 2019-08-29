@@ -21,7 +21,6 @@ import ink.z31.liverprotector.bean.SupplyBean;
 import ink.z31.liverprotector.bean.common.PveExploreVo;
 import ink.z31.liverprotector.bean.common.RepairDockVo;
 import ink.z31.liverprotector.bean.common.UserShipVO;
-import ink.z31.liverprotector.bean.common.UserVo;
 import ink.z31.liverprotector.exception.HmException;
 import ink.z31.liverprotector.interfaces.FirstLoginCallBack;
 import ink.z31.liverprotector.interfaces.ReloginCallBack;
@@ -29,16 +28,22 @@ import ink.z31.liverprotector.interfaces.SecondLoginCallBack;
 import ink.z31.liverprotector.util.CommonUtil;
 import ink.z31.liverprotector.util.Config;
 import ink.z31.liverprotector.util.DateUtil;
+import ink.z31.liverprotector.util.Holder;
 import ink.z31.liverprotector.util.StringUtil;
+import ink.z31.liverprotector.util.Util;
 
 
 public class GameFunction {
     private static final String TAG = "GameFunction";
-    private GameFunction(){}
+
+    private GameFunction() {
+    }
+
     private static GameFunction gameFunction;
-    public static GameFunction getInstance(){
-        if (gameFunction == null){
-            gameFunction =  new GameFunction();
+
+    public static GameFunction getInstance() {
+        if (gameFunction == null) {
+            gameFunction = new GameFunction();
         }
         return gameFunction;
     }
@@ -49,66 +54,71 @@ public class GameFunction {
 
     /**
      * 检查远征信息
+     *
      * @throws HmException Hm游戏服务器问题
      */
     public void checkExplore() throws HmException {
-        List<String> finish = new ArrayList<>();
-        long time = new Date().getTime() / 1000;
-        for (String exploreId: userData.allExplore.keySet()) {
-            PveExploreVo.Levels explore = userData.allExplore.get(exploreId);
-            if (explore != null && explore.endTime != 0 && explore.endTime != -1 && time > explore.endTime) {
-                finish.add(explore.exploreId);
-            }
-        }
-        if (finish.size() != 0)
-        {
-            StartExploreBean startExploreJson = null;
-            for(String key: finish)
-            {
-                //收远征
-                CommonUtil.delay(2000);
-                String exploreData = netSender.exploreGetResult(key);
-
-                GetExploreBean exploreJson = JSON.parseObject(exploreData, GetExploreBean.class);
-                if (exploreJson.bigSuccess == 1)
-                {
-                    Log.i(TAG,"[远征] 远征大成功 " + key);
-                    UIUpdate.log("[远征] 远征大成功 " + key.replace("000", "-"));
-                }else {
-                    Log.i(TAG,"[远征] 远征成功 " + key);
-                    UIUpdate.log("[远征] 远征成功 " + key.replace("000", "-"));
+        try {
+            List<String> finish = new ArrayList<>();
+            long time = new Date().getTime() / 1000;
+            for (String exploreId : userData.allExplore.keySet()) {
+                PveExploreVo.Levels explore = userData.allExplore.get(exploreId);
+                if (explore != null && explore.endTime != 0 && explore.endTime != -1 && time > explore.endTime) {
+                    finish.add(explore.exploreId);
                 }
-                //分析远征数据
-                userData.userVoUpdate((UserVo) exploreJson.userResVo);
-                CommonUtil.delay(3000);
-                //重新派出远征
-                PveExploreVo.Levels levels = userData.allExplore.get(key);
-                if (levels != null){
+            }
+            if (finish.size() != 0) {
+                StartExploreBean startExploreJson = null;
+                for (String key : finish) {
+                    //收远征
+                    CommonUtil.delay(2000);
+                    String exploreData = netSender.exploreGetResult(key);
+
+                    GetExploreBean exploreJson = JSON.parseObject(exploreData, GetExploreBean.class);
+                    if (exploreJson.bigSuccess == 1) {
+                        Log.i(TAG, "[远征] 远征大成功 " + key);
+                        UIUpdate.log("[远征] 远征大成功 " + key.replace("000", "-"));
+                    } else {
+                        Log.i(TAG, "[远征] 远征成功 " + key);
+                        UIUpdate.log("[远征] 远征成功 " + key.replace("000", "-"));
+                    }
+                    //分析远征数据
+                    userData.userVoUpdate(exploreJson.userResVo);
+                    CommonUtil.delay(3000);
+                    //重新派出远征
+                    PveExploreVo.Levels levels = userData.allExplore.get(key);
                     String fleet = levels.fleetId;
                     String startExploreData = netSender.exploreStart(fleet, key);
                     startExploreJson = JSON.parseObject(startExploreData, StartExploreBean.class);
-                    Log.i(TAG,"[远征] 开始远征 " + startExploreJson.exploreId);
+                    Log.i(TAG, "[远征] 开始远征 " + startExploreJson.exploreId);
+                }
+                //更新远征信息
+                if (startExploreJson != null) {
+                    userData.exploreSetAll(startExploreJson.pveExploreVo.levels);
                 }
             }
-            //更新远征信息
-            if (startExploreJson != null){
-                userData.exploreSetAll(startExploreJson.pveExploreVo.levels);
-            }
+        } catch (HmException e) {
+            Log.e(TAG, "[错误] 检测远征出现错误:" + e.getMessage());
+            throw new HmException(e);
+        } catch (Exception e) {
+            Log.e(TAG, "[错误] 检测远征出现错误:" + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     /**
      * 对已经修理完的出浴
+     *
      * @throws HmException 错误代码
      */
     public void repairComplete() throws HmException {
         Log.i(TAG, "检测出浴...");
         RepairCompleteBean repairCompleteBean = null;
         long nowTime = new Date().getTime() / 1000;
-        for (RepairDockVo d: userData.repairDockVo){
-            if (d.locked == 0){
+        for (RepairDockVo d : userData.repairDockVo) {
+            if (d.locked == 0) {
                 int endTime = Integer.valueOf(d.endTime);
-                if (endTime > 0 && endTime < nowTime && d.shipId != null){
+                if (endTime > 0 && endTime < nowTime && d.shipId != null) {
                     // 说明需要出浴
                     String repairCompleteString = netSender.repairComplete(d.id, d.shipId);
                     repairCompleteBean = JSON.parseObject(repairCompleteString, RepairCompleteBean.class);
@@ -121,7 +131,7 @@ public class GameFunction {
                 }
             }
         }
-        if (repairCompleteBean != null){
+        if (repairCompleteBean != null) {
             userData.setRepairDockVo(repairCompleteBean.repairDockVo);
         }
     }
@@ -129,6 +139,7 @@ public class GameFunction {
 
     /**
      * 寻找所有船只的泡澡信息
+     *
      * @throws HmException 参数错误信息
      */
     public void checkShower() throws HmException {
@@ -137,16 +148,16 @@ public class GameFunction {
         List<Integer> waitShowerShip = new ArrayList<>();
         List<Integer> showingShip = new ArrayList<>();
         // 遍历澡堂数据
-        for (RepairDockVo d: userData.repairDockVo){
-            if (d.locked == 0){
-                if (d.shipId != null){
+        for (RepairDockVo d : userData.repairDockVo) {
+            if (d.locked == 0) {
+                if (d.shipId != null) {
                     showingShip.add(Integer.valueOf(d.shipId));
                 }
                 long nowTime = new Date().getTime() / 1000;
                 int endTime = Integer.valueOf(d.endTime);
-                if (endTime == 0){
+                if (endTime == 0) {
                     ableDock++;
-                }else if((endTime < nowTime && endTime > 0)){
+                } else if ((endTime < nowTime && endTime > 0)) {
                     netSender.repairComplete(d.id, d.shipId);
                     UIUpdate.log("[修理] 泡澡船只: " + userData.allShip.get(Integer.valueOf(d.shipId)).title);
                     CommonUtil.delay(3000);
@@ -155,27 +166,27 @@ public class GameFunction {
             }
         }
         // 遍历船只数据
-        if (ableDock != 0){
-            for (int i=0; i<userData.allShip.size(); i++){
+        if (ableDock != 0) {
+            for (int i = 0; i < userData.allShip.size(); i++) {
                 int key = userData.allShip.keyAt(i);
 
-                if (showingShip.indexOf(key) != -1){
+                if (showingShip.indexOf(key) != -1) {
                     continue;
                 }
                 UserShipVO ship = userData.allShip.get(key);
-                if (ship.fleet_id != 0 && !Config.isRepairFleet){
+                if (ship.fleet_id != 0 && !Config.isRepairFleet) {
                     continue;
                 }
                 int hp = ship.battleProps.hp;
                 int hpMax = ship.battlePropsMax.hp;
-                if (hp != hpMax){
+                if (hp != hpMax) {
                     waitShowerShip.add(key);
                 }
             }
         }
         RubdownBean rubdownBean = null;
         int min = Math.min(ableDock, waitShowerShip.size());
-        for (int i=0; i<min; i++){
+        for (int i = 0; i < min; i++) {
             CommonUtil.delay(2000);
             int ship = waitShowerShip.get(i);
             netSender.boatRepair(ship);
@@ -184,13 +195,13 @@ public class GameFunction {
             CommonUtil.delay(3000);
             String rubdownString = netSender.boatRubdown(ship);
             rubdownBean = JSON.parseObject(rubdownString, RubdownBean.class);
-            for (RepairDockVo repairDockVo: rubdownBean.repairDockVo){
-                if (repairDockVo.shipId != null && Integer.valueOf(repairDockVo.shipId) == ship){
+            for (RepairDockVo repairDockVo : rubdownBean.repairDockVo) {
+                if (repairDockVo.shipId != null && Integer.valueOf(repairDockVo.shipId) == ship) {
                     Log.i(TAG, "[修理] 搓澡:" + userData.allShip.get(ship).title + " 到 " + DateUtil.timeStamp2Date(String.valueOf(repairDockVo.endTime), "HH:mm"));
                 }
             }
         }
-        if (rubdownBean != null){
+        if (rubdownBean != null) {
             userData.setRepairDockVo(rubdownBean.repairDockVo);
         }
     }
@@ -200,7 +211,7 @@ public class GameFunction {
             Log.i(TAG, "[出征] 检测船只补给情况...");
             List<Integer> needSupply = new ArrayList<>();
             // 寻找需要补给的船只
-            for (int ship: ships) {
+            for (int ship : ships) {
                 UserShipVO userShipVO = userData.allShip.get(ship);
                 if (userShipVO != null) {
                     if (userShipVO.battleProps.oil != userShipVO.battlePropsMax.oil) {
@@ -217,7 +228,7 @@ public class GameFunction {
                 }
             }
             // 整合需要补给的船只
-            if (needSupply.size() != 0){
+            if (needSupply.size() != 0) {
                 CommonUtil.delay(2000);
                 String supplyData = netSender.boatSupplyBoats(needSupply);
                 SupplyBean supplyBean = JSON.parseObject(supplyData, SupplyBean.class);
@@ -225,7 +236,7 @@ public class GameFunction {
                 userData.userVoUpdate(supplyBean.userVo);
                 userData.allShipSetAllShipVO(supplyBean.shipVO);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e(TAG, "检测补给出错:" + e.getMessage());
             throw new HmException(e);
         }
@@ -233,6 +244,7 @@ public class GameFunction {
 
     /**
      * 检测分解
+     *
      * @throws HmException 错误信息
      */
     public boolean checkDismantle() throws HmException {
@@ -245,7 +257,7 @@ public class GameFunction {
             Set<String> saveStar = Setting.getInstance().getDismantleStar();
             boolean isSave = Setting.getInstance().isDismantleEquipment();
 
-            for (int i=0; i < userData.allShip.size(); i++) {
+            for (int i = 0; i < userData.allShip.size(); i++) {
                 UserShipVO userShipVO = userData.allShip.valueAt(i);
                 // 分析船只信息
                 if (!type.contains("0") && !type.contains(String.valueOf(userShipVO.type))) {
@@ -262,7 +274,7 @@ public class GameFunction {
             if (needDismantle.size() != 0) {
                 // 输出消息
                 List<String> shipNames = new ArrayList<>();
-                for (int i: needDismantle) {
+                for (int i : needDismantle) {
                     shipNames.add(userData.getShipName(i));
                 }
                 String shipName = StringUtil.listJoinString(" ", shipNames);
@@ -274,10 +286,11 @@ public class GameFunction {
                 if (dismantleBean.equipmentVo != null) {
                     userData.equipmentSetAll(dismantleBean.equipmentVo);
                 }
-                for (int del: dismantleBean.delShips) {
+                for (int del : dismantleBean.delShips) {
                     userData.allShipDel(del);
                 }
                 UIUpdate.log("[分解] 分解船只:" + shipName);
+                CommonUtil.delay(2000);
             }
         }
         // 判断是否可以出去
@@ -286,16 +299,17 @@ public class GameFunction {
 
     /**
      * 检测快速修理
+     *
      * @param shipList 维修船只的编号
-     * @param present 修理血量百分比
+     * @param present  修理血量百分比
      */
     public void checkFastRepair(List<Integer> shipList, int present) throws HmException {
         Log.i(TAG, "[修理] 进行修理检测");
         List<Integer> needRepair = new ArrayList<>();
-        for (int ship: shipList) {
+        for (int ship : shipList) {
             UserShipVO userShipVO = userData.allShip.get(ship);
             if (userShipVO != null) {
-                if (userShipVO.battleProps.hp / userShipVO.battlePropsMax.hp * 100 <= present) {
+                if ((float)userShipVO.battleProps.hp / (float)userShipVO.battlePropsMax.hp * 100 <= present) {
                     needRepair.add(userShipVO.id);
                 }
             }
@@ -312,7 +326,7 @@ public class GameFunction {
             userData.userVoUpdate(fastRepairBean.userVo);
             // 获取快修船只
             List<String> shipNames = new ArrayList<>();
-            for (int i: needRepair) {
+            for (int i : needRepair) {
                 shipNames.add(userData.getShipName(i));
             }
             String shipName = StringUtil.listJoinString(" ", shipNames);
@@ -322,8 +336,7 @@ public class GameFunction {
     }
 
 
-
-    public void reLogin(final ReloginCallBack callBack) {
+    private void reLogin(final ReloginCallBack callBack) {
         FirstLogin firstLogin = FirstLogin.getInstance();
         SecondLogin secondLogin = SecondLogin.getInstance();
         firstLogin.readLogin(new FirstLoginCallBack() {
@@ -346,17 +359,36 @@ public class GameFunction {
             public void onError(String errMsg) {
                 callBack.onError(errMsg);
             }
-        }, (data) -> {});
+        }, (data) -> {
+
+        });
     }
 
+    public boolean reLogin() {
+        final Holder holder = new Holder(false);
+        holder.setHoldInt(0);
+        while (!holder.isHoldBool()) {
+            if (holder.getHoldInt() >= 5) {
+                UIUpdate.log("[致命] 登录游戏重试次数过多, 停止任务");
+                return false;
+            }
+            gameFunction.reLogin(new ReloginCallBack() {
+                @Override
+                public void onFinish() {
+                    holder.setHoldBool(true);
+                }
 
-
-
-
-
-
-
-
+                @Override
+                public void onError(String errMsg) {
+                    Util.putErrMsg(errMsg);
+                    UIUpdate.log("[错误] 重新登录游戏出错");
+                    holder.setHoldInt(holder.getHoldInt() + 1);
+                }
+            });
+            UIUpdate.detailLog("[错误] 登录游戏出错, 进行重试");
+        }
+        return true;
+    }
 
 
 

@@ -3,10 +3,16 @@ package ink.z31.liverprotector.game;
 
 import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
+
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import ink.z31.liverprotector.bean.CheckVersionBean;
+import ink.z31.liverprotector.bean.PathBean;
+import ink.z31.liverprotector.bean.PathConfigBean;
 import ink.z31.liverprotector.exception.HmException;
 import ink.z31.liverprotector.util.Config;
 import ink.z31.liverprotector.util.Encode;
@@ -21,6 +27,32 @@ public class NetSender {
         return netSender;
     }
     private static final String TAG = "NetSender";
+
+
+    public CheckVersionBean checkVersion() {
+        String url = "http://www.simonkimi.top/pe/version.json";
+        Requests requests = new Requests.Builder()
+                .url(url)
+                .get()
+                .build()
+                .execute();
+        return JSON.parseObject(requests.text, CheckVersionBean.class);
+    }
+
+    public HashMap<String, PathConfigBean> getPath() {
+        String url = "http://www.simonkimi.top/pe/path.json";
+        Requests requests = new Requests.Builder()
+                .url(url)
+                .get()
+                .build()
+                .execute();
+        Log.i(TAG, "下载配置:" + requests.text);
+        PathBean bean = JSON.parseObject(requests.text, PathBean.class);
+        for (String key: bean.path.keySet()) {
+            Log.i(TAG, key + JSON.toJSONString(bean.path.get(key)));
+        }
+        return bean.path;
+    }
 
     /**
      * 登录的第一次获取的init数据,貌似没有什么用
@@ -84,7 +116,7 @@ public class NetSender {
                 .build()
                 .execute();
         String data = requests.text;
-        HmException.errorFind(data);
+        HmException.errorFind("index/hmLogin/", data);
         return data;
     }
 
@@ -105,7 +137,7 @@ public class NetSender {
                 .build()
                 .execute();
         String data = requests.text;
-        HmException.errorFind(data);
+        HmException.errorFind("index/login/", data);
         return data;
     }
 
@@ -119,7 +151,7 @@ public class NetSender {
         String url = Config.host + "api/initGame?&crazy=0" + this.getUrlEnd();
         Requests requests = new Requests.Builder().url(url).get().zlib().build().execute();
         String data = requests.text;
-        HmException.errorFind(data);
+        HmException.errorFind("api/initGame", data);
         return data;
     }
 
@@ -138,7 +170,25 @@ public class NetSender {
                 .build()
                 .execute();
         String data = requests.text;
-        HmException.errorFind(data);
+        HmException.errorFind("pve/getPveData/", data);
+        return data;
+    }
+
+    /**
+     * 获取活动的点数信息
+     * @return 活动的关卡编号,每个点的配置信息
+     * @throws HmException 错误信息
+     */
+    public String peventGetPveData() throws HmException {
+        String url = Config.host + "pevent/getPveData/" + this.getUrlEnd();
+        Requests requests = new Requests.Builder()
+                .url(url)
+                .get()
+                .zlib()
+                .build()
+                .execute();
+        String data = requests.text;
+        HmException.errorFind("pevent/getPveData/", data);
         return data;
     }
 
@@ -157,7 +207,7 @@ public class NetSender {
                 .build()
                 .execute();
         String data = requests.text;
-        HmException.errorFind(data);
+        HmException.errorFind("bsea/getData/", data);
         return data;
     }
 
@@ -176,7 +226,7 @@ public class NetSender {
                 .build()
                 .execute();
         String data = requests.text;
-        HmException.errorFind(data);
+        HmException.errorFind("live/getUserInfo", data);
         return data;
     }
 
@@ -195,7 +245,7 @@ public class NetSender {
                 .build()
                 .execute();
         String data = requests.text;
-        HmException.errorFind(data);
+        HmException.errorFind("active/getUserData/", data);
         return data;
     }
 
@@ -213,7 +263,7 @@ public class NetSender {
                 .build()
                 .execute();
         String data = requests.text;
-        HmException.errorFind(data);
+        HmException.errorFind("pve/getUserData/", data);
         return data;
     }
 
@@ -233,11 +283,11 @@ public class NetSender {
                     .build()
                     .execute();
             String data = requests.text;
-            HmException.errorFind(data);
+            HmException.errorFind("campaign/getUserData/", data);
             return data;
         }catch (HmException e){
             Log.e(TAG,"campaignGetUserData错误:" + e.toString());
-            throw new HmException(e.getCode());
+            throw e;
         }
 
     }
@@ -259,11 +309,11 @@ public class NetSender {
                     .execute();
             String data = requests.text;
 
-            HmException.errorFind(data);
+            HmException.errorFind("init", data);
             return data;
         }catch (HmException e){
             Log.e(TAG, "获取init数据出错:" + e.toString());
-            throw new HmException(e.getCode());
+            throw e;
         }
     }
 
@@ -284,11 +334,11 @@ public class NetSender {
                     .build()
                     .execute();
             String data = requests.text;
-            HmException.errorFind(data);
+            HmException.errorFind("boat/supplyBoats/[%s]/0/0/", data);
             return data;
         }catch (HmException e){
             Log.e(TAG,"boat/supplyBoats错误:" + e.toString());
-            throw new HmException(e.getCode());
+            throw e;
         }
     }
 
@@ -298,7 +348,7 @@ public class NetSender {
      * @return boat/lock
      * @throws HmException 错误信息
      */
-    public String boatLock(int id) throws HmException {
+    public void boatLock(int id) throws HmException {
         try {
             String url = Config.host + String.format("boat/lock/%s/", id) + this.getUrlEnd();
             Requests requests = new Requests.Builder()
@@ -308,11 +358,10 @@ public class NetSender {
                     .build()
                     .execute();
             String data = requests.text;
-            HmException.errorFind(data);
-            return data;
+            HmException.errorFind("boat/lock", data);
         }catch (HmException e){
             Log.e(TAG,"boat/lock错误:" + e.toString());
-            throw new HmException(e.getCode());
+            throw e;
         }
     }
 
@@ -334,11 +383,11 @@ public class NetSender {
                     .build()
                     .execute();
             String data = requests.text;
-            HmException.errorFind(data);
+            HmException.errorFind("dock/dismantleBoat/", data);
             return data;
         }catch (HmException e){
             Log.e(TAG,"dock/dismantleBoat错误:" + e.toString());
-            throw new HmException(e.getCode());
+            throw e;
         }
     }
 
@@ -358,11 +407,11 @@ public class NetSender {
                     .build()
                     .execute();
             String data = requests.text;
-            HmException.errorFind(data);
+            HmException.errorFind("explore/getResult/", data);
             return data;
         }catch (HmException e){
             Log.e(TAG,"explore/getResult错误:" + e.toString());
-            throw new HmException(e.getCode());
+            throw e;
         }
     }
 
@@ -383,11 +432,11 @@ public class NetSender {
                     .build()
                     .execute();
             String data = requests.text;
-            HmException.errorFind(data);
+            HmException.errorFind("explore/start/", data);
             return data;
         }catch (HmException e){
             Log.e(TAG,"explore/start错误:" + e.toString());
-            throw new HmException(e.getCode());
+            throw e;
         }
     }
 
@@ -408,11 +457,11 @@ public class NetSender {
                     .build()
                     .execute();
             String data = requests.text;
-            HmException.errorFind(data);
+            HmException.errorFind("boat/repairComplete/", data);
             return data;
         }catch (HmException e){
             Log.e(TAG,"explore/start错误:" + e.toString());
-            throw new HmException(e.getCode());
+            throw e;
         }
     }
 
@@ -432,11 +481,11 @@ public class NetSender {
                     .build()
                     .execute();
             String data = requests.text;
-            HmException.errorFind(data);
+            HmException.errorFind("boat/repair/", data);
             return data;
         }catch (HmException e){
             Log.e(TAG,"boat/repair错误:" + e.toString());
-            throw new HmException(e.getCode());
+            throw e;
         }
     }
 
@@ -456,11 +505,11 @@ public class NetSender {
                     .build()
                     .execute();
             String data = requests.text;
-            HmException.errorFind(data);
+            HmException.errorFind("boat/rubdown/", data);
             return data;
         }catch (HmException e){
             Log.e(TAG,"boat/rubdown错误:" + e.toString());
-            throw new HmException(e.getCode());
+            throw e;
         }
     }
 
@@ -480,11 +529,11 @@ public class NetSender {
                     .build()
                     .execute();
             String data = requests.text;
-            HmException.errorFind(data);
+            HmException.errorFind("boat/supplyBoats/", data);
             return data;
         }catch (HmException e){
             Log.e(TAG,"boat/supplyBoats:" + e.toString());
-            throw new HmException(e.getCode());
+            throw e;
         }
     }
 
@@ -504,11 +553,11 @@ public class NetSender {
                     .build()
                     .execute();
             String data = requests.text;
-            HmException.errorFind(data);
+            HmException.errorFind("boat/instantRepairShips/", data);
             return data;
         }catch (HmException e){
             Log.e(TAG,"boat/instantRepairShips:" + e.toString());
-            throw new HmException(e.getCode());
+            throw e;
         }
     }
 
@@ -534,10 +583,10 @@ public class NetSender {
                     .build()
                     .execute();
             String data = requests.text;
-            HmException.errorFind(data);
+            HmException.errorFind("challenge", data);
         }catch (HmException e){
             Log.e(TAG,"battle/Challenge出错:" + e.toString());
-            throw new HmException(e.getCode());
+            throw e;
         }
     }
 
@@ -557,11 +606,11 @@ public class NetSender {
                     .build()
                     .execute();
             String data = requests.text;
-            HmException.errorFind(data);
+            HmException.errorFind("newNext", data);
             return data;
         }catch (HmException e){
             Log.e(TAG,"battle/newNext:" + e.toString());
-            throw new HmException(e.getCode());
+            throw e;
         }
     }
 
@@ -575,11 +624,11 @@ public class NetSender {
                     .build()
                     .execute();
             String data = requests.text;
-            HmException.errorFind(data);
+            HmException.errorFind("spy", data);
             return data;
         }catch (HmException e){
             Log.e(TAG,"battle/spy:" + e.toString());
-            throw new HmException(e.getCode());
+            throw e;
         }
     }
 
@@ -593,11 +642,11 @@ public class NetSender {
                     .build()
                     .execute();
             String data = requests.text;
-            HmException.errorFind(data);
+            HmException.errorFind("dealto", data);
             return data;
         }catch (HmException e){
             Log.e(TAG,"battle/spy:" + e.toString());
-            throw new HmException(e.getCode());
+            throw e;
         }
     }
 
@@ -611,11 +660,11 @@ public class NetSender {
                     .build()
                     .execute();
             String data = requests.text;
-            HmException.errorFind(data);
+            HmException.errorFind("battle/getWarResult:", data);
             return data;
         }catch (HmException e){
             Log.e(TAG,"battle/getWarResult:" + e.toString());
-            throw new HmException(e.getCode());
+            throw e;
         }
     }
 
@@ -629,11 +678,28 @@ public class NetSender {
                     .build()
                     .execute();
             String data = requests.text;
-            HmException.errorFind(data);
+            HmException.errorFind("battle/SkipWar", data);
             return data;
         }catch (HmException e){
             Log.e(TAG,"battle/SkipWar:" + e.toString());
-            throw new HmException(e.getCode());
+            throw e;
+        }
+    }
+
+    public void setFleet(int fleet) throws HmException  {
+        try {
+            String url = Config.host + String.format(Locale.CHINA, "pevent/setFleet/%d/", fleet) + this.getUrlEnd();
+            Requests requests = new Requests.Builder()
+                    .url(url)
+                    .get()
+                    .zlib()
+                    .build()
+                    .execute();
+            String data = requests.text;
+            HmException.errorFind("pevent/setFleet", data);
+        }catch (HmException e){
+            Log.e(TAG,"pevent/setFleet:" + e.toString());
+            throw e;
         }
     }
 

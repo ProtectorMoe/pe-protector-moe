@@ -3,9 +3,11 @@ package ink.z31.liverprotector;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -18,8 +20,10 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.github.florent37.materialviewpager.MaterialViewPager;
 import com.github.florent37.materialviewpager.header.HeaderDesign;
 
@@ -30,6 +34,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.Date;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import ink.z31.liverprotector.activity.FragmentActivity;
 import ink.z31.liverprotector.activity.HtmlActivity;
 import ink.z31.liverprotector.activity.LoginActivity;
@@ -42,7 +47,9 @@ import ink.z31.liverprotector.game.UserData;
 import ink.z31.liverprotector.service.MainService;
 import ink.z31.liverprotector.util.Config;
 import ink.z31.liverprotector.util.EventBusUtil;
+import ink.z31.liverprotector.util.FileUtil;
 
+import static ink.z31.liverprotector.activity.FragmentActivity.ERROR_FRAGMENT;
 import static ink.z31.liverprotector.util.EventBusUtil.EVENT_FLEET_CHANGE;
 import static ink.z31.liverprotector.util.EventBusUtil.EVENT_LOGIN_FINISH;
 import static ink.z31.liverprotector.util.EventBusUtil.EVENT_RES_CHANGE;
@@ -169,25 +176,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivityForResult(intent, LoginActivity.REQUEST_CODE);
         }
 
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(menuItem -> {
+            mDrawerLayout.closeDrawers();
+            switch (menuItem.getItemId()) {
+                case R.id.nav_err:
+                    Intent intent = new Intent(MainActivity.this, FragmentActivity.class);
+                    intent.putExtra("type", ERROR_FRAGMENT);
+                    startActivity(intent);
+                    break;
+            }
+
+            return true;
+        });
+
+
+
+
+
     }
 
     @Override
     public void onClick(View v) {
+        FloatingActionsMenu floatingActionsMenu = findViewById(R.id.multiple_actions);
         switch (v.getId()) {
             case R.id.action_add_task:
                 Log.i(TAG, "[UI] 开启任务界面");
+                floatingActionsMenu.collapse();
                 Intent intent = new Intent(MainActivity.this, HtmlActivity.class);
                 intent.putExtra("type", HtmlActivity.HTML_TASK);
                 startActivityForResult(intent, HtmlActivity.REQUEST_CODE);
                 break;
             case R.id.action_set_task:
                 Log.i(TAG, "[UI] 开启路径界面");
+                floatingActionsMenu.collapse();
                 Intent intent2 = new Intent(MainActivity.this, HtmlActivity.class);
                 intent2.putExtra("type", HtmlActivity.HTML_TASK_MANAGER);
                 startActivity(intent2);
                 break;
             case R.id.action_setting:
                 Log.i(TAG, "[UI] 开启设置界面");
+                floatingActionsMenu.collapse();
                 Intent intent1 = new Intent(MainActivity.this, FragmentActivity.class);
                 intent1.putExtra("type", FragmentActivity.SETTING_FRAGMENT);
                 startActivity(intent1);
@@ -204,6 +233,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     new EventBusUtil(EVENT_RES_CHANGE).post();
                     new EventBusUtil(EVENT_FLEET_CHANGE).post();
                     new EventBusUtil(EVENT_TASK_CHANGE).post();
+                } else {
+                    finish();
                 }
                 break;
             case HtmlActivity.REQUEST_CODE:  // h5界面返回值
@@ -237,6 +268,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Intent intent = new Intent(this, MainService.class);
                         stopService(intent);
                         finish();
+                        System.exit(0);
                     })
                     .show();
         }
@@ -291,4 +323,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         EventBus.getDefault().unregister(this);
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onResChange(EventBusUtil util) {
+        // 刷新界面信息
+        if (util.getCode() == EVENT_RES_CHANGE) {
+            try {
+                TextView textView = findViewById(R.id.tv_username);
+                textView.setText(userData.userBaseData.friendVo.username);
+                textView = findViewById(R.id.tv_sign);
+                textView.setText(userData.userBaseData.friendVo.sign);
+                CircleImageView imageView = findViewById(R.id.img_mine);
+                Bitmap b = FileUtil.getImageFromAssetsFile("html/images/head/" + userData.userBaseData.friendVo.avatar_cid + ".png");
+                imageView.setImageBitmap(b);
+            } catch (Exception e) {
+            }
+        }
+    }
+
 }

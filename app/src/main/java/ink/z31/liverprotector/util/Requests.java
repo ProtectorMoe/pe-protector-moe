@@ -11,6 +11,7 @@ import java.util.Map;
 import ink.z31.liverprotector.interceptor.HeaderInterceptor;
 import ink.z31.liverprotector.interceptor.LoggingInterceptor;
 
+import ink.z31.liverprotector.interceptor.RetryInterceptor;
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.FormBody;
@@ -51,6 +52,7 @@ public class Requests {
             })
             .addInterceptor(new HeaderInterceptor())
             .addInterceptor(new LoggingInterceptor())
+            .addInterceptor(new RetryInterceptor(3))
             .build();  // 公用的客户端
 
     private static final int GET = 0;

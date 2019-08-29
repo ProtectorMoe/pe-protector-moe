@@ -18,6 +18,7 @@ import ink.z31.liverprotector.MainActivity;
 import ink.z31.liverprotector.R;
 import ink.z31.liverprotector.bean.TaskBean;
 import ink.z31.liverprotector.exception.HmException;
+import ink.z31.liverprotector.exception.OperateException;
 import ink.z31.liverprotector.game.Counter;
 import ink.z31.liverprotector.game.GameChallenge;
 import ink.z31.liverprotector.game.GameConstant;
@@ -27,6 +28,7 @@ import ink.z31.liverprotector.game.UIUpdate;
 import ink.z31.liverprotector.game.UserData;
 import ink.z31.liverprotector.util.CommonUtil;
 import ink.z31.liverprotector.util.EventBusUtil;
+import ink.z31.liverprotector.util.Util;
 
 public class MainService extends Service {
     private static final String TAG = "MainService";
@@ -38,6 +40,7 @@ public class MainService extends Service {
     private GameConstant gameConstant = GameConstant.getInstance();
     private UserData userData = UserData.getInstance();
     private TaskManager taskManager = TaskManager.getInstance();
+    private static boolean inRun = false;
 
     public MainService() {
     }
@@ -61,13 +64,14 @@ public class MainService extends Service {
         }
         //显示通知
         builder
-            .setContentTitle("护肝宝")
-            .setContentText("正在后台运行")
-            .setSmallIcon(R.mipmap.icon)
-            .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.icon))
-            .setContentIntent(pi)
-            .setOngoing(true)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+                .setContentTitle("护肝宝")
+                .setContentText("正在后台运行")
+                .setSmallIcon(R.mipmap.icon)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.icon))
+                .setSmallIcon(R.mipmap.icon)
+                .setContentIntent(pi)
+                .setOngoing(true)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         manager.notify(1, builder.build());
     }
 
@@ -76,6 +80,7 @@ public class MainService extends Service {
         // 主进程开始
         thread = new Thread(() -> {
             UIUpdate.log("[线程] 开启主线程");
+            inRun = true;
             while (true) {
                 try {
                     mainThread();
@@ -95,13 +100,16 @@ public class MainService extends Service {
                             || e.getCode().equals("-203")) {
                         // 资源不足
                         UIUpdate.log("[致命] 资源不足, 终止所有任务" + e.toString());
-                        // TODO 暂停任务开关
+                        TaskManager.isRun = false;
                     } else if (e.getCode().equals("-9995")) {
                         UIUpdate.log("[警告] 登录失效, 尝试重新登录" + e.toString());
+                        if (!gameFunction.reLogin()) return;
+                    } else {
+                        if (!gameFunction.reLogin()) return;
                     }
                 } catch (Exception e) {
                     Log.i(TAG, "[错误] 发生错误" + e.getMessage());
-                    e.printStackTrace();
+                    Util.getErrMsg(e);
                 }
             }
         });
@@ -109,7 +117,7 @@ public class MainService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private void mainThread() throws Exception{
+    private void mainThread() throws HmException, OperateException {
         Counter counter = Counter.getInstance();
         while (true) {
             // 开始检测任务
@@ -138,9 +146,11 @@ public class MainService extends Service {
                             taskBean.finish();
                             break;
                         case ERROR:
-                            taskBean.finish();
+                            UIUpdate.detailLog("[错误] 出现错误, 开始");
+                            if (!gameFunction.reLogin()) return;
                             break;
                     }
+                    TaskManager.getInstance().writeFile();
                 }
             } else {
                 new EventBusUtil(EventBusUtil.EVENT_NOW_TASK_CHANGE, "空闲模式").post();
@@ -172,9 +182,10 @@ public class MainService extends Service {
     public void onDestroy() {
         super.onDestroy();
         stopForeground(true);
-        thread.interrupt();
+        if (inRun) {
+            thread.interrupt();
+        }
         manager.cancel(1);
         Log.i(TAG, "[服务] 主服务停止");
-
     }
 }

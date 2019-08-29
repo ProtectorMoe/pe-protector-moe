@@ -11,9 +11,12 @@ import com.alibaba.fastjson.JSON;
 import org.litepal.LitePal;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import ink.z31.liverprotector.activity.HtmlActivity;
+import ink.z31.liverprotector.bean.PathConfigBean;
+import ink.z31.liverprotector.game.NetSender;
 import ink.z31.liverprotector.interfaces.HttpFinishCallBack;
 import ink.z31.liverprotector.sqlite.MapConfigBean;
 import ink.z31.liverprotector.util.App;
@@ -96,5 +99,32 @@ public class TaskManagerHtml {
             name.add(bean.name);
         }
         return JSON.toJSONString(name);
+    }
+
+    private interface OnDownLoadCallBack {
+        void onFinish(HashMap<String, PathConfigBean> data);
+        void onError(String errMsg);
+    }
+
+    @JavascriptInterface
+    public void onDownload() {
+        new Thread(() -> {
+            HashMap<String, PathConfigBean> data = NetSender.getInstance().getPath();
+            for (String key: data.keySet()) {
+                // 寻找重名
+                List<MapConfigBean> list = LitePal
+                        .where("name=?", key)
+                        .find(MapConfigBean.class);
+                for (MapConfigBean l: list) {
+                    l.delete();
+                }
+                MapConfigBean bean = new MapConfigBean();
+                String config = JSON.toJSONString(data.get(key));
+                Log.i(TAG, config);
+                bean.name = key;
+                bean.data = config;
+                bean.save();
+            }
+        }).start();
     }
 }

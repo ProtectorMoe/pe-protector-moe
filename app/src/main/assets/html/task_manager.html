@@ -21,7 +21,8 @@
 	<div class="mui-content">
 		<div class="mui-input-group">
 			<div class="mui-button-row">
-				<button class="mui-btn mui-icon mui-btn-blue" @click="onAddPath()">添加配置</button>
+				<button class="mui-btn mui-icon mui-btn-blue" @click="onAddPath()">添加</button>
+				<button class="mui-btn mui-icon" @click="onDownload()">下载</button>
 				<button class="mui-btn mui-icon" @click="onRefresh()">刷新</button>
 			</div>
 		</div>
@@ -67,14 +68,17 @@
 					onRefresh: function() {
 						var path_list = window.android && window.android.onRefresh();
 						if (path_list) {
-							app.task_list = JSON.parse(path_list);
+							app.task_list = JSON.parse(path_list).sort();
 						}
+					},
+					onDownload: function() {
+						onDownload();
 					}
 				},
 			});
 
 			var onLoad = function(str) {  // 初始化任务列表
-				app.task_list = JSON.parse(str);
+				app.task_list = JSON.parse(str).sort();
 			};
 
 			var onCancel = function() {
@@ -82,8 +86,12 @@
 				window.android && window.android.onCancel();
 			};
 
-
-
+			var onDownload = function() {
+				mui.alert("下载中, 请返回后再查看", "提示", function(e) {
+					window.android && window.android.onDownload();
+					window.android && window.android.onCancel();
+				});
+			};
 		</script>
 
 

@@ -4,9 +4,12 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -25,9 +28,12 @@ import java.util.Date;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import ink.z31.liverprotector.MainActivity;
 import ink.z31.liverprotector.R;
+import ink.z31.liverprotector.bean.CheckVersionBean;
 import ink.z31.liverprotector.bean.LoginServerListBean;
 import ink.z31.liverprotector.game.FirstLogin;
+import ink.z31.liverprotector.game.NetSender;
 import ink.z31.liverprotector.game.SecondLogin;
+import ink.z31.liverprotector.interfaces.CheckVersionCallBack;
 import ink.z31.liverprotector.interfaces.FirstLoginCallBack;
 import ink.z31.liverprotector.interfaces.SecondLoginCallBack;
 import ink.z31.liverprotector.util.App;
@@ -39,6 +45,7 @@ public class  LoginActivity extends AppCompatActivity {
     public static final int REQUEST_CODE = 1;
     private SweetAlertDialog loginAlertDialog;
     private int serverIndex;
+    private boolean checkVersion = false;
 
 
     private static final int LOGIN_SHOW_DIALOG = 0;
@@ -123,11 +130,76 @@ public class  LoginActivity extends AppCompatActivity {
 
         // 设置按钮事件
         Button actionButton = findViewById(R.id.bt_login);
-        actionButton.setOnClickListener((v -> firstLogin()));
+        actionButton.setOnClickListener((v -> {
+            if (checkVersion) {
+                firstLogin();
+            } else {
+                new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("错误")
+                        .setContentText("初始化中, 请稍候")
+                        .setConfirmText("确定")
+                        .show();
+            }
+
+        }));
         // 设置服务器
         NiceSpinner sp_server = findViewById(R.id.sp_server);
         sp_server.attachDataSource(Arrays.asList("安卓", "IOS", "台服", "国际"));
         sp_server.setSelectedIndex(preferences.getInt("server", 0));
+        // 连接更新服务器
+        final CheckVersionCallBack callBack = new CheckVersionCallBack() {
+            @Override
+            public void onFinish() {
+                checkVersion = true;
+            }
+
+            @Override
+            public void onUpgrade(String newVersion, String newData) {
+                Looper.prepare();
+                new SweetAlertDialog(LoginActivity.this, SweetAlertDialog.NORMAL_TYPE)
+                        .setTitleText("发现新版本")
+                        .setContentText(String.format("新版本:%s\n更新日志:\n%s", newVersion, newData))
+                        .setConfirmText("确定")
+                        .setConfirmClickListener((sweetAlertDialog) -> {
+                            setResult(RESULT_CANCELED);
+                            finish();
+                        })
+                        .show();
+                Looper.loop();
+
+            }
+
+            @Override
+            public void onError(String errMsg) {
+                Looper.prepare();
+                new SweetAlertDialog(LoginActivity.this, SweetAlertDialog.ERROR_TYPE)
+                        .setTitleText("错误")
+                        .setContentText("连接更新服务器失败")
+                        .setConfirmText("退出")
+                        .setConfirmClickListener((sweetAlertDialog) -> {
+                            setResult(RESULT_CANCELED);
+                            finish();
+                        })
+                        .show();
+                Looper.loop();
+            }
+        };
+        new Thread(() -> {
+            try {
+                PackageManager manager = getApplicationContext().getPackageManager();
+                PackageInfo info = manager.getPackageInfo(getApplicationContext().getPackageName(), 0);
+                String nowVersion = info.versionName;
+                CheckVersionBean bean = NetSender.getInstance().checkVersion();
+
+                if (Float.valueOf(bean.version).doubleValue() > Float.valueOf(nowVersion).doubleValue()) {
+                    callBack.onUpgrade(bean.version, bean.history.get(bean.version));
+                } else {
+                    callBack.onFinish();
+                }
+            } catch (Exception e) {
+                callBack.onError(e.getMessage() + e.getLocalizedMessage());
+            }
+        }).start();
     }
 
 

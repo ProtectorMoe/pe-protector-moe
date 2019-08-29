@@ -134,7 +134,7 @@ public class LogFragment extends Fragment {
                 tv_aluminium_change.setText((aluminium >= 0? "+": "") + aluminium);
 
                 tv_battle_num.setText(String.valueOf(counter.getBattleNum()));
-                tv_node_num.setText(String.valueOf(counter.getBattleNum()));
+                tv_node_num.setText(String.valueOf(counter.getNodeNum()));
                 tv_finish_num.setText(String.valueOf(counter.getFinishNum()));
                 tv_sl_num.setText(String.valueOf(counter.getSlNum()));
             }

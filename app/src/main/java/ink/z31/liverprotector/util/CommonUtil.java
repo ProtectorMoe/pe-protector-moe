@@ -29,7 +29,7 @@ public class CommonUtil {
         try {
             Thread.sleep(time);
         }catch (Exception e) {
-            Log.e(TAG, e.getLocalizedMessage());
+            Log.e(TAG, e.getMessage());
         }
     }
 

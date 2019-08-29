@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 
 import java.util.HashMap;
 
+import ink.z31.liverprotector.util.Util;
+
 
 public class HmException extends Exception {
     private String code;
@@ -24,10 +26,16 @@ public class HmException extends Exception {
         super(cause);
     }
 
-    public static void errorFind(String data) throws HmException {
-        Eid eid = JSON.parseObject(data, Eid.class);
-        if (eid.eid != null && Integer.valueOf(eid.eid) != 0){
-            throw new HmException(eid.eid);
+    public static void errorFind(String name, String data) throws HmException {
+        try {
+            Eid eid = JSON.parseObject(data, Eid.class);
+            if (eid.eid != null && Integer.valueOf(eid.eid) != 0){
+                throw new HmException(eid.eid);
+            }
+        } catch (HmException e) {
+            throw e;
+        } catch (Exception e) {
+            Util.getErrMsg(e, "解析数据出错, 位置" + name);
         }
     }
 

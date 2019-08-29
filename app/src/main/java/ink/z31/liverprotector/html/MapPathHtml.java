@@ -19,12 +19,12 @@ public class MapPathHtml {
         String config = null;
         if (name != null && !name.equals("")) {
             List<MapConfigBean> list = LitePal
-                    .select("data")
                     .limit(1)
                     .where("name=?", name)
                     .find(MapConfigBean.class);
             if (list.size() > 0) {
                 config = list.get(0).data;
+                Log.i(TAG, "[JavaScript]" + config);
             }
         }
         final String f = config;
@@ -36,7 +36,7 @@ public class MapPathHtml {
                 super.onPageFinished(view, url);
                 if (f != null) {
                     String code = String.format("javascript:onLoad(\'%s\', \'%s\')", name, f);
-                    Log.i(TAG, "[Javascript] 执行脚本" + code);
+                    Log.i(TAG, "[JavaScript] 执行脚本" + code);
                     view.loadUrl(code);
                 }
             }

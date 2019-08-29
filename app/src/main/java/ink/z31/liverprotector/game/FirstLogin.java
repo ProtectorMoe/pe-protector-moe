@@ -17,6 +17,7 @@ import ink.z31.liverprotector.interfaces.ResProgressCallBack;
 import ink.z31.liverprotector.util.App;
 import ink.z31.liverprotector.util.Config;
 import ink.z31.liverprotector.util.Requests;
+import ink.z31.liverprotector.util.Util;
 
 
 public class FirstLogin  {
@@ -93,8 +94,7 @@ public class FirstLogin  {
         } catch (HmException e){
             callBack.onError(e.getMessage());
         } catch (Exception e){
-            callBack.onError(e.getMessage());
-            e.printStackTrace();
+            callBack.onError(Util.getErrMsg(e));
         }
     }
 

@@ -24,6 +24,7 @@ import ink.z31.liverprotector.exception.HmException;
 import ink.z31.liverprotector.exception.OperateException;
 import ink.z31.liverprotector.sqlite.MapConfigBean;
 import ink.z31.liverprotector.util.CommonUtil;
+import ink.z31.liverprotector.util.Util;
 
 public class GameChallenge extends GameBattle {
     private static final String TAG = "GameChallenge";
@@ -34,7 +35,6 @@ public class GameChallenge extends GameBattle {
 
     private String configName;
     private String fleet;
-    private String head = "pve";
     private int repair;
     private PathConfigBean configBean;
     private TaskBean taskBean;
@@ -42,6 +42,7 @@ public class GameChallenge extends GameBattle {
 
     public GameChallenge(TaskBean taskBean) throws OperateException{
         // 初始化数据
+        head = "pve";
         this.taskBean = taskBean;
         this.configName = taskBean.name;
         this.fleet = String.valueOf(taskBean.battle_data.fleet);
@@ -56,7 +57,7 @@ public class GameChallenge extends GameBattle {
             configBean = JSON.parseObject(config, PathConfigBean.class);
             this.map = configBean.map;
         } else {
-            throw new OperateException("解析");
+            throw new OperateException("解析任务失败");
         }
     }
 
@@ -79,6 +80,7 @@ public class GameChallenge extends GameBattle {
         PveNode pveNode;
         boolean isLastPoint;
         Counter counter = Counter.getInstance();
+        String mapName;
 
         try {
             //-------------战前准备页面---------------
@@ -87,6 +89,14 @@ public class GameChallenge extends GameBattle {
             CommonUtil.delay(2000);
             fleetVo = userData.getFleet().get(fleet);
             ships = fleetVo.ships;
+            mapName = userData.getLevel(this.map).title;
+            // 活动关的设置舰队
+            if (Integer.valueOf(this.map) > 1000) {
+                netSender.setFleet(1);
+                netSender.setFleet(2);
+                netSender.setFleet(3);
+                netSender.setFleet(4);
+            }
             // -----------进行补给------------
             UIUpdate.detailLog(TAG, "[出征] 补给检测");
             gameFunction.checkSupply(ships);
@@ -99,18 +109,19 @@ public class GameChallenge extends GameBattle {
             }
             // ----------------出征页面---------------------
             // 开始出征
+            UIUpdate.detailLog(TAG, "[出征] 开始出征");
             CommonUtil.delay(2000);
-            netSender.battleChallenge(this.head, this.map, this.fleet);
+            challengeStart(this.map, this.fleet);
             while (true) {  // 出征总循环
                 // ----------------选路页面-------------
-                UIUpdate.detailLog(TAG, "[出征] 进行选路");
-                CommonUtil.delay(2000);
+                CommonUtil.delay(1000);
                 nowNode = challengeNewNext();  // 获取当前路径点
                 counter.nodeNumAdd();
                 pveNode = userData.getNode(nowNode);  // 获取当前点数据
                 nowFlag = pveNode.flag;  // 当前点旗帜
                 isLastPoint = isLastNode(pveNode);  // 是否为最后一点
                 UIUpdate.detailLog(TAG, String.format("[出征] 进点%s → %s", nowFlag, configBean.detail.containsKey(nowFlag)? "继续": "SL"));
+                CommonUtil.delay(1000);
                 if (!configBean.detail.containsKey(nowFlag)) {  // 当前点是否为期望点
                     throw new ChallengeException(ChallengeException.EXCEPTION_SL); //  进行SL
                 }
@@ -125,20 +136,21 @@ public class GameChallenge extends GameBattle {
                 // 1:普通点, 2:BOSS点, 3:资源点 4:待机点, 5:收费站
                 if (nodeType == 1 || nodeType == 2) {
                     // --------------开始索敌-------------
-                    CommonUtil.delay(2000);
                     UIUpdate.detailLog(TAG, "[出征] 进行索敌");
+                    CommonUtil.delay(2000);
                     SpyBean spyBean = challengeSpy();  // 获取索敌数据
 
                     // 索敌失败SL
                     if (spyBean.enemyVO.isFound == 0 && nodeDetail.spyFailSl) {
                         UIUpdate.detailLog(TAG, "[出征] 索敌失败, 设置需要SL");
+                        CommonUtil.delay(2000);
                         throw new ChallengeException(ChallengeException.EXCEPTION_SL);
                     }
                     // 取得敌人数量
                     SparseIntArray enemyNum = new SparseIntArray();
                     for (ShipVO shipVO: spyBean.enemyVO.enemyShips) {
                         int type = shipVO.type;
-                        if (enemyNum.indexOfKey(type) > 0) {
+                        if (enemyNum.indexOfKey(type) >= 0) {
                             enemyNum.put(type, enemyNum.get(type) + 1);
                         } else {
                             enemyNum.put(type, 1);
@@ -146,28 +158,34 @@ public class GameChallenge extends GameBattle {
                     }
                     // 判断是否需要SL
                     for (PathConfigBean.NodeDetail detail: flagDetails) {
-                        if (enemyNum.indexOfKey(detail.enemy) >= 0) {
-                            int num = enemyNum.get(detail.enemy);
-                            if ((detail.num <=6 && num >= detail.num) || (detail.num>=6 && num<=detail.num-6)) {
-                                if (detail.deal == 0) {
-                                    UIUpdate.detailLog(TAG, "[出征] 发现设置敌人, 进行SL");
-                                    throw new ChallengeException(ChallengeException.EXCEPTION_SL);
-                                } else {
-                                    nowFormat = String.valueOf(detail.deal);
-                                }
+                        int num = enemyNum.indexOfKey(detail.enemy) != -1? enemyNum.get(detail.enemy): 0;
+                        if ((detail.num <=6 && num >= detail.num) || (detail.num>6 && num<detail.num-6)) {
+                            if (detail.deal == 0) {
+                                UIUpdate.detailLog(TAG, "[出征] 舰船SL启动, 进行SL");
+                                throw new ChallengeException(ChallengeException.EXCEPTION_SL);
+                            } else {
+                                nowFormat = String.valueOf(detail.deal);
                             }
                         }
                     }
                     // 判断是否需要迂回
                     if (nodeDetail.round_about && roundabout == 1) {
-                        UIUpdate.detailLog(TAG, "[出征] 尝试进行SL");
+                        UIUpdate.detailLog(TAG, "[出征] 尝试进行迂回");
+                        CommonUtil.delay(1000);
                         SkipWarBean skipWarBean = challengeSkipWar();
                         if (skipWarBean.isSuccess == 0) {
+                            UIUpdate.detailLog(TAG, "[出征] 迂回失败, 开始判定");
+                            CommonUtil.delay(1000);
                             skipFailCount++;
                             if (configBean.skipMax <= skipFailCount) {
                                 UIUpdate.detailLog(TAG, "[出征] 迂回次数达到最大, 进行SL");
+                                CommonUtil.delay(1000);
                                 throw new ChallengeException(ChallengeException.EXCEPTION_SL);
                             }
+                        } else {
+                            UIUpdate.detailLog(TAG, "[出征] 迂回成功");
+                            CommonUtil.delay(1000);
+                            continue;
                         }
                     }
                 }
@@ -180,7 +198,7 @@ public class GameChallenge extends GameBattle {
                     int randomInt = CommonUtil.randomInt(15, 25);
                     UIUpdate.detailLog(TAG, "[出征] 开始战斗, 等待" + randomInt + "s");
                     CommonUtil.delay(randomInt*1000);
-                } else if (nodeType == 3 || nodeType == 4) {
+                } else if (nodeType == 3 || nodeType == 5) {
                     // 资源点或收费站
                     if (pveNode.gain != null || pveNode.loss != null) {
                         String access = pveNode.gain != null? "获得": "损失";
@@ -193,18 +211,29 @@ public class GameChallenge extends GameBattle {
                         log = String.format("[出征] 资源点, %s %s", access, log);
                         Log.i(TAG, log);
                         UIUpdate.log(log);
+                        CommonUtil.delay(2000);
                     }
                     if (nodeDetail.sl) {  // 资源点进行SL
                         UIUpdate.detailLog(TAG, "[出征] 资源点, 进行SL");
-                        throw new ChallengeException(ChallengeException.EXCEPTION_SL); //  进行SL
+                        CommonUtil.delay(2000);
+                        return Finish.FINISH;
                     }
+                    if (isLastPoint) {
+                        // 完成任务, 回港
+                        UIUpdate.detailLog(TAG, "[出征] 完成任务, 回港");
+                        CommonUtil.delay(2000);
+                        return Finish.FINISH;
+                    }
+                    continue;
+                } else if (nodeType == 4) {  // 空点, 继续走
+                    continue;
                 }
                 // -------------进行夜战结算-----------
-                CommonUtil.delay(2000);
                 UIUpdate.detailLog(TAG, "[出征] 准备进行夜战或结算");
+                CommonUtil.delay(2000);
                 GetResultBean resultBean = challengeGetWarResult(nodeDetail.night && dealtoBean.warReport.canDoNightWar == 1);  // 判断是否进行夜战
                 if (nodeDetail.night && dealtoBean.warReport.canDoNightWar == 1) {
-                    int randomInt = CommonUtil.randomInt(15, 25);
+                    int randomInt = CommonUtil.randomInt(10, 20);
                     UIUpdate.detailLog(TAG, "[出征] 夜战中, 等待" + randomInt + "s");
                     CommonUtil.delay(randomInt*1000);
                 }
@@ -233,8 +262,13 @@ public class GameChallenge extends GameBattle {
                         }
                     }
                 }
-                String log = String.format("[出征] %s点%s 评价:%s MVP:%s 出:%s", this.map.replace("0", "-"), nowFlag, resultLevel, mvp, newShipName);
+                String log = String.format("[出征] %s点%s 评价:%s MVP:%s 出:%s", mapName, nowFlag, resultLevel, mvp, newShipName);
                 UIUpdate.log(TAG, log);
+                CommonUtil.delay(1000);
+                // 战利品测试
+                if (resultBean.dropSpoils != null && resultBean.dropSpoils.equals("1")) {
+                    UIUpdate.log(TAG, "[出征] 获得 战利品 *1");
+                }
                 // 血量更新与判断
                 userData.allShipSetAllShipVO(resultBean.shipVO);
                 for (Integer ship : ships) {
@@ -247,10 +281,11 @@ public class GameChallenge extends GameBattle {
                 if (isLastPoint) {
                     // 完成任务, 回港
                     UIUpdate.detailLog(TAG, "[出征] 完成任务, 回港");
+                    CommonUtil.delay(2000);
                     return Finish.FINISH;
                 } else {
-                    UIUpdate.detailLog(TAG, "[出征] 完成任务, 进行下一点");
-
+                    UIUpdate.detailLog(TAG, "[出征] 完成, 进行下一点");
+                    CommonUtil.delay(2000);
                 }
             }
 
@@ -268,11 +303,10 @@ public class GameChallenge extends GameBattle {
                     return Finish.SL;
                 case ChallengeException.EXCEPTION_BROKEN:
                     return Finish.BROKEN;
-
             }
         } catch (Exception e) {
-            UIUpdate.log("[出征] 错误:" + e.getMessage());
-            e.printStackTrace();
+            UIUpdate.log("[出征] 错误:" + e.getMessage() + "\n" + "可在错误日志内查看具体错误");
+            Util.getErrMsg(e);
             return Finish.ERROR;
         } finally {
             CommonUtil.delay(2000);
@@ -302,6 +336,7 @@ public class GameChallenge extends GameBattle {
                 break;
             default:
                 present = 0;
+                break;
         }
         gameFunction.checkFastRepair(ships, present);
         // ----------更新船只血量信息---------
