@@ -10,14 +10,13 @@ import ink.z31.liverprotector.util.App;
 
 public class Setting {
     private static Setting setting;
-    private SharedPreferences preferences;
     public static Setting getInstance() {
         if (setting == null) setting = new Setting();
         return setting;
     }
 
     public void init() {
-        preferences = PreferenceManager.getDefaultSharedPreferences(App.getContext());
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         dismantleSwitch = preferences.getBoolean("pref_dismantle_switch", false);
         dismantleEquipment = preferences.getBoolean("pref_dismantle_equipment", false);
         dismantleStar = preferences.getStringSet("pref_dismantle_star", new HashSet<>());

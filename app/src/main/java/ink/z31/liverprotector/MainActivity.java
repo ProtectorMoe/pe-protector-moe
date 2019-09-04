@@ -32,7 +32,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Date;
-import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import ink.z31.liverprotector.activity.FragmentActivity;
@@ -59,10 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TAG = "MainActivity";
     private UserData userData = UserData.getInstance();
     private DrawerLayout mDrawerLayout;
-    private MaterialViewPager materialViewPager;
-    private List<Fragment> fragmentList;
     private boolean isConnected = false;
-
     private MainService.MainBinder mainBinder;
 
 
@@ -73,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // 服务绑定
         // 绑定服务
         Intent bindIntent = new Intent(this, MainService.class);
         isConnected = bindService(bindIntent, serviceConnection, BIND_AUTO_CREATE);
@@ -85,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 注册EventBus
         EventBus.getDefault().register(this);
         // 设置主页面
-        materialViewPager = findViewById(R.id.materialViewPager);
+        MaterialViewPager materialViewPager = findViewById(R.id.materialViewPager);
         materialViewPager.getViewPager().setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int i) {
@@ -139,8 +134,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         materialViewPager.getPagerTitleStrip().setViewPager(materialViewPager.getViewPager());
 
         // 设置颜色
-
-
         materialViewPager.setMaterialViewPagerListener(page -> {
             switch (page) {
                 case 0:

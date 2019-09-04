@@ -11,16 +11,13 @@ public class Config {
     public static int serverType = 0;  // 游戏国籍
     public static String resVersion = "";  // res的版本
 
-    public static String host = "";
-    public static String userId;
-    public static String loginHead;
-    public static String loginApiHead;
+    public static String host = "";  // 游戏地址
+    public static String userId;  // 用户标识码
+    public static String loginHead;  // 登录地址
+    public static String loginApiHead;  // 登录api地址
 
     public static boolean isFirstLogin = true;
-    public static boolean isExplore = true;
-    public static boolean isRepair = false;
     public static boolean isRepairFleet = false;
     public static final double [] RAND = {Math.random(), Math.random(), Math.random(), Math.random()};
-
     public static final StringBuilder errMsg = new StringBuilder();
 }

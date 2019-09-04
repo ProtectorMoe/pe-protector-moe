@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="utf-8">
+	<title>护肝宝</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<link rel="stylesheet" href="css/mui.min.css">
+	<link rel="stylesheet" href="css/mui.picker.css">
+	<link rel="stylesheet" href="css/mui.poppicker.css">
+</head>
+<body>
+<script src="js/vue.min.js"></script>
+<script src="js/mui.min.js"></script>
+<script src="js/mui.picker.min.js"></script>
+<script src="js/mui.poppicker.js"></script>
+<script type="text/javascript" charset="utf-8">
+	    mui.init();
+	</script>
+
+
+<div id="app">
+	<header class="mui-bar mui-bar-nav">
+		<a @click="onCancel" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">护肝宝 添加任务</h1>
+	</header>
+	<div class="mui-content">
+		<div class="mui-card" >
+			<div class="mui-card-header">
+				类型
+				<div class="mui-input-row mui-input-range">
+					<label>{{Array("", "出征", "战役", "演习")[config_type_value]}}</label>
+					<input v-model="config_type_value" type="range" min="1" max="3">
+				</div>
+			</div>
+
+			<form class="mui-input-group mui-card-content" v-show="config_type_value == 1">
+				<div class="mui-input-row">
+					<label>配置名称:</label>
+					<input @click="onConfigClick" v-model="config_name" type="text" placeholder="点击选择配置" readonly>
+				</div>
+				<div class="mui-input-row">
+					<label>执行次数</label>
+					<input type="number" v-model="config_num" class="mui-input-clear" placeholder="请输入执行次数">
+				</div>
+				<div class="mui-input-row">
+					<label>队伍</label>
+					<input type="text" v-model="config_fleet[config_fleet_value]" @click="onFleetClick" placeholder="请选择队伍" readonly>
+				</div>
+				<div class="mui-input-row">
+					<label>修理方式</label>
+					<input @click="onRepairClick" type="text" v-model="config_repair[config_repair_value]" placeholder="请输入执行次数" readonly>
+				</div>
+			</form>
+
+			<form class="mui-input-group mui-card-content" v-show="config_type_value == 2">
+				<div class="mui-input-row">
+					<label>地图:</label>
+					<input @click="onCampaignMapClick" v-model="campaign_name[campaign_name_value]" type="text" placeholder="点击选择配置" readonly>
+				</div>
+				<div class="mui-input-row">
+					<label>修理方式</label>
+					<input @click="onRepairClick" type="text" v-model="config_repair[campaign_repair]" placeholder="请输入执行次数" readonly>
+				</div>
+				<div class="mui-input-row">
+					<label>无限SL</label>
+					<input type="number" v-model="campaign_sl" class="mui-input-clear" placeholder="不输入则不开启">
+				</div>
+				<div class="mui-input-row">
+					<label>夜战</label>
+					<div class="mui-switch">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</div>
+			</form>
+
+			<div class="mui-card-footer">
+				<a @click="onCancel" class="mui-card-link">取消</a>
+				<a @click="onSubmit" class="mui-card-link">提交</a>
+			</div>
+		</div>
+
+
+
+	</div>
+</div>
+<script type="text/javascript" charset="utf-8">
+        var app = new Vue({
+            el : "#app",
+			data : {
+				config_type_value: 1,
+				config_type: ["", "battle", "campaign", "pvp"],
+
+
+
+				config_list: ["测试"],
+				config_name: "",
+				config_num: "500",
+
+				config_repair_value: 0,
+				config_repair: ["中破快修", "大破快修", "中破停止", "大破停止"],
+
+				config_fleet: ["", "一队", "二队", "三队", "四队"],
+				config_fleet_value: 1,
+
+				campaign_name: ['驱逐简单战役', '驱逐困难战役', '巡洋简单战役', '巡洋困难战役', '战列简单战役',
+                                '战列困难战役', '航母简单战役', '航母困难战役', '潜艇简单战役', '潜艇困难战役'],
+				campaign_name_value: 0,
+				campaign_sl: "",
+				campaign_night: false,
+				campaign_repair: 0
+
+
+			},
+			methods: {
+				onConfigClick: function() {
+					var picker = new mui.PopPicker();
+					var l = [];
+					for (var d in app.config_list) {
+						if (app.config_list.hasOwnProperty(d)) {
+							l.push({value: app.config_list[d], text: app.config_list[d]});
+						}
+					}
+					picker.setData(l);
+					picker.show(function(e) {
+						app.config_name = e[0]["value"];
+					});
+				},
+				onRepairClick: function() {
+					var picker = new mui.PopPicker();
+					var l = [];
+					for (var d in app.config_repair) {
+						if (app.config_repair.hasOwnProperty(d)) {
+							l.push({value: d, text: app.config_repair[d]});
+						}
+					}
+					picker.setData(l);
+					picker.show(function(e) {
+						app.config_repair_value = e[0]["value"];
+					});
+				},
+
+				onFleetClick: function() {
+					var picker = new mui.PopPicker();
+					var l = [];
+					for (var i=1; i<=4; i++) {
+						l.push({value: i, text: app.config_fleet[i]});
+					}
+					picker.setData(l);
+					picker.show(function(e) {
+						app.config_fleet_value = e[0]["value"];
+					});
+				},
+
+				onCampaignMapClick: function() {
+					var picker = new mui.PopPicker();
+					var l = [];
+					for (var d in app.campaign_name) {
+						if (app.campaign_name.hasOwnProperty(d)) {
+							l.push({value: d, text: app.campaign_name[d]});
+						}
+					}
+					picker.setData(l);
+					picker.show(function(e) {
+						app.campaign_name_value = e[0]["value"];
+					});
+				},
+
+				onCampaignRepairClick: function() {
+					var picker = new mui.PopPicker();
+					var l = [];
+					for (var d in app.config_repair) {
+						if (app.config_repair.hasOwnProperty(d)) {
+							l.push({value: d, text: app.config_repair[d]});
+						}
+					}
+					picker.setData(l);
+					picker.show(function(e) {
+						app.campaign_repair = e[0]["value"];
+					});
+				},
+
+
+				onSubmit: function() {
+					var obj = {};
+					if (app.config_type_value == 1) {
+						if (app.config_name.length === 0) {
+							mui.alert('您没有选择配置','错误','返回',function (e) {
+							},'div');
+							return;
+						}
+						obj.name = app.config_name;
+						obj.type = "battle";
+						obj.num = 0;
+						obj.num_max = Number.parseInt(app.config_num);
+						obj.locked = "-1";
+						obj.battle_data = {
+							repair : app.config_repair_value,
+							fleet : app.config_fleet_value
+						};
+					} else {
+						mui.alert("这个功能还没有开发!", "404");
+						return;
+					}
+					onFinish(obj);
+				},
+				onCancel: function() {
+					onCancel();
+				}
+
+
+			}
+        });
+
+		var onLoad = function(str) {
+			if (str) {
+				app.config_list = JSON.parse(str).sort();
+			}
+		};
+
+		var onFinish = function(obj) {
+			var str = JSON.stringify(obj);
+			console.log("提交数据" + str);
+			window.android && window.android.onFinish(str);
+		};
+
+		var onCancel = function() {
+			console.log("用户取消操作");
+			window.android && window.android.onCancel();
+		};
+
+
+    </script>
+
+</body>
+</html>
