@@ -177,19 +177,23 @@ public class NetSender {
     /**
      * 获取活动的点数信息
      * @return 活动的关卡编号,每个点的配置信息
-     * @throws HmException 错误信息
      */
-    public String peventGetPveData() throws HmException {
-        String url = Config.host + "pevent/getPveData/" + this.getUrlEnd();
-        Requests requests = new Requests.Builder()
-                .url(url)
-                .get()
-                .zlib()
-                .build()
-                .execute();
-        String data = requests.text;
-        HmException.errorFind("pevent/getPveData/", data);
-        return data;
+    public String peventGetPveData() {
+        try {
+            String url = Config.host + "pevent/getPveData/" + this.getUrlEnd();
+            Requests requests = new Requests.Builder()
+                    .url(url)
+                    .get()
+                    .zlib()
+                    .build()
+                    .execute();
+            String data = requests.text;
+            HmException.errorFind("pevent/getPveData/", data);
+            return data;
+        } catch (Exception e) {
+            Log.e(TAG, "获取活动数据失败, 可能不在活动期间");
+        }
+        return null;
     }
 
 

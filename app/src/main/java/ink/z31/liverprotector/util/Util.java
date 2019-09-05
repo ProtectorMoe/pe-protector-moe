@@ -35,11 +35,11 @@ public class Util {
         return sw.toString();
     }
 
-    public static void putErrMsg(String errmsg) {
+    public static void putErrMsg(String errMsg) {
         Config.errMsg.append("\r\n")
                 .append(DateUtil.timeStamp2Date(DateUtil.timeStamp(), null))
                 .append("\r\n")
-                .append(errmsg)
+                .append(errMsg)
                 .append("\r\n");
     }
 }

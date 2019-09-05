@@ -22,7 +22,7 @@ public class TaskListAdapter extends BaseItemDraggableAdapter<TaskBean, BaseView
         helper.setText(R.id.task_item_num, item.num + "/" + item.num_max);
         if (item.type.equals("battle")) {
             UserData userData = UserData.getInstance();
-            FleetVo fleetVo = userData.fleet.get(String.valueOf(item.battle_data.fleet));
+            FleetVo fleetVo = userData.fleet.get(String.valueOf(item.battleData.fleet));
             helper.setText(R.id.task_item_fleet, fleetVo != null ? fleetVo.title : "未知舰队");
         }
         // 绑定点击事件

@@ -88,24 +88,29 @@ public class MainService extends Service {
                     Log.e(TAG, "[错误] 主线程发生错误:" + e.toString());
                     UIUpdate.log("[错误] 主线程发生错误:" + e.toString());
 
-                    if (e.getCode().equals("-9999")) {
-                        UIUpdate.log("[致命] 服务器维护, 终止进程" + e.toString());
-                        return;
-                    } else if (e.getCode().equals("-102")
-                            || e.getCode().equals("-105")
-                            || e.getCode().equals("-106")
-                            || e.getCode().equals("-107")
-                            || e.getCode().equals("-108")
-                            || e.getCode().equals("-204")
-                            || e.getCode().equals("-203")) {
-                        // 资源不足
-                        UIUpdate.log("[致命] 资源不足, 终止所有任务" + e.toString());
-                        TaskManager.isRun = false;
-                    } else if (e.getCode().equals("-9995")) {
-                        UIUpdate.log("[警告] 登录失效, 尝试重新登录" + e.toString());
-                        if (!gameFunction.reLogin()) return;
-                    } else {
-                        if (!gameFunction.reLogin()) return;
+                    switch (e.getCode()) {
+                        case "-9999":
+                            UIUpdate.log("[致命] 服务器维护, 终止进程" + e.toString());
+                            return;
+                        case "-102":
+                        case "-105":
+                        case "-106":
+                        case "-107":
+                        case "-108":
+                        case "-204":
+                        case "-203":
+                            UIUpdate.log("[致命] 资源不足, 终止所有任务" + e.toString());
+                            TaskManager.isRun = false;
+                            break;
+                        case "-9995":
+                            UIUpdate.log("[警告] 登录失效, 尝试重新登录" + e.toString());
+                            if (!gameFunction.reLogin()) return;
+                            break;
+                        default:
+                            if (!gameFunction.reLogin()) return;
+                            break;
+
+
                     }
                 } catch (Exception e) {
                     Log.i(TAG, "[错误] 发生错误" + e.getMessage());

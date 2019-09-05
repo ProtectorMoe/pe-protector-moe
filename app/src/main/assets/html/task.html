@@ -35,7 +35,7 @@
 				</div>
 			</div>
 
-			<form class="mui-input-group mui-card-content" v-show="config_type_value == 1">
+			<div class="mui-input-group mui-card-content" v-show="config_type_value == 1">
 				<div class="mui-input-row">
 					<label>配置名称:</label>
 					<input @click="onConfigClick" v-model="config_name" type="text" placeholder="点击选择配置" readonly>
@@ -46,22 +46,26 @@
 				</div>
 				<div class="mui-input-row">
 					<label>队伍</label>
-					<input type="text" v-model="config_fleet[config_fleet_value]" @click="onFleetClick" placeholder="请选择队伍" readonly>
+					<input type="text" v-model="fleet" @click="onFleetClick" placeholder="请选择队伍" readonly>
 				</div>
 				<div class="mui-input-row">
 					<label>修理方式</label>
-					<input @click="onRepairClick" type="text" v-model="config_repair[config_repair_value]" placeholder="请输入执行次数" readonly>
+					<input @click="onRepairClick" type="text" v-model="repair" placeholder="请输入执行次数" readonly>
 				</div>
-			</form>
+			</div>
 
-			<form class="mui-input-group mui-card-content" v-show="config_type_value == 2">
+			<div class="mui-input-group mui-card-content" v-show="config_type_value == 2">
 				<div class="mui-input-row">
 					<label>地图:</label>
-					<input @click="onCampaignMapClick" v-model="campaign_name[campaign_name_value]" type="text" placeholder="点击选择配置" readonly>
+					<input @click="onCampaignMapClick" v-model="map" type="text" placeholder="点击选择配置" readonly>
+				</div>
+				<div class="mui-input-row">
+					<label>阵形</label>
+					<input @click="onFormatClick" type="text" v-model="format" placeholder="请选择阵形" readonly>
 				</div>
 				<div class="mui-input-row">
 					<label>修理方式</label>
-					<input @click="onRepairClick" type="text" v-model="config_repair[campaign_repair]" placeholder="请输入执行次数" readonly>
+					<input @click="onRepairClick" type="text" v-model="repair" placeholder="请输入执行次数" readonly>
 				</div>
 				<div class="mui-input-row">
 					<label>无限SL</label>
@@ -69,11 +73,33 @@
 				</div>
 				<div class="mui-input-row">
 					<label>夜战</label>
-					<div class="mui-switch">
+					<div id="campaign_night" class="mui-switch">
 						<div class="mui-switch-handle"></div>
 					</div>
 				</div>
-			</form>
+			</div>
+
+			<div class="mui-input-group mui-card-content" v-show="config_type_value == 3">
+				<div class="mui-input-row">
+					<label>队伍</label>
+					<input type="text" v-model="fleet" @click="onFleetClick" placeholder="请选择队伍" readonly>
+				</div>
+				<div class="mui-input-row">
+					<label>阵形</label>
+					<input @click="onFormatClick" type="text" v-model="format" placeholder="请选择阵形" readonly>
+				</div>
+				<div class="mui-input-row">
+					<label>修理方式</label>
+					<input @click="onRepairClick" type="text" v-model="repair" placeholder="请输入执行次数" readonly>
+				</div>
+				<div class="mui-input-row">
+					<label>夜战</label>
+					<div id="pvp_night" class="mui-switch">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</div>
+			</div>
+
 
 			<div class="mui-card-footer">
 				<a @click="onCancel" class="mui-card-link">取消</a>
@@ -91,26 +117,34 @@
 			data : {
 				config_type_value: 1,
 				config_type: ["", "battle", "campaign", "pvp"],
-
-
-
 				config_list: ["测试"],
 				config_name: "",
 				config_num: "500",
+				config_format: 1,
 
 				config_repair_value: 0,
-				config_repair: ["中破快修", "大破快修", "中破停止", "大破停止"],
-
-				config_fleet: ["", "一队", "二队", "三队", "四队"],
 				config_fleet_value: 1,
 
-				campaign_name: ['驱逐简单战役', '驱逐困难战役', '巡洋简单战役', '巡洋困难战役', '战列简单战役',
-                                '战列困难战役', '航母简单战役', '航母困难战役', '潜艇简单战役', '潜艇困难战役'],
 				campaign_name_value: 0,
 				campaign_sl: "",
-				campaign_night: false,
-				campaign_repair: 0
 
+
+
+			},
+			computed: {
+				fleet: function() {
+					return ["", "一队", "二队", "三队", "四队"][this.config_fleet_value]
+				},
+				repair: function() {
+					return ["中破快修", "大破快修", "中破停止", "大破停止"][this.config_repair_value]
+				},
+				map: function() {
+					return ['驱逐简单战役', '驱逐困难战役', '巡洋简单战役', '巡洋困难战役', '战列简单战役',
+                                '战列困难战役', '航母简单战役', '航母困难战役', '潜艇简单战役', '潜艇困难战役'][this.config_type_value]
+				},
+				format: function() {
+					return ["", "单纵", "复纵", "轮型", "梯形", "单横"][this.config_format]
+				}
 
 			},
 			methods: {
@@ -128,11 +162,12 @@
 					});
 				},
 				onRepairClick: function() {
+					var config_repair = ["中破快修", "大破快修", "中破停止", "大破停止"];
 					var picker = new mui.PopPicker();
 					var l = [];
-					for (var d in app.config_repair) {
-						if (app.config_repair.hasOwnProperty(d)) {
-							l.push({value: d, text: app.config_repair[d]});
+					for (var d in config_repair) {
+						if (config_repair.hasOwnProperty(d)) {
+							l.push({value: d, text: config_repair[d]});
 						}
 					}
 					picker.setData(l);
@@ -142,10 +177,11 @@
 				},
 
 				onFleetClick: function() {
+					var config_fleet = ["", "一队", "二队", "三队", "四队"];
 					var picker = new mui.PopPicker();
 					var l = [];
 					for (var i=1; i<=4; i++) {
-						l.push({value: i, text: app.config_fleet[i]});
+						l.push({value: i, text: config_fleet[i]});
 					}
 					picker.setData(l);
 					picker.show(function(e) {
@@ -154,34 +190,29 @@
 				},
 
 				onCampaignMapClick: function() {
+					var campaign_name = ['驱逐简单战役', '驱逐困难战役', '巡洋简单战役', '巡洋困难战役', '战列简单战役',
+					            '战列困难战役', '航母简单战役', '航母困难战役', '潜艇简单战役', '潜艇困难战役'];
 					var picker = new mui.PopPicker();
 					var l = [];
-					for (var d in app.campaign_name) {
-						if (app.campaign_name.hasOwnProperty(d)) {
-							l.push({value: d, text: app.campaign_name[d]});
+					for (var d in campaign_name) {
+						if (campaign_name.hasOwnProperty(d)) {
+							l.push({value: d, text: campaign_name[d]});
 						}
 					}
 					picker.setData(l);
 					picker.show(function(e) {
-						app.campaign_name_value = e[0]["value"];
+						campaign_name_value = e[0]["value"];
 					});
 				},
 
-				onCampaignRepairClick: function() {
+				onFormatClick: function() {
 					var picker = new mui.PopPicker();
-					var l = [];
-					for (var d in app.config_repair) {
-						if (app.config_repair.hasOwnProperty(d)) {
-							l.push({value: d, text: app.config_repair[d]});
-						}
-					}
+					var l = [{value: 1, text: "单纵"}, {value: 2, text: "复纵"}, {value: 3, text: "轮型"}, {value: 4, text: "梯形"}, {value: 5, text: "单横"}];
 					picker.setData(l);
 					picker.show(function(e) {
-						app.campaign_repair = e[0]["value"];
+						campaign_name_value = e[0]["value"];
 					});
 				},
-
-
 				onSubmit: function() {
 					var obj = {};
 					if (app.config_type_value == 1) {
@@ -195,10 +226,22 @@
 						obj.num = 0;
 						obj.num_max = Number.parseInt(app.config_num);
 						obj.locked = "-1";
-						obj.battle_data = {
+						obj.battleData = {
 							repair : app.config_repair_value,
 							fleet : app.config_fleet_value
 						};
+					} else if(app.config_type_value == 3) {
+						obj.type = "pvp";
+						obj.num = 0;
+						obj.num_max = 5;
+						obj.locked = "-1";
+						obj.pvpData = {
+							format: app.config_format,
+							repair : app.config_repair_value,
+							fleet : app.config_fleet_value,
+							night: document.getElementById("pvp_night").classList.contains("mui-active")
+						};
+
 					} else {
 						mui.alert("这个功能还没有开发!", "404");
 						return;

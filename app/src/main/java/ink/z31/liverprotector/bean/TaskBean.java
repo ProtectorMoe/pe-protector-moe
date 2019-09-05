@@ -21,7 +21,15 @@ public class TaskBean {
         public int repair;
         public int fleet;
     }
-    public BattleData battle_data;
+    public BattleData battleData;
+
+    public static class PvpData {
+        public int format;
+        public int fleet;
+        public boolean night;
+        public int repair;
+    }
+    public PvpData pvpData;
 
 
 }

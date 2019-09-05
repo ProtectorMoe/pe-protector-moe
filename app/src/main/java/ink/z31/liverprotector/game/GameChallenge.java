@@ -45,8 +45,8 @@ public class GameChallenge extends GameBattle {
         head = "pve";
         this.taskBean = taskBean;
         this.configName = taskBean.name;
-        this.fleet = String.valueOf(taskBean.battle_data.fleet);
-        this.repair = taskBean.battle_data.repair;
+        this.fleet = String.valueOf(taskBean.battleData.fleet);
+        this.repair = taskBean.battleData.repair;
         // 读取配置名称
         List<MapConfigBean> list = LitePal
                 .limit(1)

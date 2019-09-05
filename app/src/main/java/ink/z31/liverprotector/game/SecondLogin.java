@@ -34,7 +34,7 @@ public class SecondLogin {
             //设备随机数
             Random random = new Random(Integer.valueOf(Config.userId).longValue());
             StringBuilder udid = new StringBuilder();
-            for (int i=0;i<15;i++) {
+            for (int i=0; i<15; i++) {
                 udid.append(random.nextInt(10));
             }
             userPhoneData.put("udid", udid.toString());
@@ -52,12 +52,9 @@ public class SecondLogin {
             // 初始化点数信息
             userData.pveNodeGet(netSender.pveGetPveData());
             String pveData = netSender.peventGetPveData();
-            if (pveData.length() > 10) {
+            if (pveData != null && pveData.length() > 10 && pveData.contains("{")) {
                 userData.peventNodeGet(pveData);
             }
-
-
-            //  测试
             callBack.onFinish();
         }catch (HmException e){
             Log.e(TAG, e.getMessage());
