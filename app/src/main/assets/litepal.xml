@@ -3,11 +3,11 @@
     <dbname value="init" />
     <version value="2" />
     <list>
-        <mapping class="ink.z31.liverprotector.bean.common.ShipCard"/>
-        <mapping class="ink.z31.liverprotector.bean.common.ShipCardWu"/>
-        <mapping class="ink.z31.liverprotector.bean.common.ShipEquipmnt"/>
-        <mapping class="ink.z31.liverprotector.bean.common.Database"/>
+        <mapping class="moe.protector.pe.bean.common.ShipCard"/>
+        <mapping class="moe.protector.pe.bean.common.ShipCardWu"/>
+        <mapping class="moe.protector.pe.bean.common.ShipEquipmnt"/>
+        <mapping class="moe.protector.pe.bean.common.Database"/>
 
-        <mapping class="ink.z31.liverprotector.sqlite.MapConfigBean"/>
+        <mapping class="moe.protector.pe.sqlite.MapConfigBean"/>
     </list>
 </litepal>

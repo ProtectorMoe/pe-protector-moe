@@ -3,10 +3,10 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "ink.z31.liverprotector"
+        applicationId "moe.protector.pe"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 2
+        versionCode 3
         versionName "0.26"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

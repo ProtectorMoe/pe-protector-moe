@@ -174,8 +174,8 @@
 
 
 
--keep class !ink.z31.liverprotector.** {*;}
+-keep class !moe.protector.pe.** {*;}
 -dontwarn **
 
--keep class ink.z31.liverprotector.bean.** { *; }
--keep class ink.z31.liverprotector.sqlite.** { *; }
+-keep class moe.protector.pe.bean.** { *; }
+-keep class moe.protector.pe.sqlite.** { *; }
