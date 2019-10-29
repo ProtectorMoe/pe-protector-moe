@@ -1,0 +1,33 @@
+-- Merging decision tree log ---
+manifest
+ADDED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml:1:1-9:12
+INJECTED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml:1:1-9:12
+INJECTED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml:1:1-9:12
+INJECTED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml:1:1-9:12
+INJECTED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml:1:1-9:12
+INJECTED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml:1:1-9:12
+INJECTED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml:1:1-9:12
+	package
+		ADDED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml:2:1-31
+		INJECTED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml
+		INJECTED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml
+	android:versionName
+		ADDED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml:4:1-26
+		INJECTED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml
+		INJECTED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml:1:11-69
+	android:versionCode
+		ADDED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml:3:1-24
+		INJECTED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml
+		INJECTED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml
+application
+ADDED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml:7:1-16
+uses-sdk
+INJECTED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml
+INJECTED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml
+		ADDED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml
+		INJECTED from J:\Android-Class\LiverProtector\sweet-alert-dialog\src\main\AndroidManifest.xml
