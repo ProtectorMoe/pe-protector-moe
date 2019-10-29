@@ -30,17 +30,18 @@ public class NetSender {
 
 
     public CheckVersionBean checkVersion() {
-        String url = "https://raw.githubusercontent.com/bcxmzbcxm/update/master/pe-protector-moe/data/version.json";
+        String url = "http://update.protector.moe/pe/version.json";
         Requests requests = new Requests.Builder()
                 .url(url)
                 .get()
                 .build()
                 .execute();
+        Log.d(TAG, requests.text);
         return JSON.parseObject(requests.text, CheckVersionBean.class);
     }
 
     public HashMap<String, PathConfigBean> getPath() {
-        String url = "https://raw.githubusercontent.com/bcxmzbcxm/update/master/pe-protector-moe/data/path.json";
+        String url = "http://update.protector.moe/pe/path.json";
         Requests requests = new Requests.Builder()
                 .url(url)
                 .get()

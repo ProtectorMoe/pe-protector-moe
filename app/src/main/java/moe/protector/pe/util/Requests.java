@@ -180,7 +180,7 @@ public class Requests {
             return this;
         }catch (IOException e){
             Log.e(TAG, e.getMessage());
-            this.text = "error";
+            this.text = e.getMessage();
             return this;
         }
     }

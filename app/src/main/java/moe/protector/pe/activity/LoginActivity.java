@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -154,14 +155,21 @@ public class  LoginActivity extends AppCompatActivity {
             @Override
             public void onUpgrade(String newVersion, String newData) {
                 Looper.prepare();
-                new SweetAlertDialog(LoginActivity.this, SweetAlertDialog.NORMAL_TYPE)
+                new SweetAlertDialog(LoginActivity.this, SweetAlertDialog.WARNING_TYPE)
                         .setTitleText("发现新版本")
                         .setContentText(String.format("新版本:%s\n更新日志:\n%s", newVersion, newData))
-                        .setConfirmText("确定")
+                        .setConfirmText("去下载")
+                        .setCancelText("下次再说")
+                        .setCancelClickListener(SweetAlertDialog::cancel)
                         .setConfirmClickListener((sweetAlertDialog) -> {
+                            Uri uri = Uri.parse("https://github.com/ProtectorMoe/pe-protector-moe/releases");
+                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                            startActivity(intent);
+                            sweetAlertDialog.cancel();
                             setResult(RESULT_CANCELED);
                             finish();
                         })
+
                         .show();
                 Looper.loop();
 
@@ -174,10 +182,7 @@ public class  LoginActivity extends AppCompatActivity {
                         .setTitleText("错误")
                         .setContentText("连接更新服务器失败")
                         .setConfirmText("退出")
-                        .setConfirmClickListener((sweetAlertDialog) -> {
-                            setResult(RESULT_CANCELED);
-                            finish();
-                        })
+                        .setConfirmClickListener(SweetAlertDialog::cancel)
                         .show();
                 Looper.loop();
             }
@@ -191,7 +196,7 @@ public class  LoginActivity extends AppCompatActivity {
                 int versionCode = info.versionCode;
                 CheckVersionBean bean = NetSender.getInstance().checkVersion();
                 if (bean.versionCode > versionCode) {
-                    callBack.onUpgrade(bean.versionName, bean.history.get(bean.versionName));
+                    callBack.onUpgrade(bean.versionName, bean.history.get(String.valueOf(bean.versionCode)));
                 } else {
                     callBack.onFinish();
                 }
