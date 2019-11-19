@@ -53,7 +53,7 @@ public class GameConstant {
     public void parseJson(String json, ResProgressCallBack callBack) {
         // 读取json文件
         Log.i(TAG, "[登录] 开始解析Json文件");
-        callBack.onChange("解析Res文件...");
+        callBack.onChange("解析游戏基础数据...");
         InitDataBean initDataBean = JSON.parseObject(json, InitDataBean.class);
         Log.i(TAG, "[登录] 解析Json文件完成, 写入数据库");
         float len = initDataBean.shipCardWu.size() + initDataBean.shipEquipmnt.size() + initDataBean.shipCard.size();
@@ -67,7 +67,7 @@ public class GameConstant {
             int p = Math.round(count / len * 100);
             if (progress != p) {
                 progress = p;
-                callBack.onChange("更新Res数据:" + p + "%");
+                callBack.onChange("更新数据库:" + p + "%");
             }
         }
         for (ShipCard shipCard: initDataBean.shipCard){
@@ -76,7 +76,7 @@ public class GameConstant {
             int p = Math.round(count / len * 100);
             if (progress != p) {
                 progress = p;
-                callBack.onChange("更新Res数据:" + p + "%");
+                callBack.onChange("更新数据库:" + p + "%");
             }
         }
         for (ShipEquipmnt e: initDataBean.shipEquipmnt){
@@ -85,7 +85,7 @@ public class GameConstant {
             int p = Math.round(count / len * 100);
             if (progress != p) {
                 progress = p;
-                callBack.onChange("更新Res数据:" + p + "%");
+                callBack.onChange("更新数据库:" + p + "%");
             }
         }
         SharedPreferences.Editor editor = App.getContext().getSharedPreferences("init", Context.MODE_PRIVATE).edit();

@@ -130,16 +130,7 @@ public class  LoginActivity extends AppCompatActivity {
         // 设置按钮事件
         Button actionButton = findViewById(R.id.bt_login);
         actionButton.setOnClickListener((v -> {
-            if (checkVersion) {
-                firstLogin();
-            } else {
-                new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
-                        .setTitleText("错误")
-                        .setContentText("初始化中, 请稍候")
-                        .setConfirmText("确定")
-                        .show();
-            }
-
+            firstLogin();
         }));
         // 设置服务器
         NiceSpinner sp_server = findViewById(R.id.sp_server);
@@ -181,7 +172,7 @@ public class  LoginActivity extends AppCompatActivity {
                 new SweetAlertDialog(LoginActivity.this, SweetAlertDialog.ERROR_TYPE)
                         .setTitleText("错误")
                         .setContentText("连接更新服务器失败")
-                        .setConfirmText("退出")
+                        .setConfirmText("确定")
                         .setConfirmClickListener(SweetAlertDialog::cancel)
                         .show();
                 Looper.loop();

@@ -139,15 +139,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 case 0:
                     return HeaderDesign.fromColorResAndUrl(
                             R.color.blue,
-                            "https://acg.toubiec.cn/random?size=mw690&r=" + Config.RAND[0]);
+                            Config.SETU[0]);
                 case 1:
                     return HeaderDesign.fromColorResAndUrl(
                             R.color.green,
-                            "https://acg.toubiec.cn/random?size=mw690&r=" + Config.RAND[1]);
+                            Config.SETU[1]);
                 case 2:
                     return HeaderDesign.fromColorResAndUrl(
                             R.color.cyan,
-                            "https://acg.toubiec.cn/random?size=mw690&r=" + Config.RAND[2]);
+                            Config.SETU[2]);
 //                case 3:
 //                    return HeaderDesign.fromColorResAndUrl(
 //                            R.color.red,

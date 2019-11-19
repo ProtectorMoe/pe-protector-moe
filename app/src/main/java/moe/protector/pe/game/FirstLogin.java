@@ -226,7 +226,7 @@ public class FirstLogin  {
             if(Long.valueOf(Config.resVersion) > dataVersion){
                 // 开始下载资料
                 Log.i(TAG, "[登录] 数据过期, 加载新数据...");
-                callBack.onChange("加载新Res数据....");
+                callBack.onChange("下载游戏基础数据....");
                 initData = netSender.getInitData();
                 gameConstant.parseJson(initData, callBack);
             }
