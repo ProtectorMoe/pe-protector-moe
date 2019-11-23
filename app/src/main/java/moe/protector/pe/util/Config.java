@@ -18,6 +18,6 @@ public class Config {
 
     public static boolean isFirstLogin = true;
     public static boolean isRepairFleet = false;
-    public static final double [] RAND = {Math.random(), Math.random(), Math.random(), Math.random()};
     public static final StringBuilder errMsg = new StringBuilder();
+    public static String [] SETU = {Img.getRandomSetu(), Img.getRandomSetu(), Img.getRandomSetu()};
 }

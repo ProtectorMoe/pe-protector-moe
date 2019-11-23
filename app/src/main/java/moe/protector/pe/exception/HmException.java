@@ -28,6 +28,9 @@ public class HmException extends Exception {
 
     public static void errorFind(String name, String data) throws HmException {
         try {
+            if (!data.contains("eid")) {
+                return;
+            }
             Eid eid = JSON.parseObject(data, Eid.class);
             if (eid.eid != null && Integer.valueOf(eid.eid) != 0){
                 throw new HmException(eid.eid);
