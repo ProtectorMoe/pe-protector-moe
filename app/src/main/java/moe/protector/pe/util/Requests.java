@@ -165,17 +165,17 @@ public class Requests {
             // 执行
             Request request = requestBuilder.build();
             Response okResponse = okHttpClient.newCall(request).execute();
-            // 取出流
+            // 取出网络流
             InputStream io = okResponse.body().byteStream();
             // 获取byte
             this.content = Encode.ioToByteArray(io);
             // 获取字符串
-            if (this.isZlibDecompress){
+            if (this.isZlibDecompress){  // zlib解压
                 this.text = new String(Encode.zlib_decompress(this.content));
-            } else if (this.isGZipDecompress){
+            } else if (this.isGZipDecompress){  //gzip解压
                 this.text = Encode.gzipUncompress(this.content);
             } else {
-                this.text = new String(this.content);
+                this.text = new String(this.content);  // 直接获取字符串
             }
             return this;
         }catch (IOException e){

@@ -9,7 +9,7 @@ public class PveNode {
     public String flag;
     public List<Integer> nextNode;
     public String nodeType;
-    public String pveLevelId;
+    public List<Integer> buff;
 
     public HashMap<String, Integer> gain;
     public HashMap<String, Integer> loss;

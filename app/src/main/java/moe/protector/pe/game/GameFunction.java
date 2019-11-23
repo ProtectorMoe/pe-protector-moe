@@ -336,6 +336,7 @@ public class GameFunction {
     }
 
 
+
     private void reLogin(final ReloginCallBack callBack) {
         FirstLogin firstLogin = FirstLogin.getInstance();
         SecondLogin secondLogin = SecondLogin.getInstance();

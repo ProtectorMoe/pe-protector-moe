@@ -111,6 +111,10 @@
 						<label>迂回失败最多</label>
 						<input type="number" v-model="skip_fail_max" class="mui-input-numbox" placeholder="超过这个数就SL">
 					</div>
+					<div class="mui-input-row">
+						<label>战况选择</label>
+						<input type="text" @click="onBuffSelect" v-model="buff" class="mui-input-numbox" readonly>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -155,15 +159,18 @@
 				map_index: "",
 				map_src: "",
 				map_nodes: [],
-				user_point: {},
+				user_point: {}, 
 				skip_fail_max: 2,
+				config_buff: 0,
+				
+				
 
 				// 添加点绑定
 				deal_list: ['SL', '换单纵', '换复纵', '换轮型', '换梯形', '换单横'],
 				format_list: ['', '单纵', '复纵', '轮型', '梯形', '单横'],
 				em_list: ["", "航母", "轻母", "装母", "战列", "航战", "战巡", "重巡", "航巡", "雷巡",
 				        "轻巡", "重炮", "驱逐", "潜母", "潜艇", "炮潜", "补给", "导驱", "防驱"],
-
+				buff_list: {'0': "无战况", '20000': '机密情报:E 火力+15,命中-10', '20001': '机密情报:E 命中+15,装甲-10', '20002': '机密情报:E 装甲,回避+10,火力-10', '20003': '机密情报:E U国舰船火力+15,装甲-10', '20004': '机密情报:E U国舰船火力+15,装甲-10', '20005': '特殊情报:G 全队航速+3,回避-5', '20006': '特殊情报:G 全队索敌+5,火力-5', '20007': '特殊情报:G 全队回避+10,装甲-10', '20008': '特殊情报:G 全队对空+10,命中-5', '20009': '特殊情报:G 全队装甲+10,索敌-5', '20010': '改装计划:L 战列火力+10,航母火力-10', '20011': '改装计划:L 航母火力+10,驱逐回避-10', '20012': '改装计划:L 驱逐回避+10,驱逐对空+10', '20013': '改装计划:L 轻巡和重巡火力+10,命中+10', '20014': '改装计划:L 潜艇鱼雷+10.航母,战列火力-5', '20015': '封锁条件 战列,战巡的火力-40,装甲-40。战斗S胜以下无法前进。（削弱条件：G,H点各击破一次并取得S胜及以上的战斗评级）', '20016': '封锁条件(削弱) 战列,战巡的火力-10,装甲-10。战斗B胜以下无法前进。', '20017': '小心翼翼 火力-10,命中-10,闪避+15,装甲+15', '20018': '稳步前进 航速-5,火力+5,命中+5', '20019': '火力万岁 火力+15,闪避-15,装甲-15,对空-15', '20020': '瞄准 命中+20,闪避-10,装甲-10', '20021': '搜索阵型 闪避+20,命中-15,火力-10'},
 				add_format: 1,
 				add_point: "",
 				add_sl: []
@@ -234,6 +241,23 @@
 						mui.alert(drop_result,'结果','确认',function (e) {
 						},'div');
 					});
+				},
+				// 显示战况选择时的弹窗
+				onBuffSelect: function() {
+					var picker = new mui.PopPicker();
+					var data = [];
+					for (var i in app.buff_list) {
+						if (app.buff_list.hasOwnProperty(i)) {
+							data.push({
+								value: i,
+								text: app.buff_list[i]
+							})
+						}
+					}
+					picker.setData(data);
+					picker.show(function(select){
+						app.config_buff = select[0]['value']
+					})
 				},
 				// 添加点点击时弹出dialog
 				onAddPointClick: function() {
@@ -340,13 +364,14 @@
 					app.add_sl = JSON.parse(JSON.stringify(detail.detail));
 					Avgrund.show("#point-popup");
 				},
+				
 				onSubmit: function() {
 					mui.prompt('请输入配置名称', app.config_name,'提交',['取消','确认'],function (e) {
 					    if (e["index"] === 1) {
-							// TODO 回调
 							var obj = {};
 							obj.map = app.map_index;
 							obj.skipMax = app.skip_fail_max;
+							obj.buff = app.config_buff;
 							obj.detail = app.user_point;
 
 							var len = 0;
@@ -385,8 +410,13 @@
 					return num<=6? (" ≥ " + num + " "): (" < " + String(num-6) + " ");
 				}
 
+			},
+			computed: {
+				buff: function() {
+					return app.buff_list[app.config_buff];
+				}
 			}
-        });
+		});
 		app.onMapChanged("101");
 
 		var onLoad = function(name, str) {

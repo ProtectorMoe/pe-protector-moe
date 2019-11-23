@@ -619,6 +619,32 @@ public class NetSender {
         }
     }
 
+    /**
+     * 选择战况
+     * @return 返回值
+     * @throws HmException 服务器错误
+     */
+    public String selectBuff(String buff) throws HmException {
+        try {
+            String url = Config.host + String.format(Locale.CHINA, "pve/selectBuff/%s", buff) + this.getUrlEnd();
+            Requests requests = new Requests.Builder()
+                    .url(url)
+                    .get()
+                    .zlib()
+                    .build()
+                    .execute();
+            String data = requests.text;
+            HmException.errorFind("newNext", data);
+            return data;
+        }catch (HmException e){
+            Log.e(TAG,"battle/newNext:" + e.toString());
+            throw e;
+        }
+    }
+
+
+
+
     public String battleSpy(String head) throws HmException {
         try {
             String url = Config.host + String.format(Locale.CHINA, "%s/spy/", head) + this.getUrlEnd();

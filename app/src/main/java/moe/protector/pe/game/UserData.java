@@ -18,6 +18,7 @@ import moe.protector.pe.bean.UserDataBean;
 import moe.protector.pe.bean.common.EquipmentVo;
 import moe.protector.pe.bean.common.FleetVo;
 import moe.protector.pe.bean.common.PackageVo;
+import moe.protector.pe.bean.common.PveBuff;
 import moe.protector.pe.bean.common.PveExploreVo;
 import moe.protector.pe.bean.common.PveLevel;
 import moe.protector.pe.bean.common.PveNode;
@@ -140,6 +141,7 @@ public class UserData {
     // ----------------- 点数数据 -----------------
     private HashMap<String, PveNode> pveData = new HashMap<>();
     private HashMap<String, PveLevel> pveLevel = new HashMap<>();
+    private HashMap<String, PveBuff> pveBuff = new HashMap<>();
 
     /**
      * 获取最新的点数信息
@@ -153,6 +155,9 @@ public class UserData {
         }
         for (PveLevel level : pveDataBean.pveLevel) {
             this.pveLevel.put(level.id, level);
+        }
+        for (PveBuff buff : pveDataBean.pveBuff) {
+            this.pveBuff.put(buff.id, buff);
         }
     }
 
@@ -180,6 +185,9 @@ public class UserData {
     }
     public PveLevel getLevel(String id) {
         return pveLevel.get(id);
+    }
+    public PveBuff getBuff(String id) {
+        return pveBuff.get(id);
     }
 
 

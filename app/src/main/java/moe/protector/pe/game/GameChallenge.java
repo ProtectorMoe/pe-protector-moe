@@ -130,6 +130,11 @@ public class GameChallenge extends GameBattle {
                 }
                 String nowFormat = nodeDetail.format;  // 初始化阵形数据
                 List<PathConfigBean.NodeDetail> flagDetails = nodeDetail.detail;  // 当前点的路径数据
+                // 选择战况
+                if (pveNode.buff.size() != 0) {
+                    netSender.selectBuff(configBean.buff);
+                    UIUpdate.detailLog(TAG, String.format("[出征] 选择战况 %s", userData.getBuff(configBean.buff)));
+                }
                 // 1:普通点, 2:BOSS点, 3:资源点 4:待机点, 5:收费站
                 if (nodeType == 1 || nodeType == 2) {
                     // --------------开始索敌-------------
@@ -319,8 +324,7 @@ public class GameChallenge extends GameBattle {
 
     /**
      * 检测修理
-     * @throws HmException
-     * @throws ChallengeException
+     * @throws ChallengeException, HmException
      */
     private void checkRepair(List<Integer> ships)throws HmException, ChallengeException {
         int present;
@@ -329,7 +333,7 @@ public class GameChallenge extends GameBattle {
                 present = 50;
                 break;
             case 1:
-                present = 75;
+                present = 25;
                 break;
             default:
                 present = 0;

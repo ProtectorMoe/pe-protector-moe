@@ -6,6 +6,7 @@ import java.util.List;
 public class PathConfigBean {
     public String map;
     public int skipMax;
+    public String buff;
     public HashMap<String, Detail> detail;
 
     public static class Detail{
