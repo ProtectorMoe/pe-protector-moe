@@ -37,16 +37,13 @@ import moe.protector.pe.game.SecondLogin;
 import moe.protector.pe.interfaces.CheckVersionCallBack;
 import moe.protector.pe.interfaces.FirstLoginCallBack;
 import moe.protector.pe.interfaces.SecondLoginCallBack;
-import moe.protector.pe.util.App;
 import moe.protector.pe.util.Config;
 
 public class  LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
-    private App app;
     public static final int REQUEST_CODE = 1;
     private SweetAlertDialog loginAlertDialog;
     private int serverIndex;
-    private boolean checkVersion = false;
 
 
     private static final int LOGIN_SHOW_DIALOG = 0;
@@ -93,9 +90,7 @@ public class  LoginActivity extends AppCompatActivity {
                         secondLogin();
                     }
                 });
-                dialog.setNegativeButton("取消", (dialog1, which) -> {
-                    loginAlertDialog.cancel();
-                });
+                dialog.setNegativeButton("取消", (dialog1, which) -> loginAlertDialog.cancel());
                 dialog.show();
                 break;
             case LOGIN_RES:
@@ -109,7 +104,6 @@ public class  LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        app = (App) getApplication();
         // 初始化界面
         loginAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         loginAlertDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
@@ -129,9 +123,7 @@ public class  LoginActivity extends AppCompatActivity {
 
         // 设置按钮事件
         Button actionButton = findViewById(R.id.bt_login);
-        actionButton.setOnClickListener((v -> {
-            firstLogin();
-        }));
+        actionButton.setOnClickListener((v -> firstLogin()));
         // 设置服务器
         NiceSpinner sp_server = findViewById(R.id.sp_server);
         sp_server.attachDataSource(Arrays.asList("安卓", "IOS", "台服", "国际"));
@@ -140,7 +132,6 @@ public class  LoginActivity extends AppCompatActivity {
         final CheckVersionCallBack callBack = new CheckVersionCallBack() {
             @Override
             public void onFinish() {
-                checkVersion = true;
             }
 
             @Override

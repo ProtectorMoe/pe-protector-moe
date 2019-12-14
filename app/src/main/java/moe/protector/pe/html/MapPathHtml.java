@@ -15,36 +15,33 @@ import moe.protector.pe.sqlite.MapConfigBean;
 public class MapPathHtml {
     private HttpFinishCallBack callBack;
     private static final String TAG = "MapPathHtml";
-    public MapPathHtml(String name, WebView webview, HttpFinishCallBack callBack){
-        String config = null;
-        if (name != null && !name.equals("")) {
-            List<MapConfigBean> list = LitePal
-                    .limit(1)
-                    .where("name=?", name)
-                    .find(MapConfigBean.class);
-            if (list.size() > 0) {
-                config = list.get(0).data;
-                Log.i(TAG, "[JavaScript]" + config);
-            }
-        }
-        final String f = config;
+    public MapPathHtml(String name, String config, WebView webview, HttpFinishCallBack callBack){
         this.callBack = callBack;
         webview.loadUrl("file:///android_asset/html/map.html");
         webview.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                if (f != null) {
-                    String code = String.format("javascript:onLoad(\'%s\', \'%s\')", name, f);
-                    Log.i(TAG, "[JavaScript] 执行脚本" + code);
-                    view.loadUrl(code);
+                String f = "";
+                if (!name.equals("")) {
+                    List<MapConfigBean> list = LitePal
+                            .limit(1)
+                            .where("name=?", name)
+                            .find(MapConfigBean.class);
+                    if (list.size() > 0) {
+                        f = list.get(0).data;
+                    }
                 }
+                if (!config.equals("")) {
+                    f = config;
+                }
+                String code = String.format("javascript:onLoad(\'%s\', \'%s\')", name, f);
+                Log.i(TAG, "[JavaScript] 执行脚本" + code);
+                view.loadUrl(code);
             }
         });
-
-
-
     }
+
 
     @JavascriptInterface
     public void onFinish(String name, String obj) {
@@ -68,8 +65,4 @@ public class MapPathHtml {
         callBack.onCancel(null);
     }
 
-    @JavascriptInterface
-    public void onJump() {
-
-    }
 }

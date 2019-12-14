@@ -12,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 
+
 public class Encode {
     /**
      * io转byte类型
@@ -72,8 +73,7 @@ public class Encode {
      * @return String类型的结果
      */
     public static String base64_encode(String text) {
-        String result = Base64.encodeToString(text.getBytes(), Base64.DEFAULT);
-        return result;
+        return Base64.encodeToString(text.getBytes(), Base64.DEFAULT).replaceAll("[\\s*\t\n\r]", "");
     }
 
     /**

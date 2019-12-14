@@ -420,7 +420,7 @@
 		app.onMapChanged("101");
 
 		var onLoad = function(name, str) {
-			if (name && str) {
+			if (name !== undefined && str !== undefined) {
 				app.config_name = name;
 				var obj = JSON.parse(str);
 				app.onMapChanged(obj.map);

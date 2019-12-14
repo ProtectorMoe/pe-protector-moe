@@ -39,7 +39,8 @@ public class HtmlActivity extends AppCompatActivity {
             case HTML_MAP:
                 // 用于添加配置
                 String name = intent.getStringExtra("name");
-                webview.addJavascriptInterface(new MapPathHtml(name, webview, new HttpFinishCallBack() {
+                String config = intent.getStringExtra("config");
+                webview.addJavascriptInterface(new MapPathHtml(name, config, webview, new HttpFinishCallBack() {
                     @Override
                     public void onFinish(Bundle bundle) {
                         setResult(RESULT_OK);
@@ -71,7 +72,7 @@ public class HtmlActivity extends AppCompatActivity {
                 break;
             case HTML_TASK_MANAGER:
                 // 用于管理任务
-                webview.addJavascriptInterface(new TaskManagerHtml(webview, new HttpFinishCallBack() {
+                webview.addJavascriptInterface(new TaskManagerHtml(this, webview, new HttpFinishCallBack() {
                     @Override
                     public void onFinish(Bundle bundle) {
                         setResult(RESULT_OK);

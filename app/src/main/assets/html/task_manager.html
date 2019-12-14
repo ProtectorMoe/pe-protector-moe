@@ -21,7 +21,8 @@
 	<div class="mui-content">
 		<div class="mui-input-group">
 			<div class="mui-button-row">
-				<button class="mui-btn mui-icon mui-btn-blue" @click="onAddPath()">添加</button>
+				<button class="mui-btn mui-icon mui-btn-success" @click="onAddPath()">新建</button>
+				<button class="mui-btn mui-icon mui-btn-blue" @click="onInputPath()">导入</button>
 				<button class="mui-btn mui-icon" @click="onDownload()">下载</button>
 				<button class="mui-btn mui-icon" @click="onRefresh()">刷新</button>
 			</div>
@@ -29,6 +30,7 @@
 		<div class="mui-table-view">
 			<li class="mui-table-view-cell" v-for="item in task_list">
 				<div class="mui-slider-right mui-disabled">
+					<a class="mui-btn mui-btn-success mui-icon mui-icon-paperplane" @click="onPathOutput(item)"></a>
 					<a class="mui-btn mui-btn-blue mui-icon mui-icon-gear" @click="onPathEdit(item)"></a>
 					<a class="mui-btn mui-btn-red mui-icon mui-icon-trash" @click="onPathDel(item)"></a>
 				</div>
@@ -37,62 +39,91 @@
 				</div>
 			</li>
 		</div>
+		
+		<p style="text-align: center; margin-top: 15px"> 👈左滑项目可导出编译与删除👈</p>
 	</div>
 </div>
 
 <script>
-			var app = new Vue({
-				el: "#app",
-				data: {
-					task_list: ["测试1", "测试2", "测试3"]
-				},
-				methods: {
-					onPathDel: function(task_name) {
+	var app = new Vue({
+		el: "#app",
+		data: {
+			task_list: ["测试1", "测试2", "测试3"]
+		},
+		methods: {
+			onPathDel: function(task_name) {
+				mui.confirm('确认删除任务?','删除任务',['取消','确认'],function (e) {
+					if (e.index == 1) {
 						console.log("用户请求删除任务:" + task_name);
 						var path_list = window.android && window.android.onPathDel(task_name);
 						if (path_list) {
 							app.task_list = JSON.parse(path_list);
 						}
-					},
-					onPathEdit: function(task_name) {
-						console.log("用户请求编辑任务:" + task_name);
-						window.android  && window.android.onPathEdit(task_name);
-					},
-					onAddPath: function() {
-						console.log("用户请求添加配置");
-						window.android && window.android.onAddPath();
-					},
-					onCancel: function() {
-						onCancel();
-					},
-					onRefresh: function() {
-						var path_list = window.android && window.android.onRefresh();
-						if (path_list) {
-							app.task_list = JSON.parse(path_list).sort();
-						}
-					},
-					onDownload: function() {
-						onDownload();
 					}
-				},
-			});
+				},'div')
+			},
+			onPathEdit: function(task_name) {
+				console.log("用户请求编辑任务:" + task_name);
+				window.android  && window.android.onPathEdit(task_name);
+			},
+			onAddPath: function() {
+				console.log("用户请求添加配置");
+				window.android && window.android.onAddPath();
+			},
+			onCancel: function() {
+				onCancel();
+			},
+			onRefresh: function() {
+				var path_list = window.android && window.android.onRefresh();
+				if (path_list) {
+					app.task_list = JSON.parse(path_list).sort();
+				}
+			},
+			onDownload: function() {
+				onDownload();
+			},
+			onPathOutput: function(item) {
+				onPathOutput(item);
+			},
+			onInputPath: function() {
+				mui.prompt('请输入配置字符串','','导入配置',['取消','确认'],function (e) {
+					if (e.index == 1) {
+						window.android && window.android.onInputPath(e.value)
+					}
+				},'div')
+			}
+		},
+	});
 
-			var onLoad = function(str) {  // 初始化任务列表
-				app.task_list = JSON.parse(str).sort();
-			};
+	var onLoad = function(str) {  // 初始化任务列表
+		app.task_list = JSON.parse(str).sort();
+	};
 
-			var onCancel = function() {
-				console.log("用户取消操作");
-				window.android && window.android.onCancel();
-			};
+	var onCancel = function() {
+		console.log("用户取消操作");
+		window.android && window.android.onCancel();
+	};
 
-			var onDownload = function() {
-				mui.alert("下载中, 请返回后再查看", "提示", function(e) {
-					window.android && window.android.onDownload();
-					window.android && window.android.onCancel();
-				});
-			};
-		</script>
+	var onDownload = function() {
+		mui.alert("下载中, 请返回后再查看", "提示", function(e) {
+			window.android && window.android.onDownload();
+			window.android && window.android.onCancel();
+		});
+	};
+	
+	
+	var onPathOutput = function(item) {
+		mui.confirm('将配置导出至剪贴板?','导出配置',['取消','确认'],function (e) {
+			if (e.index == 1) {
+				mui.toast('操作成功!')
+				window.android && window.android.onPathOutput(item);
+			} else {
+				mui.toast('操作取消')
+			}
+		},'div')
+	}
+	
+</script>
 
 
 </body>
