@@ -12,6 +12,5 @@
 /captures
 .externalNativeBuild
 
-/app/src/main/assets/html/images/*
 /app/release/
 /sweet-alert-dialog
