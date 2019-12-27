@@ -25,6 +25,4 @@ public class GetResultBean {
         public int hp;
         public int isMvp;
     }
-
-
 }

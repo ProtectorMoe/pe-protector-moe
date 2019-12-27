@@ -89,10 +89,6 @@
 					<input @click="onFormatClick" type="text" v-model="format" placeholder="请选择阵形" readonly>
 				</div>
 				<div class="mui-input-row">
-					<label>修理方式</label>
-					<input @click="onRepairClick" type="text" v-model="repair" placeholder="请输入执行次数" readonly>
-				</div>
-				<div class="mui-input-row">
 					<label>夜战</label>
 					<div id="pvp_night" class="mui-switch">
 						<div class="mui-switch-handle"></div>
@@ -124,8 +120,9 @@
 
 				config_repair_value: 0,
 				config_fleet_value: 1,
-
-				campaign_name_value: 0,
+				
+				campaign_map_name: {'101': '驱逐简单战役', '102': '驱逐困难战役', '201': '巡洋简单战役', '202': '巡洋困难战役', '301': '战列简单战役', '302': '战列困难战役', '401': '航母简单战役', '402': '航母困难战役', '501': '潜艇简单战役', '502': '潜艇困难战役'},
+				campaign_name_value: '101',
 				campaign_sl: "",
 
 
@@ -139,8 +136,7 @@
 					return ["中破快修", "大破快修", "中破停止", "大破停止"][this.config_repair_value]
 				},
 				map: function() {
-					return ['驱逐简单战役', '驱逐困难战役', '巡洋简单战役', '巡洋困难战役', '战列简单战役',
-                                '战列困难战役', '航母简单战役', '航母困难战役', '潜艇简单战役', '潜艇困难战役'][this.config_type_value]
+					return this.campaign_map_name[this.campaign_name_value];
 				},
 				format: function() {
 					return ["", "单纵", "复纵", "轮型", "梯形", "单横"][this.config_format]
@@ -190,18 +186,16 @@
 				},
 
 				onCampaignMapClick: function() {
-					var campaign_name = ['驱逐简单战役', '驱逐困难战役', '巡洋简单战役', '巡洋困难战役', '战列简单战役',
-					            '战列困难战役', '航母简单战役', '航母困难战役', '潜艇简单战役', '潜艇困难战役'];
 					var picker = new mui.PopPicker();
 					var l = [];
-					for (var d in campaign_name) {
-						if (campaign_name.hasOwnProperty(d)) {
-							l.push({value: d, text: campaign_name[d]});
+					for (var d in app.campaign_map_name) {
+						if (app.campaign_map_name.hasOwnProperty(d)) {
+							l.push({value: d, text: app.campaign_map_name[d]});
 						}
 					}
 					picker.setData(l);
 					picker.show(function(e) {
-						campaign_name_value = e[0]["value"];
+						app.campaign_name_value = e[0]["value"];
 					});
 				},
 
@@ -210,7 +204,7 @@
 					var l = [{value: 1, text: "单纵"}, {value: 2, text: "复纵"}, {value: 3, text: "轮型"}, {value: 4, text: "梯形"}, {value: 5, text: "单横"}];
 					picker.setData(l);
 					picker.show(function(e) {
-						campaign_name_value = e[0]["value"];
+						app.config_format = e[0]["value"];
 					});
 				},
 				onSubmit: function() {
@@ -231,9 +225,10 @@
 							fleet : app.config_fleet_value
 						};
 					} else if(app.config_type_value == 3) {
+						obj.name = "演习";
 						obj.type = "pvp";
 						obj.num = 0;
-						obj.num_max = 5;
+						obj.num_max = 1;
 						obj.locked = "-1";
 						obj.pvpData = {
 							format: app.config_format,
@@ -242,10 +237,21 @@
 							night: document.getElementById("pvp_night").classList.contains("mui-active")
 						};
 
-					} else {
-						mui.alert("这个功能还没有开发!", "404");
-						return;
+					} else if (app.config_type_value == 2) {
+						obj.name = app.campaign_map_name[app.campaign_name_value];
+						obj.type = "campaign";
+						obj.num = 0;
+						obj.num_max = app.campaign_sl || 1;
+						obj.locked = "-1";
+						obj.campaignData = {
+							campaignMap: app.campaign_name_value,
+							format: app.config_format,
+							repair : app.config_repair_value,
+							sl: app.campaign_sl,
+							night: document.getElementById("pvp_night").classList.contains("mui-active")
+						};
 					}
+					
 					onFinish(obj);
 				},
 				onCancel: function() {

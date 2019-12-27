@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -33,6 +34,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Date;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import de.hdodenhof.circleimageview.CircleImageView;
 import moe.protector.pe.activity.FragmentActivity;
 import moe.protector.pe.activity.HtmlActivity;
@@ -177,6 +179,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Intent intent = new Intent(MainActivity.this, FragmentActivity.class);
                     intent.putExtra("type", ERROR_FRAGMENT);
                     startActivity(intent);
+                    break;
+                case R.id.nav_cloud:
+                    new SweetAlertDialog(this, SweetAlertDialog.CUSTOM_IMAGE_TYPE)
+                            .setCustomImage(R.drawable.cloud)
+                            .setTitleText("云服务")
+                            .setContentText("云服务是运行在服务器上的'护萌宝', 您可以在不打开软件的情况下进行24小时远征等操作, 保护手机, 且价格极其低廉, 是否去看看?")
+                            .setConfirmText("去看看")
+                            .setCancelText("算了")
+                            .setCancelClickListener(SweetAlertDialog::cancel)
+                            .setConfirmClickListener((sweetAlertDialog) -> {
+                                Uri uri = Uri.parse("http://cloud.protector.moe");
+                                Intent intent1 = new Intent(Intent.ACTION_VIEW, uri);
+                                startActivity(intent1);
+                                sweetAlertDialog.cancel();
+                                setResult(RESULT_CANCELED);
+                                finish();
+                            })
+
+                            .show();
                     break;
             }
 

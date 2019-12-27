@@ -27,9 +27,18 @@ public class TaskBean {
         public int format;
         public int fleet;
         public boolean night;
-        public int repair;
     }
     public PvpData pvpData;
+
+    public static class CampaignData {
+        public String campaignMap;
+        public int format;
+        public int repair;
+        public boolean night;
+        public String sl;
+    }
+
+    public CampaignData campaignData;
 
 
 }

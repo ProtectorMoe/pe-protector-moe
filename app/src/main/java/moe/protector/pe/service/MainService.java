@@ -20,9 +20,11 @@ import moe.protector.pe.bean.TaskBean;
 import moe.protector.pe.exception.HmException;
 import moe.protector.pe.exception.OperateException;
 import moe.protector.pe.game.Counter;
+import moe.protector.pe.game.GameCampaign;
 import moe.protector.pe.game.GameChallenge;
 import moe.protector.pe.game.GameConstant;
 import moe.protector.pe.game.GameFunction;
+import moe.protector.pe.game.GamePvp;
 import moe.protector.pe.game.TaskManager;
 import moe.protector.pe.game.UIUpdate;
 import moe.protector.pe.game.UserData;
@@ -124,6 +126,7 @@ public class MainService extends Service {
 
     private void mainThread() throws HmException, OperateException {
         Counter counter = Counter.getInstance();
+        new EventBusUtil(EventBusUtil.EVENT_RES_CHANGE).post();
         while (true) {
             // 开始检测任务
             TaskBean taskBean = taskManager.getAvailableTask();
@@ -151,11 +154,48 @@ public class MainService extends Service {
                             taskBean.finish();
                             break;
                         case ERROR:
-                            UIUpdate.detailLog("[错误] 出现错误, 开始");
+                            UIUpdate.detailLog("[错误] 出现错误, 尝试重新登录");
                             if (!gameFunction.reLogin()) return;
                             break;
                     }
                     TaskManager.getInstance().writeFile();
+                } else if(taskBean.type.equals("pvp")) {
+                    // 演习任务
+                    GamePvp gamePvp = new GamePvp(taskBean);
+                    GamePvp.Finish finish = gamePvp.execute();
+                    switch (finish) {
+                        case ERROR:
+                            UIUpdate.detailLog("[错误] 出现错误, 尝试重新登录");
+                            if (!gameFunction.reLogin()) return;
+                            break;
+                        case FINISH:
+                            taskBean.num += 1;
+                            taskManager.writeFile();
+                            new EventBusUtil(EventBusUtil.EVENT_TASK_CHANGE).post();
+                            break;
+                    }
+                } else if(taskBean.type.equals("campaign")) {
+                    GameCampaign gameCampaign = new GameCampaign(taskBean);
+                    GameCampaign.Finish finish = gameCampaign.execute();
+                    switch (finish) {
+                        case FINISH:
+                            taskBean.finish();
+                            break;
+                        case SL:
+                            taskBean.num += 1;
+                            taskManager.writeFile();
+                            new EventBusUtil(EventBusUtil.EVENT_TASK_CHANGE).post();
+                            break;
+                        case REPAIR:
+                            UIUpdate.log("[错误] 无法修理船只, 停止任务");
+                            taskBean.finish();
+                            break;
+                        case ERROR:
+                            UIUpdate.detailLog("[错误] 出现错误, 尝试重新登录");
+                            if (!gameFunction.reLogin()) return;
+                            break;
+                    }
+
                 }
             } else {
                 new EventBusUtil(EventBusUtil.EVENT_NOW_TASK_CHANGE, "空闲模式").post();

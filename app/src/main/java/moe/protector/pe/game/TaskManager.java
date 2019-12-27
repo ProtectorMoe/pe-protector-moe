@@ -102,6 +102,7 @@ public class TaskManager {
             if (bean.num >= bean.num_max) {
                 iterator.remove();
                 UIUpdate.log("[任务] 完成任务:" + bean.name);
+                writeFile();
                 continue;
             }
             // 合条件, 返回任务

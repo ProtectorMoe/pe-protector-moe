@@ -4,7 +4,11 @@ import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 
+import moe.protector.pe.bean.CampaignGetFleet;
+import moe.protector.pe.bean.CampaignGetUserData;
+import moe.protector.pe.bean.CampaignReport;
 import moe.protector.pe.bean.DealtoBean;
+import moe.protector.pe.bean.GetChallengeListBean;
 import moe.protector.pe.bean.GetResultBean;
 import moe.protector.pe.bean.NewNextBean;
 import moe.protector.pe.bean.SkipWarBean;
@@ -13,14 +17,14 @@ import moe.protector.pe.exception.HmException;
 
 public abstract class GameBattle {
     private static final String TAG = "GameBattle";
-    private NetSender netSender = NetSender.getInstance();
+    protected NetSender netSender = NetSender.getInstance();
 
     protected String head = "pve";
 
     // 各个程序的子功能
     protected void challengeStart(String map, String fleet) throws HmException {
         try {
-            netSender.battleChallenge(head, map, fleet);
+            netSender.battleChallenge(map, fleet);
         } catch (HmException e) {
             Log.e(TAG, "出征开始错误:" + e.toString());
             throw e;
@@ -48,7 +52,6 @@ public abstract class GameBattle {
             Log.e(TAG, "出征索敌错误:" + e.toString());
             throw e;
         }
-
     }
 
     protected SkipWarBean challengeSkipWar() throws HmException {
@@ -72,7 +75,7 @@ public abstract class GameBattle {
         }
     }
 
-    protected GetResultBean challengeGetWarResult(boolean isNightFight) throws HmException{
+    protected GetResultBean challengeGetWarResult(String head, boolean isNightFight) throws HmException{
         try {
             String data = netSender.battleGetWarResult(head, isNightFight);
             return JSON.parseObject(data, GetResultBean.class);
@@ -90,8 +93,85 @@ public abstract class GameBattle {
         netSender.campaignGetUserData();
     }
 
+    protected GetChallengeListBean getChallengeList() throws HmException {
+        try {
+            String data = netSender.getChallengeList();
+            return JSON.parseObject(data, GetChallengeListBean.class);
+        } catch (HmException e) {
+            Log.e(TAG, "获取演习列表失败:" + e.toString());
+            throw e;
+        }
+    }
 
+    protected SpyBean pvpSpy(String head, String uid, int fleet) throws HmException {
+        try {
+            String data = netSender.pvpSpy(head, uid, fleet);
+            return JSON.parseObject(data, SpyBean.class);
+        } catch (HmException e) {
+            Log.e(TAG, "获取演习列表失败:" + e.toString());
+            throw e;
+        }
+    }
 
+    protected DealtoBean pvpChallenge(String head, String uid, int fleet, int format) throws HmException {
+        try {
+            String data = netSender.pvpChallenge(head, uid, fleet, format);
+            return JSON.parseObject(data, DealtoBean.class);
+        } catch (HmException e) {
+            Log.e(TAG, "获取演习列表失败:" + e.toString());
+            throw e;
+        }
+    }
+
+    protected CampaignGetUserData campaignGetUserData() throws HmException{
+        try {
+            String data = netSender.campaignGetUserData();
+            return JSON.parseObject(data, CampaignGetUserData.class);
+        } catch (HmException e) {
+            Log.e(TAG, "获取战役列表失败:" + e.toString());
+            throw e;
+        }
+    }
+
+    protected CampaignGetFleet campaignGetFleet(String map) throws HmException{
+        try {
+            String data = netSender.campaignGetFleet(map);
+            return JSON.parseObject(data, CampaignGetFleet.class);
+        } catch (HmException e) {
+            Log.e(TAG, "获取战役舰队失败:" + e.toString());
+            throw e;
+        }
+    }
+
+    protected SpyBean campaignSpy(String map) throws HmException{
+        try {
+            String data = netSender.campaignSpy(map);
+            return JSON.parseObject(data, SpyBean.class);
+        } catch (HmException e) {
+            Log.e(TAG, "获取战役舰队失败:" + e.toString());
+            throw e;
+        }
+    }
+
+    protected DealtoBean campaignChallenge(String map, int format) throws HmException{
+        try {
+            String data = netSender.campaignChallenge(map, format);
+            return JSON.parseObject(data, DealtoBean.class);
+        } catch (HmException e) {
+            Log.e(TAG, "战役出征错误:" + e.toString());
+            throw e;
+        }
+    }
+
+    protected CampaignReport campaignGetWarResult(boolean isNightFight) throws HmException{
+        try {
+            String data = netSender.battleGetWarResult("campaign", isNightFight);
+            return JSON.parseObject(data, CampaignReport.class);
+        } catch (HmException e) {
+            Log.e(TAG, "战役夜战错误::" + e.toString());
+            throw e;
+        }
+    }
 
 }
 

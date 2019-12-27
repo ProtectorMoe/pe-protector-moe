@@ -39,7 +39,7 @@ import moe.protector.pe.interfaces.FirstLoginCallBack;
 import moe.protector.pe.interfaces.SecondLoginCallBack;
 import moe.protector.pe.util.Config;
 
-public class  LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     public static final int REQUEST_CODE = 1;
     private SweetAlertDialog loginAlertDialog;

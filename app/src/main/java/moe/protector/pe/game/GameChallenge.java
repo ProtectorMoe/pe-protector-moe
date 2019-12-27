@@ -33,24 +33,21 @@ public class GameChallenge extends GameBattle {
     private NetSender netSender = NetSender.getInstance();
     private GameConstant gameConstant = GameConstant.getInstance();
 
-    private String configName;
     private String fleet;
     private int repair;
     private PathConfigBean configBean;
-    private TaskBean taskBean;
     private String map;
 
     public GameChallenge(TaskBean taskBean) throws OperateException{
         // 初始化数据
         head = "pve";
-        this.taskBean = taskBean;
-        this.configName = taskBean.name;
+        String configName = taskBean.name;
         this.fleet = String.valueOf(taskBean.battleData.fleet);
         this.repair = taskBean.battleData.repair;
         // 读取配置名称
         List<MapConfigBean> list = LitePal
                 .limit(1)
-                .where("name=?", this.configName)
+                .where("name=?", configName)
                 .find(MapConfigBean.class);
         if (list.size() != 0) {
             String config = list.get(0).data;
@@ -197,7 +194,7 @@ public class GameChallenge extends GameBattle {
                 if (nodeType == 1 || nodeType == 2) {
                     // 正常点需要延迟
                     counter.battleNumAdd();
-                    int randomInt = CommonUtil.randomInt(15, 25);
+                    int randomInt = CommonUtil.randomInt(10, 15);
                     UIUpdate.detailLog(TAG, "[出征] 开始战斗, 等待" + randomInt + "s");
                     CommonUtil.delay(randomInt*1000);
                 } else if (nodeType == 3 || nodeType == 5) {
@@ -233,7 +230,7 @@ public class GameChallenge extends GameBattle {
                 // -------------进行夜战结算-----------
                 UIUpdate.detailLog(TAG, "[出征] 准备进行夜战或结算");
                 CommonUtil.delay(2000);
-                GetResultBean resultBean = challengeGetWarResult(nodeDetail.night && dealtoBean.warReport.canDoNightWar == 1);  // 判断是否进行夜战
+                GetResultBean resultBean = challengeGetWarResult(head,nodeDetail.night && dealtoBean.warReport.canDoNightWar == 1);  // 判断是否进行夜战
                 if (nodeDetail.night && dealtoBean.warReport.canDoNightWar == 1) {
                     int randomInt = CommonUtil.randomInt(10, 20);
                     UIUpdate.detailLog(TAG, "[出征] 夜战中, 等待" + randomInt + "s");
@@ -258,14 +255,13 @@ public class GameChallenge extends GameBattle {
                         userData.allShipAdd(shipVO);
                         if (!userData.isUnlock(shipVO.shipCid)) {
                             // 出新船
-                            UIUpdate.log(String.format("[重要] 出新船 %s 锁船", gameConstant.getShipName(shipVO.shipCid)));
+                            UIUpdate.log(String.format("[重要] 出新船 <%s> 锁船", gameConstant.getShipName(shipVO.shipCid)));
                             CommonUtil.delay(2000);
                             netSender.boatLock(shipVO.id);
                         }
                     }
                 }
-                String log = String.format("[出征] %s点%s 评价:%s MVP:%s 出:%s", mapName, nowFlag, resultLevel, mvp, newShipName);
-                UIUpdate.log(TAG, log);
+                UIUpdate.log(TAG, String.format("[出征] %s点%s 评价:%s MVP:%s 出:<%s>", mapName, nowFlag, resultLevel, mvp, newShipName));
                 CommonUtil.delay(1000);
                 // 战利品测试
                 if (resultBean.dropSpoils != null && resultBean.dropSpoils.equals("1")) {

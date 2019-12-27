@@ -568,19 +568,13 @@ public class NetSender {
 
     /**
      * 开始战斗
-     * @param head 战斗请求头部
      * @param map 地图
      * @param fleet 队伍
      * @throws HmException 服务器错误信息
      */
-    public void battleChallenge(String head, String map, String fleet) throws HmException {
+    public void battleChallenge(String map, String fleet) throws HmException {
         try {
-            String url;
-            if (head.equals("pve")){
-                url = Config.host + String.format(Locale.CHINA, "%s/cha11enge/%s/%s/0/", head, map, fleet) + this.getUrlEnd();
-            } else {
-                url = Config.host + String.format(Locale.CHINA, "%s/challenge/%s/%s/0/", head, map, fleet) + this.getUrlEnd();
-            }
+            String url = Config.host + String.format(Locale.CHINA, "pve/cha11enge/%s/%s/0/", map, fleet) + this.getUrlEnd();;
             Requests requests = new Requests.Builder()
                     .url(url)
                     .get()
@@ -717,7 +711,7 @@ public class NetSender {
         }
     }
 
-    public void setFleet(int fleet) throws HmException  {
+    public void setFleet(int fleet) throws HmException {
         try {
             String url = Config.host + String.format(Locale.CHINA, "pevent/setFleet/%d/", fleet) + this.getUrlEnd();
             Requests requests = new Requests.Builder()
@@ -733,6 +727,153 @@ public class NetSender {
             throw e;
         }
     }
+
+    public String getChallengeList() throws HmException {
+        try {
+            String url = Config.host + "pvp/getChallengeList/" + this.getUrlEnd();
+            Requests requests = new Requests.Builder()
+                    .url(url)
+                    .get()
+                    .zlib()
+                    .build()
+                    .execute();
+            String data = requests.text;
+            HmException.errorFind("pvp/getChallengeList/", data);
+            return data;
+        }catch (HmException e){
+            Log.e(TAG,"pvp/getChallengeList/:" + e.toString());
+            throw e;
+        }
+    }
+
+    public String friendGetlist() throws HmException {
+        try {
+            String url = Config.host + "friend/getlist/" + this.getUrlEnd();
+            Requests requests = new Requests.Builder()
+                    .url(url)
+                    .get()
+                    .zlib()
+                    .build()
+                    .execute();
+            String data = requests.text;
+            HmException.errorFind("pvp/getChallengeList/", data);
+            return data;
+        }catch (HmException e){
+            Log.e(TAG,"pvp/getChallengeList/:" + e.toString());
+            throw e;
+        }
+    }
+
+    public String friendVisitorFriend(String uid) throws HmException {
+        try {
+            String url = Config.host + String.format("friend/visitorFriend/%s/", uid) + this.getUrlEnd();
+            Requests requests = new Requests.Builder()
+                    .url(url)
+                    .get()
+                    .zlib()
+                    .build()
+                    .execute();
+            String data = requests.text;
+            HmException.errorFind("friend/visitorFriend/", data);
+            return data;
+        }catch (HmException e){
+            Log.e(TAG,"friend/visitorFriend:" + e.toString());
+            throw e;
+        }
+    }
+
+    public String pvpSpy(String head, String uid, int fleet) throws HmException {
+        try {
+            String url = Config.host + String.format(Locale.CHINA, "%s/spy/%s/%d/", head, uid, fleet) + this.getUrlEnd();
+            Requests requests = new Requests.Builder()
+                    .url(url)
+                    .get()
+                    .zlib()
+                    .build()
+                    .execute();
+            String data = requests.text;
+            HmException.errorFind("spy", data);
+            return data;
+        }catch (HmException e){
+            Log.e(TAG,"battle/spy:" + e.toString());
+            throw e;
+        }
+    }
+
+    public String pvpChallenge(String head, String uid, int fleet, int format) throws HmException {
+        try {
+            String url = Config.host + String.format(Locale.CHINA, "%s/challenge/%s/%d/%d/", head, uid, fleet, format) + this.getUrlEnd();;
+            Requests requests = new Requests.Builder()
+                    .url(url)
+                    .get()
+                    .zlib()
+                    .build()
+                    .execute();
+            String data = requests.text;
+            HmException.errorFind("pvpChallenge", data);
+            return data;
+        }catch (HmException e){
+            Log.e(TAG,head + "/Challenge出错:" + e.toString());
+            throw e;
+        }
+    }
+
+
+    public String campaignGetFleet(String map) throws HmException {
+        try {
+            String url = Config.host + String.format(Locale.CHINA, "campaign/getFleet/%s/", map) + this.getUrlEnd();;
+            Requests requests = new Requests.Builder()
+                    .url(url)
+                    .get()
+                    .zlib()
+                    .build()
+                    .execute();
+            String data = requests.text;
+            HmException.errorFind("campaignGetFleet", data);
+            return data;
+        }catch (HmException e){
+            Log.e(TAG,"campaignGetFleet出错:" + e.toString());
+            throw e;
+        }
+    }
+
+    public String campaignSpy(String map) throws HmException {
+        try {
+            String url = Config.host + String.format(Locale.CHINA, "campaign/spy/%s/", map) + this.getUrlEnd();;
+            Requests requests = new Requests.Builder()
+                    .url(url)
+                    .get()
+                    .zlib()
+                    .build()
+                    .execute();
+            String data = requests.text;
+            HmException.errorFind("campaign/spy", data);
+            return data;
+        }catch (HmException e){
+            Log.e(TAG,"campaign/spy出错:" + e.toString());
+            throw e;
+        }
+    }
+
+    public String campaignChallenge(String map, int format) throws HmException {
+        try {
+            String url = Config.host + String.format(Locale.CHINA, "campaign/challenge/%s/%d/", map, format) + this.getUrlEnd();;
+            Requests requests = new Requests.Builder()
+                    .url(url)
+                    .get()
+                    .zlib()
+                    .build()
+                    .execute();
+            String data = requests.text;
+            HmException.errorFind("campaign/challenge", data);
+            return data;
+        }catch (HmException e){
+            Log.e(TAG,"campaign/challenge出错:" + e.toString());
+            throw e;
+        }
+    }
+
+
 
 
     private String getUrlEnd(){

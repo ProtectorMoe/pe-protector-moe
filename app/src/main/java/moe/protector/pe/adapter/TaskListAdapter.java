@@ -18,12 +18,25 @@ public class TaskListAdapter extends BaseItemDraggableAdapter<TaskBean, BaseView
     @Override
     protected void convert(BaseViewHolder helper, TaskBean item) {
         // 显示控件
-        helper.setText(R.id.task_item_name, item.name);
-        helper.setText(R.id.task_item_num, item.num + "/" + item.num_max);
+
+
+        UserData userData = UserData.getInstance();
         if (item.type.equals("battle")) {
-            UserData userData = UserData.getInstance();
+            // 战役显示
+            helper.setText(R.id.task_item_name, item.name);
+            helper.setText(R.id.task_item_num, item.num + "/" + item.num_max);
             FleetVo fleetVo = userData.fleet.get(String.valueOf(item.battleData.fleet));
             helper.setText(R.id.task_item_fleet, fleetVo != null ? fleetVo.title : "未知舰队");
+        } else if (item.type.equals("pvp")) {
+            //演习显示
+            helper.setText(R.id.task_item_name, "演习");
+            helper.setText(R.id.task_item_num, "0/1");
+            FleetVo fleetVo = userData.fleet.get(String.valueOf(item.pvpData.fleet));
+            helper.setText(R.id.task_item_fleet, fleetVo != null ? fleetVo.title : "未知舰队");
+        } else if(item.type.equals("campaign")) {
+            helper.setText(R.id.task_item_name, item.name);
+            helper.setText(R.id.task_item_num, item.num + "/" + item.num_max);
+            helper.setText(R.id.task_item_fleet, "战役舰队");
         }
         // 绑定点击事件
         helper.addOnClickListener(R.id.task_item_setting);
