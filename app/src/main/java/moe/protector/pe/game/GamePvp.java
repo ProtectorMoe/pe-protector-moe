@@ -67,7 +67,7 @@ public class GamePvp extends GameBattle {
                 head = user.type;
                 // 演习索敌
                 SpyBean spyBean = this.pvpSpy(head, user.uid, this.fleet);  // 获取索敌数据
-                UIUpdate.detailLog(TAG, "[演习] 索敌:" + user.username + "-" + user.fleetName + "-" + (spyBean.enemyVO.isFound == 0? "成功": "失败"));
+                UIUpdate.detailLog(TAG, "[演习] " + (user.type.equals("pvp")? "对手": "好友") + ": " + user.username + "-" + user.fleetName);
                 CommonUtil.delay(2000);
                 // 开始战斗
                 DealtoBean dealtoBean = this.pvpChallenge(head, user.uid, this.fleet, this.format);

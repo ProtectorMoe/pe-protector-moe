@@ -105,8 +105,8 @@ public class LogFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onResChange(EventBusUtil util) {
-        Log.d(TAG, "[日志] 更新Res数据");
-        if (util == null || util.getCode() == EventBusUtil.EVENT_RES_CHANGE) {
+        if (util != null && util.getCode() == EventBusUtil.EVENT_RES_CHANGE) {
+            Log.d(TAG, "[日志] 更新Res数据");
             View view = getView();
             UserData userData = UserData.getInstance();
             Counter counter = Counter.getInstance();

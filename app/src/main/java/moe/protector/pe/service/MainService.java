@@ -126,13 +126,13 @@ public class MainService extends Service {
 
     private void mainThread() throws HmException, OperateException {
         Counter counter = Counter.getInstance();
-        new EventBusUtil(EventBusUtil.EVENT_RES_CHANGE).post();
+        new EventBusUtil(TAG + ".onStartCommand", EventBusUtil.EVENT_RES_CHANGE).post();
         while (true) {
             // 开始检测任务
             TaskBean taskBean = taskManager.getAvailableTask();
             if (taskBean != null) {
                 // 有任务, 进行调用
-                new EventBusUtil(EventBusUtil.EVENT_NOW_TASK_CHANGE, String.format(Locale.CHINA,"%s   %d/%d", taskBean.name, taskBean.num, taskBean.num_max)).post();
+                new EventBusUtil(TAG + "mainThread", EventBusUtil.EVENT_NOW_TASK_CHANGE, String.format(Locale.CHINA,"%s   %d/%d", taskBean.name, taskBean.num, taskBean.num_max)).post();
                 if (taskBean.type.equals("battle")) {
                     // 出征任务
                     GameChallenge challenge = new GameChallenge(taskBean);
@@ -143,7 +143,7 @@ public class MainService extends Service {
                             counter.finishNumAdd();
                             taskBean.num ++;
                             taskManager.writeFile();
-                            new EventBusUtil(EventBusUtil.EVENT_TASK_CHANGE).post();
+                            new EventBusUtil(TAG + "mainThread", EventBusUtil.EVENT_TASK_CHANGE).post();
                             break;
                         case DISMANTLE:
                             UIUpdate.log("[错误] 船舱已满, 无法进行出征");
@@ -171,7 +171,7 @@ public class MainService extends Service {
                         case FINISH:
                             taskBean.num += 1;
                             taskManager.writeFile();
-                            new EventBusUtil(EventBusUtil.EVENT_TASK_CHANGE).post();
+                            new EventBusUtil(TAG + "mainThread", EventBusUtil.EVENT_TASK_CHANGE).post();
                             break;
                     }
                 } else if(taskBean.type.equals("campaign")) {
@@ -184,7 +184,7 @@ public class MainService extends Service {
                         case SL:
                             taskBean.num += 1;
                             taskManager.writeFile();
-                            new EventBusUtil(EventBusUtil.EVENT_TASK_CHANGE).post();
+                            new EventBusUtil(TAG + "mainThread", EventBusUtil.EVENT_TASK_CHANGE).post();
                             break;
                         case REPAIR:
                             UIUpdate.log("[错误] 无法修理船只, 停止任务");
@@ -198,7 +198,7 @@ public class MainService extends Service {
 
                 }
             } else {
-                new EventBusUtil(EventBusUtil.EVENT_NOW_TASK_CHANGE, "空闲模式").post();
+                new EventBusUtil(TAG + "mainThread", EventBusUtil.EVENT_NOW_TASK_CHANGE, "空闲模式").post();
             }
             gameFunction.checkExplore();
             CommonUtil.delay(2000);

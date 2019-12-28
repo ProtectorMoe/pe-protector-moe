@@ -3,6 +3,7 @@ package moe.protector.pe.game;
 import moe.protector.pe.util.EventBusUtil;
 
 public class Counter {
+    private static final String TAG = "Counter";
     private Counter () {}
     private static Counter mCounter;
     public static Counter getInstance() {
@@ -61,19 +62,19 @@ public class Counter {
 
     public void battleNumAdd() {
         battleNum++;
-        new EventBusUtil(EventBusUtil.EVENT_RES_CHANGE).post();
+        new EventBusUtil(TAG, EventBusUtil.EVENT_RES_CHANGE).post();
     }
     public void slNumAdd() {
         slNum++;
-        new EventBusUtil(EventBusUtil.EVENT_RES_CHANGE).post();
+        new EventBusUtil(TAG, EventBusUtil.EVENT_RES_CHANGE).post();
     }
     public void nodeNumAdd() {
         nodeNum++;
-        new EventBusUtil(EventBusUtil.EVENT_RES_CHANGE).post();
+        new EventBusUtil(TAG, EventBusUtil.EVENT_RES_CHANGE).post();
     }
     public void finishNumAdd() {
         finishNum++;
-        new EventBusUtil(EventBusUtil.EVENT_RES_CHANGE).post();
+        new EventBusUtil(TAG, EventBusUtil.EVENT_RES_CHANGE).post();
     }
 
 

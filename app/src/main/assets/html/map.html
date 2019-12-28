@@ -421,10 +421,12 @@
 
 		var onLoad = function(name, str) {
 			if (name !== undefined && str !== undefined) {
-				app.config_name = name;
-				var obj = JSON.parse(str);
-				app.onMapChanged(obj.map);
-				app.user_point = obj.detail;
+				app.config_name = name || "";
+				if (str !== "") {
+					var obj = JSON.parse(str);
+					app.onMapChanged(obj.map);
+					app.user_point = obj.detail;
+				}
 				console.log("加载数据:" + JSON.stringify(app.user_point));
 			}
 		};

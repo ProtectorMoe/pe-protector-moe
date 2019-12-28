@@ -37,7 +37,7 @@ public class GameCampaign extends GameBattle {
                 CommonUtil.delay(2000);
                 String map = campaignData.campaignMap;
                 CampaignGetUserData campaignGetUserData = this.campaignGetUserData();
-                UIUpdate.log("[战役] 剩余战役次数:" + campaignGetUserData.passInfo.remainNum);
+                UIUpdate.detailLog("[战役] 剩余战役次数:" + campaignGetUserData.passInfo.remainNum);
                 if (!campaignGetUserData.canCampaignChallengeLevel.contains(map)) {
                     return Finish.ERROR;
                 }
@@ -49,7 +49,7 @@ public class GameCampaign extends GameBattle {
                 // 战役补给
                 gameFunction.checkSupply(fleet);
                 CommonUtil.delay(1000);
-                UIUpdate.log("[战役] 进行补给");
+                UIUpdate.detailLog("[战役] 进行补给");
                 // 战役修理
                 if (!checkRepair(fleet, campaignData.repair)) {
                     return Finish.REPAIR;
@@ -57,12 +57,12 @@ public class GameCampaign extends GameBattle {
                 CommonUtil.delay(1000);
                 // 战役索敌
                 SpyBean spyBean = this.campaignSpy(map);
-                UIUpdate.log("[战役] 索敌" + (spyBean.enemyVO.isFound == 1? "成功": "失败"));
+                UIUpdate.detailLog("[战役] 索敌" + (spyBean.enemyVO.isFound == 1? "成功": "失败"));
                 // 战役战斗
                 DealtoBean dealtoBean = this.campaignChallenge(map, campaignData.format);
                 if (taskBean.num_max != 1) {
                     CommonUtil.delay(1000);
-                    UIUpdate.log("[战役] 执行SL");
+                    UIUpdate.log("[战役] 执行SL...完毕");
                     CommonUtil.delay(1000);
                     return Finish.SL;
 
@@ -87,7 +87,7 @@ public class GameCampaign extends GameBattle {
                 }
                 // 血量更新与判断
                 userData.allShipSetAllShipVO(resultBean.shipVO);
-                UIUpdate.detailLog(TAG, String.format("[战役] 战斗完成, 获得:<%s>", reward));
+                UIUpdate.log(TAG, String.format("[战役] 战斗完成, 获得:<%s>", reward));
                 CommonUtil.delay(5000);
             }
         } catch (HmException e) {

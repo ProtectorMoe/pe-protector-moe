@@ -91,7 +91,7 @@ public class TaskManager {
             // 完成的任务
             if (bean.isFinish()) {
                 iterator.remove();
-                new EventBusUtil(EventBusUtil.EVENT_TASK_CHANGE).post();
+                new EventBusUtil(TAG + ".getAvailableTask",EventBusUtil.EVENT_TASK_CHANGE).post();
                 continue;
             }
             // 解冻

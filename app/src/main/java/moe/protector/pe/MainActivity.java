@@ -112,8 +112,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         return "任务";
                     case 2:
                         return "日志";
-//                    case 3:
-//                        return "工具";
                 }
                 return null;
             }
@@ -238,17 +236,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (requestCode){
             case LoginActivity.REQUEST_CODE: // 登录界面的返回值
                 if (resultCode == RESULT_OK){
-                    new EventBusUtil(EVENT_LOGIN_FINISH, "登录完成").post();
-                    new EventBusUtil(EVENT_RES_CHANGE).post();
-                    new EventBusUtil(EVENT_FLEET_CHANGE).post();
-                    new EventBusUtil(EVENT_TASK_CHANGE).post();
+                    new EventBusUtil("MainActivity.onActivityResult", EVENT_LOGIN_FINISH, "登录完成").post();
+                    new EventBusUtil("MainActivity.onActivityResult", EVENT_RES_CHANGE).post();
+                    new EventBusUtil("MainActivity.onActivityResult", EVENT_FLEET_CHANGE).post();
+                    new EventBusUtil("MainActivity.onActivityResult", EVENT_TASK_CHANGE).post();
                 } else {
                     finish();
                 }
                 break;
             case HtmlActivity.REQUEST_CODE:  // h5界面返回值
                 if (resultCode == TASK_CHANGE) {  // 更新任务界面, 更新ui"));
-                    new EventBusUtil(EVENT_TASK_CHANGE, "任务发生更新, 更新ui").post();
+                    new EventBusUtil("MainActivity.onActivityResult", EVENT_TASK_CHANGE, "任务发生更新, 更新ui").post();
                 }
                 break;
 

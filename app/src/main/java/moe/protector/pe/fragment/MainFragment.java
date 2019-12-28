@@ -125,7 +125,7 @@ public class MainFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onResChange(EventBusUtil util) {
-        if (util != null && util.getCode() != EventBusUtil.EVENT_RES_CHANGE) return;
+        if (util == null || util.getCode() != EventBusUtil.EVENT_RES_CHANGE) return;
         try {
             View view = getView();
             if (view == null) return;

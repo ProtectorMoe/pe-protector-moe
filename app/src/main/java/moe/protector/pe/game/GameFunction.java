@@ -208,34 +208,13 @@ public class GameFunction {
 
     public void checkSupply(List<Integer> ships) throws HmException {
         try {
-            Log.i(TAG, "[出征] 检测船只补给情况...");
-            List<Integer> needSupply = new ArrayList<>();
-            // 寻找需要补给的船只
-            for (int ship : ships) {
-                UserShipVO userShipVO = userData.allShip.get(ship);
-                if (userShipVO != null) {
-                    if (userShipVO.battleProps.oil != userShipVO.battlePropsMax.oil) {
-                        needSupply.add(ship);
-                        continue;
-                    }
-                    if (userShipVO.battleProps.ammo != userShipVO.battlePropsMax.ammo) {
-                        needSupply.add(ship);
-                        continue;
-                    }
-                    if (userShipVO.battleProps.aluminium != userShipVO.battlePropsMax.aluminium) {
-                        needSupply.add(ship);
-                    }
-                }
-            }
-            // 整合需要补给的船只
-            if (needSupply.size() != 0) {
-                CommonUtil.delay(2000);
-                String supplyData = netSender.boatSupplyBoats(needSupply);
-                SupplyBean supplyBean = JSON.parseObject(supplyData, SupplyBean.class);
-                // 更新船只信息
-                userData.userVoUpdate(supplyBean.userVo);
-                userData.allShipSetAllShipVO(supplyBean.shipVO);
-            }
+            Log.i(TAG, "[出征] 船只补给...");
+            String supplyData = netSender.boatSupplyBoats(ships);
+            SupplyBean supplyBean = JSON.parseObject(supplyData, SupplyBean.class);
+            // 更新船只信息
+            userData.userVoUpdate(supplyBean.userVo);
+            userData.allShipSetAllShipVO(supplyBean.shipVO);
+            CommonUtil.delay(2000);
         } catch (Exception e) {
             Log.e(TAG, "检测补给出错:" + e.getMessage());
             throw new HmException(e);

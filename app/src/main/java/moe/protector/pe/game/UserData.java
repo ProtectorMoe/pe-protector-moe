@@ -102,7 +102,7 @@ public class UserData {
         userBaseData.userVo.oil = userVo.oil;
         userBaseData.userVo.aluminium = userVo.aluminium;
         userBaseData.userVo.steel = userVo.steel;
-        new EventBusUtil(EventBusUtil.EVENT_RES_CHANGE).post();
+        new EventBusUtil(TAG + "userVoUpdate", EventBusUtil.EVENT_RES_CHANGE).post();
     }
 
     public void userVoUpdate(UserResVo userVo) {
@@ -110,7 +110,7 @@ public class UserData {
         userBaseData.userVo.oil = userVo.oil;
         userBaseData.userVo.aluminium = userVo.aluminium;
         userBaseData.userVo.steel = userVo.steel;
-        new EventBusUtil(EventBusUtil.EVENT_RES_CHANGE).post();
+        new EventBusUtil(TAG + "userVoUpdate", EventBusUtil.EVENT_RES_CHANGE).post();
     }
 
     // ----------------- 装备信息 -----------------

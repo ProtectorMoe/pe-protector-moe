@@ -1,9 +1,10 @@
 package moe.protector.pe.util;
 
+import android.util.Log;
+
 import org.greenrobot.eventbus.EventBus;
 
 public class EventBusUtil {
-    private static final String TAG = "EventBusUtil";
     public static final int EVENT_TASK_CHANGE = 0;
     public static final int EVENT_LOG_ADD = 1;
     public static final int EVENT_LOGIN_FINISH = 2;
@@ -14,17 +15,21 @@ public class EventBusUtil {
 
     private int code;
     private String message;
-    public EventBusUtil(int code, String message) {
+    private String tag = "未指定";
+    public EventBusUtil(String TAG, int code, String message) {
         this.code = code;
         this.message = message;
+        this.tag = TAG;
     }
 
-    public EventBusUtil(int code) {
+    public EventBusUtil(String TAG, int code) {
         this.code = code;
         this.message = "未说明";
+        this.tag = TAG;
     }
 
     public void post() {
+        Log.d("EventBusUtil", "[EventBus]" + this.tag +this.code + this.message);
         EventBus.getDefault().post(this);
     }
 
@@ -35,4 +40,6 @@ public class EventBusUtil {
     public String getMessage() {
         return message;
     }
+
+    public String getTAG() {return this.tag;}
 }

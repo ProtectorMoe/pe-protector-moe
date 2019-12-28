@@ -15,6 +15,7 @@
 
 ### 下载
 下载地址请看[releases](https://github.com/ProtectorMoe/pe-protector-moe/releases)
+
 如果下载速度过慢请查看群文件
 
 
@@ -58,4 +59,4 @@
 以及群内众多大佬的协助, 和一直支持我的群友
 
 ### Licence
-本软件遵循GNU General Public License v3, 仅作为学习用途, 请勿商用@@@
+本软件遵循GNU General Public License v3, 仅作为学习用途, 请勿商用!
