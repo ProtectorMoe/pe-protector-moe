@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Statistic">
+    <option name="separateTabsFileTypes" value="java;xml;css;html;js;jsp;txt;php;php4;php5;phtml;inc;py" />
+    <option name="excludedDirectories">
+      <list>
+        <option value="$PROJECT_DIR$/.gradle" />
+        <option value="$PROJECT_DIR$/.idea" />
+        <option value="$PROJECT_DIR$/build" />
+        <option value="$PROJECT_DIR$/gradle" />
+        <option value="$PROJECT_DIR$/sweet-alert-dialog" />
+        <option value="$PROJECT_DIR$/app/release" />
+        <option value="$PROJECT_DIR$/app/libs" />
+        <option value="$PROJECT_DIR$/app/build" />
+        <option value="$PROJECT_DIR$/app/src/main/res" />
+        <option value="$PROJECT_DIR$/app/src/main/assets/html/css" />
+        <option value="$PROJECT_DIR$/app/src/main/assets/html/fonts" />
+        <option value="$PROJECT_DIR$/app/src/main/assets/html/images" />
+        <option value="$PROJECT_DIR$/app/src/main/assets/html/js" />
+      </list>
+    </option>
+  </component>
+</project>
