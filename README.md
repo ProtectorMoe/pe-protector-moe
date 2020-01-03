@@ -7,7 +7,7 @@
 
 本软件运行在android系统上的战舰少女R脱机辅助, 可以在不打开游戏的情况下进行自动挂机, 其结果完全等同于代练.
 
-玩家交流群: ![ldJdnH.png](https://s2.ax1x.com/2020/01/04/ldJdnH.png)
+玩家交流群: [![qun](http://pub.idqqimg.com/wpa/images/group.png)](http://shang.qq.com/wpa/qunwpa?idkey=9a510d7395883ed80ce052d37f257cc2dde8812dcd1b2639ba5d5b682b0896db)
 
 ### 结构
 本软件为Java + H5 混合编程, 其主要逻辑由Java(src/main/java/)完成, 添加任务界面等由Vue+Mui完成(src/main/assets/), 如果您想与我合作开发, 请在对应包内添加或修改代码, 谢谢. 
