@@ -1,9 +1,9 @@
-package moe.protector.pe.bean;
+package moe.protector.pe.bean.challenge;
 
 import java.util.List;
 
 import moe.protector.pe.bean.common.ShipVO;
-import moe.protector.pe.bean.common.UpdateTaskVo;
+import moe.protector.pe.bean.task.UpdateTaskVo;
 
 public class GetResultBean {
     public List<UpdateTaskVo> updateTaskVo;

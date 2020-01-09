@@ -1,6 +1,8 @@
-package moe.protector.pe.bean.common;
+package moe.protector.pe.bean.task;
 
 import java.util.List;
+
+import moe.protector.pe.bean.common.Condition;
 
 public class UpdateTaskVo {
     public String taskCid;

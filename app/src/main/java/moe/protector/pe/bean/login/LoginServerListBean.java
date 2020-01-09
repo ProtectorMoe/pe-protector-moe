@@ -1,4 +1,4 @@
-package moe.protector.pe.bean;
+package moe.protector.pe.bean.login;
 
 import java.util.List;
 

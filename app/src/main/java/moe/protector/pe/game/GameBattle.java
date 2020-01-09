@@ -4,15 +4,15 @@ import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 
-import moe.protector.pe.bean.CampaignGetFleet;
-import moe.protector.pe.bean.CampaignGetUserData;
-import moe.protector.pe.bean.CampaignReport;
-import moe.protector.pe.bean.DealtoBean;
-import moe.protector.pe.bean.GetChallengeListBean;
-import moe.protector.pe.bean.GetResultBean;
-import moe.protector.pe.bean.NewNextBean;
-import moe.protector.pe.bean.SkipWarBean;
-import moe.protector.pe.bean.SpyBean;
+import moe.protector.pe.bean.campaign.CampaignGetFleet;
+import moe.protector.pe.bean.campaign.CampaignGetUserData;
+import moe.protector.pe.bean.campaign.CampaignReport;
+import moe.protector.pe.bean.challenge.DealtoBean;
+import moe.protector.pe.bean.challenge.GetChallengeListBean;
+import moe.protector.pe.bean.challenge.GetResultBean;
+import moe.protector.pe.bean.challenge.NewNextBean;
+import moe.protector.pe.bean.challenge.SkipWarBean;
+import moe.protector.pe.bean.challenge.SpyBean;
 import moe.protector.pe.exception.HmException;
 
 public abstract class GameBattle {

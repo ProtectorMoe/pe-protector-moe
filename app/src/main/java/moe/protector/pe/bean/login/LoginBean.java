@@ -1,4 +1,4 @@
-package moe.protector.pe.bean;
+package moe.protector.pe.bean.login;
 
 public class LoginBean {
     public int error;

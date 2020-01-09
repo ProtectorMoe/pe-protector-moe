@@ -1,4 +1,4 @@
-package moe.protector.pe.bean;
+package moe.protector.pe.bean.task;
 
 public class TaskBean {
     public boolean isFinish() {

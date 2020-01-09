@@ -1,4 +1,4 @@
-package moe.protector.pe.bean;
+package moe.protector.pe.bean.friend;
 
 import java.util.List;
 
