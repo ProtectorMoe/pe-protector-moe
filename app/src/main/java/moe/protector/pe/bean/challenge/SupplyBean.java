@@ -1,15 +1,13 @@
-package moe.protector.pe.bean;
+package moe.protector.pe.bean.challenge;
 
 import java.util.List;
 
-import moe.protector.pe.bean.common.PackageVo;
 import moe.protector.pe.bean.common.ShipVO;
 import moe.protector.pe.bean.common.UserVo;
 import moe.protector.pe.bean.task.UpdateTaskVo;
 
-public class FastRepairBean {
-    public List<PackageVo> packageVo;
+public class SupplyBean {
     public UserVo userVo;
-    public List<ShipVO> shipVOS;
+    public List<ShipVO> shipVO;
     public List<UpdateTaskVo> updateTaskVo;
 }

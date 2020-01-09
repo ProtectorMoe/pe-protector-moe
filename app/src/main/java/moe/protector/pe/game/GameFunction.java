@@ -13,14 +13,16 @@ import java.util.Set;
 import moe.protector.pe.bean.DismantleBean;
 import moe.protector.pe.bean.FastRepairBean;
 import moe.protector.pe.bean.GetExploreBean;
-import moe.protector.pe.bean.LoginServerListBean;
 import moe.protector.pe.bean.RepairCompleteBean;
 import moe.protector.pe.bean.RubdownBean;
 import moe.protector.pe.bean.StartExploreBean;
-import moe.protector.pe.bean.SupplyBean;
+import moe.protector.pe.bean.challenge.SupplyBean;
 import moe.protector.pe.bean.common.PveExploreVo;
 import moe.protector.pe.bean.common.RepairDockVo;
 import moe.protector.pe.bean.common.UserShipVO;
+import moe.protector.pe.bean.login.LoginServerListBean;
+import moe.protector.pe.bean.task.FinishTask;
+import moe.protector.pe.bean.task.TaskVo;
 import moe.protector.pe.exception.HmException;
 import moe.protector.pe.interfaces.FirstLoginCallBack;
 import moe.protector.pe.interfaces.ReloginCallBack;
@@ -82,6 +84,10 @@ public class GameFunction {
                         Log.i(TAG, "[远征] 远征成功 " + key);
                         UIUpdate.log("[远征] 远征成功 " + key.replace("000", "-"));
                     }
+                    // 更新任务
+                    if (exploreJson.updateTaskVo != null && exploreJson.updateTaskVo.size() != 0) {
+                        userData.updateTaskVo(exploreJson.updateTaskVo);
+                    }
                     //分析远征数据
                     userData.userVoUpdate(exploreJson.userResVo);
                     CommonUtil.delay(3000);
@@ -93,15 +99,42 @@ public class GameFunction {
                     Log.i(TAG, "[远征] 开始远征 " + startExploreJson.exploreId);
                 }
                 //更新远征信息
-                if (startExploreJson != null) {
-                    userData.exploreSetAll(startExploreJson.pveExploreVo.levels);
-                }
+                userData.exploreSetAll(startExploreJson.pveExploreVo.levels);
             }
         } catch (HmException e) {
             Log.e(TAG, "[错误] 检测远征出现错误:" + e.getMessage());
             throw new HmException(e);
         } catch (Exception e) {
             Log.e(TAG, "[错误] 检测远征出现错误:" + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void checkTask() {
+        try {
+            ArrayList<TaskVo> taskFinish = new ArrayList<>();
+            ArrayList<TaskVo> taskAdd = new ArrayList<>();
+            for (TaskVo task : userData.taskVo.values()) {
+                if (task.condition.get(0).finishedAmount >= task.condition.get(0).totalAmount) {
+                    taskFinish.add(task);
+                }
+            }
+            if (taskFinish.size() != 0) {
+                for (TaskVo task : taskFinish) {
+                    String taskData = netSender.getTask(task.taskCid);
+                    FinishTask finishTask = JSON.parseObject(taskData, FinishTask.class);
+                    UIUpdate.log("[任务] 完成任务" + task.title);
+                    userData.userVoUpdate(finishTask.userResVo);
+                    userData.taskVo.remove(task.taskCid);
+                    if (finishTask.taskVo != null && finishTask.taskVo.size() != 0) {
+                        taskAdd.addAll(finishTask.taskVo);
+                    }
+                    CommonUtil.delay(2000);
+                }
+                userData.updateTaskVos(taskAdd);
+            }
+        } catch (HmException e) {
+            System.out.println(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -135,7 +168,6 @@ public class GameFunction {
             userData.setRepairDockVo(repairCompleteBean.repairDockVo);
         }
     }
-
 
     /**
      * 寻找所有船只的泡澡信息
@@ -211,6 +243,10 @@ public class GameFunction {
             Log.i(TAG, "[出征] 船只补给...");
             String supplyData = netSender.boatSupplyBoats(ships);
             SupplyBean supplyBean = JSON.parseObject(supplyData, SupplyBean.class);
+            // 更新任务
+            if (supplyBean.updateTaskVo != null) {
+                userData.updateTaskVo(supplyBean.updateTaskVo);
+            }
             // 更新船只信息
             userData.userVoUpdate(supplyBean.userVo);
             userData.allShipSetAllShipVO(supplyBean.shipVO);
@@ -303,6 +339,10 @@ public class GameFunction {
             userData.allShipSetAllShipVO(fastRepairBean.shipVOS);
             // 更新用户信息
             userData.userVoUpdate(fastRepairBean.userVo);
+            // 更新任务信息
+            if (fastRepairBean.updateTaskVo != null) {
+                userData.updateTaskVo(fastRepairBean.updateTaskVo);
+            }
             // 获取快修船只
             List<String> shipNames = new ArrayList<>();
             for (int i : needRepair) {
