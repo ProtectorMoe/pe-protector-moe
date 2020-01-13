@@ -49,8 +49,8 @@ public class SecondLogin {
             for (String key : userPhoneData.keySet()) {
                 data.append(key).append("=").append(userPhoneData.get(key)).append("&");
             }
-            data = data.substring(0, data.length() - 1);
-            netSender.indexLogin(Config.userId, data);
+            data = new StringBuilder(data.substring(0, data.length() - 1));
+            netSender.indexLogin(Config.userId, data.toString());
             // 初始化用户基本信息
             String apiInitGame = netSender.apiInitGame();
             userData.parseUserData(apiInitGame);

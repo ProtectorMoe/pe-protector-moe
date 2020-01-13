@@ -1008,14 +1008,12 @@ public class NetSender {
     }
 
 
-
-
     /**
      * 取url后加密内容
      *
      * @return getUrlEnd
      */
-    private String getUrlEnd(){
+    private String getUrlEnd() {
         String key = "ade2688f1904e9fb8d2efdb61b5e398a";
         long time = new Date().getTime() * 1000;
         String md5 = Encode.stringToMD5(time + key);

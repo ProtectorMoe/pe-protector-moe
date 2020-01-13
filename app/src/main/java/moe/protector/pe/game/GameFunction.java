@@ -123,7 +123,7 @@ public class GameFunction {
                 for (TaskVo task : taskFinish) {
                     String taskData = netSender.getTask(task.taskCid);
                     FinishTask finishTask = JSON.parseObject(taskData, FinishTask.class);
-                    UIUpdate.log("[任务] 完成任务" + task.title);
+                    UIUpdate.log("[任务] 完成任务: " + task.title);
                     userData.userVoUpdate(finishTask.userResVo);
                     userData.taskVo.remove(task.taskCid);
                     if (finishTask.taskVo != null && finishTask.taskVo.size() != 0) {
