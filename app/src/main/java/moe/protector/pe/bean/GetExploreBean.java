@@ -6,6 +6,7 @@ import java.util.List;
 import moe.protector.pe.bean.common.PackageVo;
 import moe.protector.pe.bean.common.PveExploreVo;
 import moe.protector.pe.bean.common.UserResVo;
+import moe.protector.pe.bean.task.UpdateTaskVo;
 
 public class GetExploreBean {
     public int bigSuccess;
@@ -13,4 +14,5 @@ public class GetExploreBean {
     public List<PackageVo> packageVos;
     public HashMap<Integer, Integer> newAward;
     public PveExploreVo pveExploreVo;
+    public List<UpdateTaskVo> updateTaskVo;
 }

@@ -30,7 +30,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 import moe.protector.pe.MainActivity;
 import moe.protector.pe.R;
 import moe.protector.pe.bean.CheckVersionBean;
-import moe.protector.pe.bean.LoginServerListBean;
+import moe.protector.pe.bean.login.LoginServerListBean;
 import moe.protector.pe.game.FirstLogin;
 import moe.protector.pe.game.NetSender;
 import moe.protector.pe.game.SecondLogin;
@@ -100,7 +100,6 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     });
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -151,10 +150,8 @@ public class LoginActivity extends AppCompatActivity {
                             setResult(RESULT_CANCELED);
                             finish();
                         })
-
                         .show();
                 Looper.loop();
-
             }
 
             @Override
@@ -187,7 +184,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         }).start();
     }
-
 
     long lastPressTime = 0;
 

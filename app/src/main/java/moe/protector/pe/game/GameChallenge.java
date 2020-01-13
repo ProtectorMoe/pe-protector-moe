@@ -10,16 +10,16 @@ import org.litepal.LitePal;
 import java.util.HashMap;
 import java.util.List;
 
-import moe.protector.pe.bean.DealtoBean;
-import moe.protector.pe.bean.GetResultBean;
-import moe.protector.pe.bean.PathConfigBean;
-import moe.protector.pe.bean.SkipWarBean;
-import moe.protector.pe.bean.SpyBean;
-import moe.protector.pe.bean.TaskBean;
+import moe.protector.pe.bean.challenge.DealtoBean;
+import moe.protector.pe.bean.challenge.GetResultBean;
+import moe.protector.pe.bean.challenge.PathConfigBean;
+import moe.protector.pe.bean.challenge.SkipWarBean;
+import moe.protector.pe.bean.challenge.SpyBean;
 import moe.protector.pe.bean.common.FleetVo;
 import moe.protector.pe.bean.common.PveNode;
 import moe.protector.pe.bean.common.ShipVO;
 import moe.protector.pe.bean.common.UserShipVO;
+import moe.protector.pe.bean.task.TaskBean;
 import moe.protector.pe.exception.HmException;
 import moe.protector.pe.exception.OperateException;
 import moe.protector.pe.sqlite.MapConfigBean;
@@ -59,7 +59,7 @@ public class GameChallenge extends GameBattle {
     }
 
     // 返回值
-    public enum Finish {
+    public enum Finish{
         FINISH, SL, REPAIR, BROKEN, DISMANTLE, ERROR
     }
     // 当前数据寄存
@@ -200,16 +200,16 @@ public class GameChallenge extends GameBattle {
                 } else if (nodeType == 3 || nodeType == 5) {
                     // 资源点或收费站
                     if (pveNode.gain != null || pveNode.loss != null) {
-                        String access = pveNode.gain != null ? "获得" : "损失";
-                        HashMap<String, Integer> res = pveNode.gain != null ? pveNode.gain : pveNode.loss;
-                        String log = "";
-                        for (String resId : res.keySet()) {
+                        String access = pveNode.gain != null? "获得": "损失";
+                        HashMap<String, Integer> res = pveNode.gain != null ? pveNode.gain: pveNode.loss;
+                        StringBuilder log = new StringBuilder();
+                        for (String resId: res.keySet()) {
                             String resName = gameConstant.getResName(resId);
-                            log += resName != null ? (resName + ":" + res.get(resId) + " ") : "";
+                            log.append(resName != null ? (resName + ":" + res.get(resId) + " ") : "");
                         }
-                        log = String.format("[出征] 资源点, %s %s", access, log);
-                        Log.i(TAG, log);
-                        UIUpdate.log(log);
+                        log = new StringBuilder(String.format("[出征] 资源点, %s %s", access, log.toString()));
+                        Log.i(TAG, log.toString());
+                        UIUpdate.log(log.toString());
                         CommonUtil.delay(2000);
                     }
                     if (nodeDetail.sl) {  // 资源点进行SL
@@ -269,6 +269,10 @@ public class GameChallenge extends GameBattle {
                 }
                 // 血量更新与判断
                 userData.allShipSetAllShipVO(resultBean.shipVO);
+                // 更新任务
+                if (resultBean.updateTaskVo != null) {
+                    userData.updateTaskVo(resultBean.updateTaskVo);
+                }
                 for (Integer ship : ships) {
                     UserShipVO userShipVO = userData.allShip.get(ship);
                     if (userShipVO.battleProps.hp < userShipVO.battlePropsMax.hp / 4.0) {  // 大破回港

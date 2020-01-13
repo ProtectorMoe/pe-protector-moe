@@ -7,10 +7,10 @@ import android.util.SparseArray;
 
 import com.alibaba.fastjson.JSON;
 
-import moe.protector.pe.bean.LoginBean;
-import moe.protector.pe.bean.LoginServerListBean;
-import moe.protector.pe.bean.LoginUserInfoBean;
-import moe.protector.pe.bean.LoginVersionBean;
+import moe.protector.pe.bean.login.LoginBean;
+import moe.protector.pe.bean.login.LoginServerListBean;
+import moe.protector.pe.bean.login.LoginUserInfoBean;
+import moe.protector.pe.bean.login.LoginVersionBean;
 import moe.protector.pe.exception.HmException;
 import moe.protector.pe.interfaces.FirstLoginCallBack;
 import moe.protector.pe.interfaces.ResProgressCallBack;

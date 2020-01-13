@@ -27,7 +27,7 @@ import java.util.List;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import moe.protector.pe.R;
 import moe.protector.pe.adapter.TaskListAdapter;
-import moe.protector.pe.bean.TaskBean;
+import moe.protector.pe.bean.task.TaskBean;
 import moe.protector.pe.game.TaskManager;
 import moe.protector.pe.util.App;
 import moe.protector.pe.util.EventBusUtil;

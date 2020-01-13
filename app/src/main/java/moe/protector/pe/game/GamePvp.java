@@ -7,14 +7,14 @@ import com.alibaba.fastjson.JSON;
 import java.util.ArrayList;
 import java.util.List;
 
-import moe.protector.pe.bean.DealtoBean;
-import moe.protector.pe.bean.FriendGetlistBean;
-import moe.protector.pe.bean.FriendVisitorFriendBean;
-import moe.protector.pe.bean.GetChallengeListBean;
-import moe.protector.pe.bean.GetResultBean;
-import moe.protector.pe.bean.SpyBean;
-import moe.protector.pe.bean.TaskBean;
+import moe.protector.pe.bean.challenge.DealtoBean;
+import moe.protector.pe.bean.challenge.GetChallengeListBean;
+import moe.protector.pe.bean.challenge.GetResultBean;
+import moe.protector.pe.bean.challenge.SpyBean;
 import moe.protector.pe.bean.common.FleetVo;
+import moe.protector.pe.bean.friend.FriendGetlistBean;
+import moe.protector.pe.bean.friend.FriendVisitorFriendBean;
+import moe.protector.pe.bean.task.TaskBean;
 import moe.protector.pe.exception.HmException;
 import moe.protector.pe.util.CommonUtil;
 
@@ -92,6 +92,10 @@ public class GamePvp extends GameBattle {
                     if (result.isMvp == 1) {
                         mvp = userData.getShipName(fleetVo.ships.get(i));
                     }
+                }
+                // 更新任务
+                if (resultBean.updateTaskVo != null) {
+                    userData.updateTaskVo(resultBean.updateTaskVo);
                 }
                 UIUpdate.log(TAG, String.format("[演习] %s 评价:%s mvp:<%s>", user.username, resultLevel, mvp));
                 CommonUtil.delay(5000);

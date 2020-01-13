@@ -6,8 +6,8 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import java.util.List;
 
 import moe.protector.pe.R;
-import moe.protector.pe.bean.TaskBean;
 import moe.protector.pe.bean.common.FleetVo;
+import moe.protector.pe.bean.task.TaskBean;
 import moe.protector.pe.game.UserData;
 
 public class TaskListAdapter extends BaseItemDraggableAdapter<TaskBean, BaseViewHolder> {

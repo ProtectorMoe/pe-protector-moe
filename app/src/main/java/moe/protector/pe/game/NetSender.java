@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Locale;
 
 import moe.protector.pe.bean.CheckVersionBean;
-import moe.protector.pe.bean.PathBean;
-import moe.protector.pe.bean.PathConfigBean;
+import moe.protector.pe.bean.challenge.PathBean;
+import moe.protector.pe.bean.challenge.PathConfigBean;
 import moe.protector.pe.exception.HmException;
 import moe.protector.pe.util.Config;
 import moe.protector.pe.util.Encode;
@@ -612,7 +612,6 @@ public class NetSender {
     public void battleChallenge(String map, String fleet) throws HmException {
         try {
             String url = Config.host + String.format(Locale.CHINA, "pve/cha11enge/%s/%s/0/", map, fleet) + this.getUrlEnd();
-            ;
             Requests requests = new Requests.Builder()
                     .url(url)
                     .get()
@@ -917,7 +916,6 @@ public class NetSender {
     public String pvpChallenge(String head, String uid, int fleet, int format) throws HmException {
         try {
             String url = Config.host + String.format(Locale.CHINA, "%s/challenge/%s/%d/%d/", head, uid, fleet, format) + this.getUrlEnd();
-            ;
             Requests requests = new Requests.Builder()
                     .url(url)
                     .get()
@@ -943,7 +941,6 @@ public class NetSender {
     public String campaignGetFleet(String map) throws HmException {
         try {
             String url = Config.host + String.format(Locale.CHINA, "campaign/getFleet/%s/", map) + this.getUrlEnd();
-            ;
             Requests requests = new Requests.Builder()
                     .url(url)
                     .get()
@@ -969,7 +966,6 @@ public class NetSender {
     public String campaignSpy(String map) throws HmException {
         try {
             String url = Config.host + String.format(Locale.CHINA, "campaign/spy/%s/", map) + this.getUrlEnd();
-            ;
             Requests requests = new Requests.Builder()
                     .url(url)
                     .get()
@@ -996,7 +992,6 @@ public class NetSender {
     public String campaignChallenge(String map, int format) throws HmException {
         try {
             String url = Config.host + String.format(Locale.CHINA, "campaign/challenge/%s/%d/", map, format) + this.getUrlEnd();
-            ;
             Requests requests = new Requests.Builder()
                     .url(url)
                     .get()
@@ -1012,17 +1007,48 @@ public class NetSender {
         }
     }
 
+
+
+
     /**
      * 取url后加密内容
      *
      * @return getUrlEnd
      */
-    private String getUrlEnd() {
+    private String getUrlEnd(){
         String key = "ade2688f1904e9fb8d2efdb61b5e398a";
         long time = new Date().getTime() * 1000;
         String md5 = Encode.stringToMD5(time + key);
         return String.format("&t=%s&e=%s&gz=1&market=2&channel=%s&version=%s", time, md5, Config.channel, Config.version);
     }
 
+    public void getLoginAward() throws HmException {
+        try {
+            String url = Config.host + "active/getLoginAward/" + this.getUrlEnd();
+            Requests requests = new Requests.Builder()
+                    .url(url)
+                    .get()
+                    .zlib()
+                    .build()
+                    .execute();
+            String data = requests.text;
+            HmException.errorFind("active/getLoginAward/", data);
+        } catch (HmException e) {
+            Log.e(TAG, "active/getLoginAward出错:" + e.toString());
+            throw e;
+        }
+    }
 
+    public String getTask(String cid) throws HmException {
+        String url = Config.host + "task/getAward/" + cid + this.getUrlEnd();
+        Requests requests = new Requests.Builder()
+                .url(url)
+                .get()
+                .zlib()
+                .build()
+                .execute();
+        String data = requests.text;
+        HmException.errorFind("task/getAward出错:", data);
+        return data;
+    }
 }

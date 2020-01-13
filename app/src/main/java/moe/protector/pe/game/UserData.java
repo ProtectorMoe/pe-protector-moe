@@ -12,9 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import moe.protector.pe.bean.PeventBean;
-import moe.protector.pe.bean.PveDataBean;
 import moe.protector.pe.bean.UserDataBean;
+import moe.protector.pe.bean.challenge.PeventBean;
+import moe.protector.pe.bean.challenge.PveDataBean;
 import moe.protector.pe.bean.common.EquipmentVo;
 import moe.protector.pe.bean.common.FleetVo;
 import moe.protector.pe.bean.common.PackageVo;
@@ -24,14 +24,13 @@ import moe.protector.pe.bean.common.PveLevel;
 import moe.protector.pe.bean.common.PveNode;
 import moe.protector.pe.bean.common.RepairDockVo;
 import moe.protector.pe.bean.common.ShipVO;
-import moe.protector.pe.bean.common.TaskVo;
-import moe.protector.pe.bean.common.UpdateTaskVo;
 import moe.protector.pe.bean.common.UserResVo;
 import moe.protector.pe.bean.common.UserShipVO;
 import moe.protector.pe.bean.common.UserVo;
+import moe.protector.pe.bean.task.TaskVo;
+import moe.protector.pe.bean.task.UpdateTaskVo;
 import moe.protector.pe.util.Config;
 import moe.protector.pe.util.EventBusUtil;
-
 
 public class UserData {
     private static final String TAG = "UserData";
@@ -357,14 +356,12 @@ public class UserData {
     }
 
     // ------------------------ 任务数据 --------------------------
-    private HashMap<String, TaskVo> taskVo = new HashMap<>();
-
+    public HashMap<String, TaskVo> taskVo = new HashMap<>();
     public void setTaskVo(List<TaskVo> vo) {
         for (TaskVo o : vo) {
             taskVo.put(o.taskCid, o);
         }
     }
-
     public void updateTaskVo(List<UpdateTaskVo> updateTaskVo) {
         for (UpdateTaskVo vo : updateTaskVo) {
             TaskVo t = taskVo.get(vo.taskCid);
@@ -374,5 +371,9 @@ public class UserData {
         }
     }
 
-
+    void updateTaskVos(List<TaskVo> updateTaskVos) {
+        for (TaskVo vo : updateTaskVos) {
+            taskVo.put(vo.taskCid, vo);
+        }
+    }
 }

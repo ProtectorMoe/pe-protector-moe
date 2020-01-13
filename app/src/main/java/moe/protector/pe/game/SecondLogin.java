@@ -45,9 +45,9 @@ public class SecondLogin {
             userPhoneData.put("udid", udid.toString());
             userPhoneData.put("source", "android");
             userPhoneData.put("affiliate", "WIFI");
-            String data = "";
+            StringBuilder data = new StringBuilder();
             for (String key : userPhoneData.keySet()) {
-                data += (key + "=" + userPhoneData.get(key) + "&");
+                data.append(key).append("=").append(userPhoneData.get(key)).append("&");
             }
             data = data.substring(0, data.length() - 1);
             netSender.indexLogin(Config.userId, data);
@@ -58,6 +58,11 @@ public class SecondLogin {
             Config.pveData = netSender.pveGetPveData();
             userData.pveNodeGet(Config.pveData);
             String pveData = netSender.peventGetPveData();
+            if (userData.userBaseData.marketingData.continueLoginAward.canGetDay != -1) {
+                UIUpdate.log("领取签到奖励");
+                netSender.getLoginAward();
+                userData.userBaseData.marketingData.continueLoginAward.canGetDay = -1;
+            }
             if (pveData != null && pveData.length() > 10 && pveData.contains("{")) {
                 userData.peventNodeGet(pveData);
             }

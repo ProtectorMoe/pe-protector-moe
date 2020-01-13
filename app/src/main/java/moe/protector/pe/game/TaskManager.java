@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import moe.protector.pe.bean.TaskBean;
+import moe.protector.pe.bean.task.TaskBean;
 import moe.protector.pe.util.App;
 import moe.protector.pe.util.DateUtil;
 import moe.protector.pe.util.EventBusUtil;

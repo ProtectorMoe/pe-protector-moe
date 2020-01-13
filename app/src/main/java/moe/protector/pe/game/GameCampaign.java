@@ -2,12 +2,12 @@ package moe.protector.pe.game;
 
 import java.util.List;
 
-import moe.protector.pe.bean.CampaignGetFleet;
-import moe.protector.pe.bean.CampaignGetUserData;
-import moe.protector.pe.bean.CampaignReport;
-import moe.protector.pe.bean.DealtoBean;
-import moe.protector.pe.bean.SpyBean;
-import moe.protector.pe.bean.TaskBean;
+import moe.protector.pe.bean.campaign.CampaignGetFleet;
+import moe.protector.pe.bean.campaign.CampaignGetUserData;
+import moe.protector.pe.bean.campaign.CampaignReport;
+import moe.protector.pe.bean.challenge.DealtoBean;
+import moe.protector.pe.bean.challenge.SpyBean;
+import moe.protector.pe.bean.task.TaskBean;
 import moe.protector.pe.exception.HmException;
 import moe.protector.pe.util.CommonUtil;
 
@@ -87,6 +87,10 @@ public class GameCampaign extends GameBattle {
                 }
                 // 血量更新与判断
                 userData.allShipSetAllShipVO(resultBean.shipVO);
+                // 更新任务
+                if (resultBean.updateTaskVo != null) {
+                    userData.updateTaskVo(resultBean.updateTaskVo);
+                }
                 UIUpdate.log(TAG, String.format("[战役] 战斗完成, 获得:<%s>", reward));
                 CommonUtil.delay(5000);
             }

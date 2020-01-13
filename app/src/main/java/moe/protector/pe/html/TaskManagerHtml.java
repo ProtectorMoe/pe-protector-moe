@@ -19,7 +19,7 @@ import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import moe.protector.pe.activity.HtmlActivity;
-import moe.protector.pe.bean.PathConfigBean;
+import moe.protector.pe.bean.challenge.PathConfigBean;
 import moe.protector.pe.game.NetSender;
 import moe.protector.pe.interfaces.HttpFinishCallBack;
 import moe.protector.pe.sqlite.MapConfigBean;
