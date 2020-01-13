@@ -38,7 +38,7 @@ public class GameChallenge extends GameBattle {
     private PathConfigBean configBean;
     private String map;
 
-    public GameChallenge(TaskBean taskBean) throws OperateException{
+    public GameChallenge(TaskBean taskBean) throws OperateException {
         // 初始化数据
         head = "pve";
         String configName = taskBean.name;
@@ -59,7 +59,7 @@ public class GameChallenge extends GameBattle {
     }
 
     // 返回值
-    public enum Finish{
+    public enum Finish {
         FINISH, SL, REPAIR, BROKEN, DISMANTLE, ERROR
     }
     // 当前数据寄存
@@ -114,7 +114,7 @@ public class GameChallenge extends GameBattle {
                 pveNode = userData.getNode(nowNode);  // 获取当前点数据
                 nowFlag = pveNode.flag;  // 当前点旗帜
                 isLastPoint = isLastNode(pveNode);  // 是否为最后一点
-                UIUpdate.detailLog(TAG, String.format("[出征] 进点%s → %s", nowFlag, configBean.detail.containsKey(nowFlag)? "继续": "SL"));
+                UIUpdate.detailLog(TAG, String.format("[出征] 进点%s → %s", nowFlag, configBean.detail.containsKey(nowFlag) ? "继续" : "SL"));
                 CommonUtil.delay(1000);
                 if (!configBean.detail.containsKey(nowFlag)) {  // 当前点是否为期望点
                     throw new ChallengeException(ChallengeException.EXCEPTION_SL); //  进行SL
@@ -129,11 +129,12 @@ public class GameChallenge extends GameBattle {
                 List<PathConfigBean.NodeDetail> flagDetails = nodeDetail.detail;  // 当前点的路径数据
                 // 选择战况
                 if (pveNode.buff.size() != 0) {
-                    netSender.selectBuff(configBean.buff);
-                    UIUpdate.detailLog(TAG, String.format("[出征] 选择战况 %s", userData.getBuff(configBean.buff)));
+                    netSender.selectBuff(nodeDetail.buff);
+                    UIUpdate.detailLog(TAG, String.format("[出征] 选择战况 %s", userData.getBuff(nodeDetail.buff).title));
+                    CommonUtil.delay(2000);
                 }
-                // 1:普通点, 2:BOSS点, 3:资源点 4:待机点, 5:收费站
-                if (nodeType == 1 || nodeType == 2) {
+                // 1:普通点, 2:BOSS点, 3:资源点 4:待机点, 5:收费站, 10:航空站
+                if (nodeType == 1 || nodeType == 2 || nodeType == 10) {
                     // --------------开始索敌-------------
                     UIUpdate.detailLog(TAG, "[出征] 进行索敌");
                     CommonUtil.delay(2000);
@@ -147,7 +148,7 @@ public class GameChallenge extends GameBattle {
                     }
                     // 取得敌人数量
                     SparseIntArray enemyNum = new SparseIntArray();
-                    for (ShipVO shipVO: spyBean.enemyVO.enemyShips) {
+                    for (ShipVO shipVO : spyBean.enemyVO.enemyShips) {
                         int type = shipVO.type;
                         if (enemyNum.indexOfKey(type) >= 0) {
                             enemyNum.put(type, enemyNum.get(type) + 1);
@@ -156,9 +157,9 @@ public class GameChallenge extends GameBattle {
                         }
                     }
                     // 判断是否需要SL
-                    for (PathConfigBean.NodeDetail detail: flagDetails) {
-                        int num = enemyNum.indexOfKey(detail.enemy) != -1? enemyNum.get(detail.enemy): 0;
-                        if ((detail.num <=6 && num >= detail.num) || (detail.num>6 && num<detail.num-6)) {
+                    for (PathConfigBean.NodeDetail detail : flagDetails) {
+                        int num = enemyNum.indexOfKey(detail.enemy) != -1 ? enemyNum.get(detail.enemy) : 0;
+                        if ((detail.num <= 6 && num >= detail.num) || (detail.num > 6 && num < detail.num - 6)) {
                             if (detail.deal == 0) {
                                 UIUpdate.detailLog(TAG, "[出征] 舰船SL启动, 进行SL");
                                 throw new ChallengeException(ChallengeException.EXCEPTION_SL);
@@ -168,7 +169,7 @@ public class GameChallenge extends GameBattle {
                         }
                     }
                     // 判断是否需要迂回
-                    if (nodeDetail.round_about && roundabout == 1) {
+                    if (nodeDetail.roundabout && roundabout == 1) {
                         UIUpdate.detailLog(TAG, "[出征] 尝试进行迂回");
                         CommonUtil.delay(1000);
                         SkipWarBean skipWarBean = challengeSkipWar();
@@ -189,23 +190,22 @@ public class GameChallenge extends GameBattle {
                     }
                 }
                 // ------------------开始战斗----------------
-                CommonUtil.delay(2000);
                 DealtoBean dealtoBean = challengeDealTo(nowNode, this.fleet, nowFormat);
-                if (nodeType == 1 || nodeType == 2) {
+                if (nodeType == 1 || nodeType == 2 || nodeType == 10) {
                     // 正常点需要延迟
                     counter.battleNumAdd();
                     int randomInt = CommonUtil.randomInt(10, 15);
                     UIUpdate.detailLog(TAG, "[出征] 开始战斗, 等待" + randomInt + "s");
-                    CommonUtil.delay(randomInt*1000);
+                    CommonUtil.delay(randomInt * 1000);
                 } else if (nodeType == 3 || nodeType == 5) {
                     // 资源点或收费站
                     if (pveNode.gain != null || pveNode.loss != null) {
-                        String access = pveNode.gain != null? "获得": "损失";
-                        HashMap<String, Integer> res = pveNode.gain != null ? pveNode.gain: pveNode.loss;
+                        String access = pveNode.gain != null ? "获得" : "损失";
+                        HashMap<String, Integer> res = pveNode.gain != null ? pveNode.gain : pveNode.loss;
                         String log = "";
-                        for (String resId: res.keySet()) {
+                        for (String resId : res.keySet()) {
                             String resName = gameConstant.getResName(resId);
-                            log += resName != null? (resName + ":" + res.get(resId) + " "): "";
+                            log += resName != null ? (resName + ":" + res.get(resId) + " ") : "";
                         }
                         log = String.format("[出征] 资源点, %s %s", access, log);
                         Log.i(TAG, log);
@@ -230,17 +230,17 @@ public class GameChallenge extends GameBattle {
                 // -------------进行夜战结算-----------
                 UIUpdate.detailLog(TAG, "[出征] 准备进行夜战或结算");
                 CommonUtil.delay(2000);
-                GetResultBean resultBean = challengeGetWarResult(head,nodeDetail.night && dealtoBean.warReport.canDoNightWar == 1);  // 判断是否进行夜战
+                GetResultBean resultBean = challengeGetWarResult(head, nodeDetail.night && dealtoBean.warReport.canDoNightWar == 1);  // 判断是否进行夜战
                 if (nodeDetail.night && dealtoBean.warReport.canDoNightWar == 1) {
                     int randomInt = CommonUtil.randomInt(10, 20);
                     UIUpdate.detailLog(TAG, "[出征] 夜战中, 等待" + randomInt + "s");
-                    CommonUtil.delay(randomInt*1000);
+                    CommonUtil.delay(randomInt * 1000);
                 }
-                String [] assess = {"-", "SS", "S", "A", "B", "C", "D"};
+                String[] assess = {"-", "SS", "S", "A", "B", "C", "D"};
                 String resultLevel = assess[resultBean.warResult.resultLevel];
                 // 获取mvp
                 String mvp = "-";
-                for (int i=0; i<ships.size(); i++) {
+                for (int i = 0; i < ships.size(); i++) {
                     GetResultBean.ShipResult result = resultBean.warResult.selfShipResults.get(i);
                     if (result.isMvp == 1) {
                         mvp = userData.getShipName(ships.get(i));
@@ -288,7 +288,7 @@ public class GameChallenge extends GameBattle {
             }
 
         } catch (OperateException e) {
-            Log.e(TAG,"[出征] 出征" + e.getMessage());
+            Log.e(TAG, "[出征] 出征" + e.getMessage());
         } catch (HmException e) {
             UIUpdate.log("[出征] 错误:" + e.toString());
             return Finish.ERROR;
@@ -320,9 +320,10 @@ public class GameChallenge extends GameBattle {
 
     /**
      * 检测修理
+     *
      * @throws ChallengeException, HmException
      */
-    private void checkRepair(List<Integer> ships)throws HmException, ChallengeException {
+    private void checkRepair(List<Integer> ships) throws HmException, ChallengeException {
         int present;
         switch (this.repair) {
             case 0:
@@ -337,8 +338,8 @@ public class GameChallenge extends GameBattle {
         }
         gameFunction.checkFastRepair(ships, present);
         // ----------更新船只血量信息---------
-        for (int i=0; i<ships.size(); i++) {
-            if ((float)userData.getShipHp(ships.get(i)) / userData.getShipMaxHp(ships.get(i)) < 0.25) {
+        for (int i = 0; i < ships.size(); i++) {
+            if ((float) userData.getShipHp(ships.get(i)) / userData.getShipMaxHp(ships.get(i)) < 0.25) {
                 throw new ChallengeException(ChallengeException.EXCEPTION_REPAIR);
             }
         }
@@ -347,13 +348,14 @@ public class GameChallenge extends GameBattle {
 
     /**
      * 当前点是否为最后一点
+     *
      * @return 是否
      */
     private boolean isLastNode(PveNode pveNode) {
         if (pveNode.nextNode.size() == 0) {
             return true;
         } else {
-            for (int node: pveNode.nextNode) {
+            for (int node : pveNode.nextNode) {
                 if (configBean.detail.containsKey(userData.getNode(String.valueOf(node)).flag)) {
                     return false;
                 }
@@ -370,12 +372,15 @@ class ChallengeException extends Exception {
     public static final int EXCEPTION_BROKEN = 2;
 
     private int code;
+
     public ChallengeException(int code) {
         this.code = code;
     }
+
     public ChallengeException(ChallengeException e) {
         this.code = e.code;
     }
+
     public int getCode() {
         return this.code;
     }

@@ -6,6 +6,7 @@ import android.util.Log;
 public class OperateException extends Exception {
     private static final String TAG = "OperateException";
     private String msg;
+
     public OperateException(String msg) {
         this.msg = msg;
         Log.e(TAG, "出现错误" + this.msg);

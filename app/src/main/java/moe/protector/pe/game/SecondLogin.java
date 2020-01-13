@@ -13,16 +13,21 @@ import moe.protector.pe.util.Util;
 
 public class SecondLogin {
     private static final String TAG = "SecondLogin";
-    private SecondLogin(){}
+
+    private SecondLogin() {
+    }
+
     private static SecondLogin secondLogin = new SecondLogin();
     private static UserData userData = UserData.getInstance();
-    public static SecondLogin getInstance(){
+
+    public static SecondLogin getInstance() {
         return secondLogin;
     }
+
     // 使用的常量
     private static NetSender netSender = NetSender.getInstance();
 
-    public void login(final SecondLoginCallBack callBack){
+    public void login(final SecondLoginCallBack callBack) {
         try {
             //登录发送用户数据
             Map<String, String> userPhoneData = new HashMap<>();
@@ -34,14 +39,14 @@ public class SecondLogin {
             //设备随机数
             Random random = new Random(Integer.valueOf(Config.userId).longValue());
             StringBuilder udid = new StringBuilder();
-            for (int i=0; i<15; i++) {
+            for (int i = 0; i < 15; i++) {
                 udid.append(random.nextInt(10));
             }
             userPhoneData.put("udid", udid.toString());
             userPhoneData.put("source", "android");
             userPhoneData.put("affiliate", "WIFI");
             String data = "";
-            for (String key: userPhoneData.keySet()) {
+            for (String key : userPhoneData.keySet()) {
                 data += (key + "=" + userPhoneData.get(key) + "&");
             }
             data = data.substring(0, data.length() - 1);
@@ -50,16 +55,17 @@ public class SecondLogin {
             String apiInitGame = netSender.apiInitGame();
             userData.parseUserData(apiInitGame);
             // 初始化点数信息
-            userData.pveNodeGet(netSender.pveGetPveData());
+            Config.pveData = netSender.pveGetPveData();
+            userData.pveNodeGet(Config.pveData);
             String pveData = netSender.peventGetPveData();
             if (pveData != null && pveData.length() > 10 && pveData.contains("{")) {
                 userData.peventNodeGet(pveData);
             }
             callBack.onFinish();
-        }catch (HmException e){
+        } catch (HmException e) {
             Log.e(TAG, e.getMessage());
             callBack.onError(e.getMessage());
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e(TAG, e.getMessage());
             callBack.onError(Util.getErrMsg(e));
         }

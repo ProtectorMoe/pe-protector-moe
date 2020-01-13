@@ -57,10 +57,10 @@ public class MainService extends Service {
         manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
         //安卓8.0适配
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "1");
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             String id = "my_channel_01";
             NotificationChannel mChannel;
-            mChannel = new NotificationChannel(id,"my_channel", NotificationManager.IMPORTANCE_DEFAULT);
+            mChannel = new NotificationChannel(id, "my_channel", NotificationManager.IMPORTANCE_DEFAULT);
             manager.createNotificationChannel(mChannel);
             builder.setChannelId(id);
         }
@@ -130,9 +130,10 @@ public class MainService extends Service {
         while (true) {
             // 开始检测任务
             TaskBean taskBean = taskManager.getAvailableTask();
+            new EventBusUtil(TAG + "mainThread", EventBusUtil.EVENT_TASK_CHANGE).post();
             if (taskBean != null) {
                 // 有任务, 进行调用
-                new EventBusUtil(TAG + "mainThread", EventBusUtil.EVENT_NOW_TASK_CHANGE, String.format(Locale.CHINA,"%s   %d/%d", taskBean.name, taskBean.num, taskBean.num_max)).post();
+                new EventBusUtil(TAG + "mainThread", EventBusUtil.EVENT_NOW_TASK_CHANGE, String.format(Locale.CHINA, "%s   %d/%d", taskBean.name, taskBean.num, taskBean.num_max)).post();
                 if (taskBean.type.equals("battle")) {
                     // 出征任务
                     GameChallenge challenge = new GameChallenge(taskBean);
@@ -141,7 +142,7 @@ public class MainService extends Service {
                     switch (finish) {
                         case FINISH:
                             counter.finishNumAdd();
-                            taskBean.num ++;
+                            taskBean.num++;
                             taskManager.writeFile();
                             new EventBusUtil(TAG + "mainThread", EventBusUtil.EVENT_TASK_CHANGE).post();
                             break;
@@ -159,7 +160,7 @@ public class MainService extends Service {
                             break;
                     }
                     TaskManager.getInstance().writeFile();
-                } else if(taskBean.type.equals("pvp")) {
+                } else if (taskBean.type.equals("pvp")) {
                     // 演习任务
                     GamePvp gamePvp = new GamePvp(taskBean);
                     GamePvp.Finish finish = gamePvp.execute();
@@ -174,7 +175,7 @@ public class MainService extends Service {
                             new EventBusUtil(TAG + "mainThread", EventBusUtil.EVENT_TASK_CHANGE).post();
                             break;
                     }
-                } else if(taskBean.type.equals("campaign")) {
+                } else if (taskBean.type.equals("campaign")) {
                     GameCampaign gameCampaign = new GameCampaign(taskBean);
                     GameCampaign.Finish finish = gameCampaign.execute();
                     switch (finish) {
@@ -211,13 +212,13 @@ public class MainService extends Service {
         return mBinder;
     }
 
-    public class MainBinder extends Binder{
-        public void cancelNotification(){
+    public class MainBinder extends Binder {
+        public void cancelNotification() {
             manager.cancel(1);
             stopSelf();
         }
 
-        public MainService mainService(){
+        public MainService mainService() {
             return MainService.this;
         }
     }

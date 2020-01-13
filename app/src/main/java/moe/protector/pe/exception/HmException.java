@@ -11,18 +11,15 @@ public class HmException extends Exception {
     private String code;
     private String message;
     private static HashMap<String, String> codeMessage = new HashMap<String, String>();
-    public HmException(String code){
+
+    public HmException(String code) {
         this.setErrorCode();
         this.code = code;
-        if (codeMessage.containsKey(code)){
-            this.message = codeMessage.get(code);
-        }else {
-            this.message = "未知错误";
-        }
+        this.message = codeMessage.containsKey(code) ? codeMessage.get(code) : "未知错误";
 
     }
 
-    public HmException(Throwable cause){
+    public HmException(Throwable cause) {
         super(cause);
     }
 
@@ -32,7 +29,7 @@ public class HmException extends Exception {
                 return;
             }
             Eid eid = JSON.parseObject(data, Eid.class);
-            if (eid.eid != null && Integer.valueOf(eid.eid) != 0){
+            if (eid.eid != null && Integer.valueOf(eid.eid) != 0) {
                 throw new HmException(eid.eid);
             }
         } catch (HmException e) {
@@ -51,7 +48,7 @@ public class HmException extends Exception {
         return this.message;
     }
 
-    private void setErrorCode(){
+    private void setErrorCode() {
         codeMessage.put("-1", "操作速度太快，请慢点操作");
         codeMessage.put("-2", "数据库错误");
         codeMessage.put("-3", "您的账号被封锁，请联系游戏管理员！");

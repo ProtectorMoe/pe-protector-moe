@@ -12,12 +12,12 @@
 
     <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/img_mine"
-        android:layout_width="96dp"
-        android:layout_height="95dp"
+        android:layout_width="78dp"
+        android:layout_height="82dp"
         android:layout_centerInParent="true"
         android:src="@mipmap/icon_lp"
-        app:civ_border_color="#FF000000"
-        app:civ_border_width="0dp" />
+        app:civ_border_color="#eeeeee"
+        app:civ_border_width="1dp" />
 
     <TextView
         android:layout_marginStart="10dp"
@@ -27,6 +27,7 @@
         android:layout_alignParentBottom="true"
         android:text="签名一定要长长长长长长长长"
         android:layout_marginBottom="5dp"
+        android:textColor="#000000"
         android:textSize="12sp"/>
 
     <TextView
@@ -36,6 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/tv_sign"
         android:text="用户名7个字"
+        android:textColor="#000000"
         android:textSize="14sp"/>
 
 

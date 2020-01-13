@@ -21,8 +21,9 @@ import moe.protector.pe.util.App;
 public class GameConstant {
     private static final String TAG = "GameConstant";
     private static GameConstant gameConstant;
-    public static GameConstant getInstance(){
-        if (gameConstant == null){
+
+    public static GameConstant getInstance() {
+        if (gameConstant == null) {
             gameConstant = new GameConstant();
         }
         return gameConstant;
@@ -32,7 +33,7 @@ public class GameConstant {
     private HashMap<String, String> resName = new HashMap<>();
 
 
-    private GameConstant(){
+    private GameConstant() {
         resName.put("2", "油");
         resName.put("3", "弹");
         resName.put("4", "钢");
@@ -61,27 +62,27 @@ public class GameConstant {
         int progress = 0;
 
         // 加载数据进入数据库
-        for (ShipCardWu shipCardWu: initDataBean.shipCardWu){
+        for (ShipCardWu shipCardWu : initDataBean.shipCardWu) {
             shipCardWu.save();
-            count ++;
+            count++;
             int p = Math.round(count / len * 100);
             if (progress != p) {
                 progress = p;
                 callBack.onChange("更新数据库:" + p + "%");
             }
         }
-        for (ShipCard shipCard: initDataBean.shipCard){
+        for (ShipCard shipCard : initDataBean.shipCard) {
             shipCard.save();
-            count ++;
+            count++;
             int p = Math.round(count / len * 100);
             if (progress != p) {
                 progress = p;
                 callBack.onChange("更新数据库:" + p + "%");
             }
         }
-        for (ShipEquipmnt e: initDataBean.shipEquipmnt){
+        for (ShipEquipmnt e : initDataBean.shipEquipmnt) {
             e.save();
-            count ++;
+            count++;
             int p = Math.round(count / len * 100);
             if (progress != p) {
                 progress = p;
@@ -99,7 +100,7 @@ public class GameConstant {
         return preferences.getString("version", "0");
     }
 
-    public String getShipName(long cid){
+    public String getShipName(long cid) {
         List<ShipCardWu> shipCardWu = LitePal.select("title")
                 .where("cid=?", String.valueOf(cid))
                 .limit(1)
@@ -134,7 +135,7 @@ public class GameConstant {
 
     }
 
-    public int getIndex(long cid){
+    public int getIndex(long cid) {
         List<ShipCardWu> shipCardWu = LitePal
                 .select("shipIndex")
                 .where("cid=?", String.valueOf(cid))

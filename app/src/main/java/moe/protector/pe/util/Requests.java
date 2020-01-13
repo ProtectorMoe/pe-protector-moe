@@ -47,7 +47,7 @@ public class Requests {
                     if (host.contains("passport") || host.contains("login")){
                         return new ArrayList<>();
                     }
-                    return cookies != null ? cookies : new ArrayList<Cookie>();
+                    return cookies != null ? cookies : new ArrayList<>();
                 }
             })
             .addInterceptor(new HeaderInterceptor())

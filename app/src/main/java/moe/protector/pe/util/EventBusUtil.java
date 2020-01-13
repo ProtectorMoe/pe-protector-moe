@@ -15,7 +15,8 @@ public class EventBusUtil {
 
     private int code;
     private String message;
-    private String tag = "未指定";
+    private String tag;
+
     public EventBusUtil(String TAG, int code, String message) {
         this.code = code;
         this.message = message;
@@ -29,7 +30,7 @@ public class EventBusUtil {
     }
 
     public void post() {
-        Log.d("EventBusUtil", "[EventBus]" + this.tag +this.code + this.message);
+        Log.v("EventBusUtil", "[EventBus]" + this.tag + this.code + this.message);
         EventBus.getDefault().post(this);
     }
 
@@ -41,5 +42,7 @@ public class EventBusUtil {
         return message;
     }
 
-    public String getTAG() {return this.tag;}
+    public String getTAG() {
+        return this.tag;
+    }
 }

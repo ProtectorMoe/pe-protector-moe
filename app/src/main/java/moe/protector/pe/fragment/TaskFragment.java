@@ -36,7 +36,9 @@ public class TaskFragment extends Fragment {
     private static final String TAG = "TaskFragment";
     private TaskListAdapter adapter;
     private WebView webview;
-    public TaskFragment() { }
+
+    public TaskFragment() {
+    }
 
     public static TaskFragment getInstance() {
         return new TaskFragment();

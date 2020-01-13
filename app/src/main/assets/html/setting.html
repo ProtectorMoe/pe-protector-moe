@@ -1,0 +1,321 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/avgrund.css">
+	</head>
+	
+	<body>
+		<script src="js/vue.min.js"></script>
+		<script src="js/mui.min.js"></script>
+		<script src="js/avgrund.js"></script>
+		<script type="text/javascript">
+			mui.init()
+		</script>
+		<div id="app">
+			<div class="avgrund-cover"></div>
+			<aside id="star-pop" class="avgrund-popup" style="width: 90%;margin-left: 5%; margin-top: 30%;">
+				<div class="mui-input-group">
+					<div class="mui-input-row mui-checkbox">
+					  <label>6星</label>
+					  <input name="star" value="6" type="checkbox">
+					</div>
+					<div class="mui-input-row mui-checkbox">
+					  <label>5星</label>
+					  <input name="star" value="5" type="checkbox">
+					</div>
+					<div class="mui-input-row mui-checkbox">
+					  <label>4星</label>
+					  <input name="star" value="4" type="checkbox">
+					</div>
+					<div class="mui-input-row mui-checkbox">
+					  <label>3星</label>
+					  <input name="star" value="3" type="checkbox">
+					</div>
+					<div class="mui-input-row mui-checkbox">
+					  <label>2星</label>
+					  <input name="star" value="2" type="checkbox">
+					</div>
+					<div class="mui-input-row mui-checkbox">
+					  <label>1星</label>
+					  <input name="star" value="1" type="checkbox">
+					</div>
+				</div>
+				<div class="mui-button-row">
+				        <button type="button" class="mui-btn mui-btn-primary" onclick="onHide()">确认</button>
+				    </div>
+			</aside>
+			
+			<aside id="type-pop" class="avgrund-popup" style="width: 90%;margin-left: 5%; margin-top: 30%;">
+				<div class="mui-input-group">
+					<div class="mui-input-row mui-checkbox">
+					  <label>全部</label>
+					  <input name="type" value="0" type="checkbox">
+					</div>
+					<div class="mui-input-row mui-checkbox">
+					  <label>航母</label>
+					  <input name="type" value="1" type="checkbox">
+					</div>
+					<div class="mui-input-row mui-checkbox">
+					  <label>轻母</label>
+					  <input name="type" value="2" type="checkbox">
+					</div>
+					<div class="mui-input-row mui-checkbox">
+					  <label>战列</label>
+					  <input name="type" value="4" type="checkbox">
+					</div>
+					<div class="mui-input-row mui-checkbox">
+					  <label>战巡</label>
+					  <input name="type" value="6" type="checkbox">
+					</div>
+					<div class="mui-input-row mui-checkbox">
+					  <label>重巡</label>
+					  <input name="type" value="7" type="checkbox">
+					</div>
+					<div class="mui-input-row mui-checkbox">
+					  <label>轻巡</label>
+					  <input name="type" value="10" type="checkbox">
+					</div>
+					<div class="mui-input-row mui-checkbox">
+					  <label>重炮</label>
+					  <input name="type" value="11" type="checkbox">
+					</div>
+					<div class="mui-input-row mui-checkbox">
+					  <label>驱逐</label>
+					  <input name="type" value="12" type="checkbox">
+					</div>
+					<div class="mui-input-row mui-checkbox">
+					  <label>潜艇</label>
+					  <input name="type" value="14" type="checkbox">
+					</div>
+				</div>
+				<div class="mui-button-row">
+				        <button type="button" class="mui-btn mui-btn-primary" onclick="onHide()">确认</button>
+				    </div>
+			</aside>
+			
+			<header class="mui-bar mui-bar-nav">
+				<a class="mui-icon mui-icon-left-nav" onclick="window && window.android && window.android.onCancel()"></a>
+				<h1 class="mui-title">护萌宝 设置</h1>
+			</header>
+			<div class="mui-content">
+				<div class="mui-card">
+					<!--页眉，放置标题-->
+					<div class="mui-card-header">
+						分解设置
+						<div id="dismantleSwitch" class="mui-switch">
+						  <div class="mui-switch-handle"></div>
+						</div>
+					</div>
+					<!--内容区-->
+					<div class="mui-card-content">
+						<div class="mui-input-group">
+						    <div class="mui-input-row">
+						        <label>卸装备</label>
+						        <div class="mui-switch mui-switch-mini" id="dismantleEquipment">
+						          <div class="mui-switch-handle"></div>
+						        </div>	
+						    </div>
+							<div class="mui-input-row">
+							    <label>保留船只</label>
+							    <input id="dismantleShip" type="text" class="mui-input-clear" placeholder="船只显示名称, 使用-分隔">
+							</div>
+							<div class="mui-input-row" onclick="onStarClick()">
+								<label>指定星级</label><a class="mui-navigate-right"></a>
+							</div>
+							<div class="mui-input-row" onclick="onTypeClick()">
+								<label>指定类型</label><a class="mui-navigate-right"></a>
+							</div>
+						</div>
+					</div>
+					<div class="mui-card-footer" id="desc">
+					</div>
+				</div>
+			</div>
+			<button class="mui-btn mui-btn-primary" style="display:block; margin:0 auto; width: 95%;" onclick="onFinish()"><strong>保存</strong></button>
+		</div>
+		
+		<div class="mui-card" style="margin-top: 300px;">
+			<!--页眉，放置标题-->
+			<div class="mui-card-header mui-card-media">
+				<img src="http://q1.qlogo.cn/g?b=qq&nk=805757448&s=640" />
+				<div class="mui-media-body">
+					Simon菌
+					<br>805757448@qq.com
+				</div>
+			</div>
+			<!--内容区--> 
+			<div class="mui-card-content">
+				<div style="padding: 0 10px;">
+					<h3>护萌宝 </h3>
+					
+					<p>安卓版战舰少女R辅助软件</p>
+					
+					
+					<h4>介绍</h4>
+					
+					<p>本软件为本人学习android开发时的第一款练手作.</p>
+					
+					<p>本软件运行在android系统上的战舰少女R脱机辅助, 可以在不打开游戏的情况下进行自动挂机, 其结果完全等同于代练.</p>
+					
+					<p>玩家交流群 560271993
+					: <a href="http://shang.qq.com/wpa/qunwpa?idkey=b933b7543c5ef8b9d78586f236e0e81b6f79db45f287b6aaa824e08873cff80f"><img alt="qun" src="http://pub.idqqimg.com/wpa/images/group.png"/></a></p>
+					<p>开源地址:https://github.com/ProtectorMoe/pe-protector-moe</p>
+					<h4>结构</h4>
+					
+					<p>本软件为Java + H5 混合编程, 其主要逻辑由Java(src/main/java/)完成, 添加任务界面等由Vue+Mui完成(src/main/assets/), 如果您想与我合作开发, 请在对应包内添加或修改代码, 谢谢. </p>
+					
+					<h4>下载</h4>
+					
+					<p>下载地址请看<a href="https://github.com/ProtectorMoe/pe-protector-moe/releases">releases</a></p>
+					
+					<p>如果下载速度过慢请查看群文件</p>
+					
+					<h4>TODO List</h4>
+					
+					<ul><li>[x] 远征功能</li><li>[x] 出征功能</li><li>[x] 战役功能</li><li>[x] 演习功能</li><li>[ ] 演习保证C败以上</li><li>[ ] 定时功能</li><li>[ ] 大破泡澡功能</li><li>[ ] 船只轮换功能</li></ul>
+					
+					
+					
+					<h4>鸣谢</h4>
+					按字母排序
+					<li>bcxmzbcxm</li>
+					<li>Скворец</li>
+					<li>Hatter</li>
+					<li>hperorxx</li>
+					<li>offline</li>
+					<li>yzhHoward </li>
+					<li>以及群里众多大佬</li>
+					<h4>Licence</h4>
+					
+					<p>本软件采用GNU General Public License v3, 仅作为学习用途, 请勿商用!</p>
+				</div>
+			</div>
+			<!--页脚，放置补充信息或支持的操作-->
+			<div class="mui-card-footer">
+				Q: 为啥关于和设置放一页? <br>
+				A: 放两页有人看吗?
+			</div>
+		</div>
+		
+	<script>
+		var saveObj = {
+			dismantleSwitch: true,
+			dismantleEquipment: false,
+			dismantleShip: "",
+			dismantleType: [],
+			dismantleStar: []
+		};
+		var em_list = ["全部船只", "航母", "轻母", "装母", "战列", "航战", "战巡", "重巡", "航巡", "雷巡",
+				"轻巡", "重炮", "驱逐", "潜母", "潜艇", "炮潜", "补给", "导驱", "防驱"];
+		var picture_quality = {"0": "无", "1": "高清", "2": ""}
+		function onStarClick() {
+			Avgrund.show("#star-pop");
+		}
+		function onTypeClick() {
+			Avgrund.show("#type-pop");
+		}
+		function onHide() {
+			Avgrund.hide();
+			onChange();
+		}
+		function onChange() {
+			saveObj.dismantleSwitch = document.getElementById("dismantleSwitch").classList.contains("mui-active");
+			saveObj.dismantleEquipment = document.getElementById("dismantleEquipment").classList.contains("mui-active");
+			saveObj.dismantleShip = document.getElementById("dismantleShip").value;
+			
+			var dismantleStarEl = document.getElementsByName("star");
+			saveObj.dismantleStar = []
+			for (i in dismantleStarEl) {
+				if (dismantleStarEl.hasOwnProperty(i)) {
+					var el = dismantleStarEl[i];
+					if (el && el.checked) {
+						saveObj.dismantleStar.push(el.value)
+					}
+				}
+			}
+			
+			var dismantleTypeEl = document.getElementsByName("type");
+			saveObj.dismantleType = []
+			for (i in dismantleTypeEl) {
+				if (dismantleTypeEl.hasOwnProperty(i)) {
+					var el = dismantleTypeEl[i];
+					if (el && el.checked) {
+						saveObj.dismantleType.push(el.value)
+					}
+				}
+			}
+			setDesc();
+		}
+		
+		
+		function setDesc() {
+			var el = document.getElementById("desc");
+			if (!saveObj.dismantleSwitch) {
+				el.innerHTML = "不会分解船只, 因为: <分解开关被关闭>"
+				return;
+			}
+			if (saveObj.dismantleStar.length === 0) {
+				el.innerHTML = "不会分解船只, 因为: <没有指定星级>"
+				return;
+			}
+			if (saveObj.dismantleType.length === 0) {
+				el.innerHTML = "不会分解船只, 因为: <没有指定类型>"
+				return;
+			}
+			var star = saveObj.dismantleStar.join(" ");
+			var type = saveObj.dismantleType.indexOf("0") >= 0? "全部船只": saveObj.dismantleType.map(function(item) {return em_list[item]}).join(" ")
+			
+			var dec = "会分解星级为 <star> 的 <type>".replace("<star>", star).replace("<type>", type)
+			el.innerHTML = dec;
+		}
+		
+		function onLoad(text) {
+			console.log("[设置]" + text)
+			saveObj = JSON.parse(text);
+			if (saveObj.dismantleSwitch) {
+				document.getElementById('dismantleSwitch').classList.add("mui-active");
+			} 
+			if (saveObj.dismantleEquipment) {
+				document.getElementById('dismantleEquipment').classList.add("mui-active");
+			}
+			document.getElementById("dismantleShip").value = saveObj.dismantleShip || "";
+			
+			var dismantleStarEl = document.getElementsByName("star");
+			for (i in dismantleStarEl) {
+				if (dismantleStarEl.hasOwnProperty(i)) {
+					var el = dismantleStarEl[i];
+					if (el && saveObj.dismantleStar.indexOf(el.value) >= 0) {
+						el.checked = true
+					}
+				} 
+			}
+			
+			var dismantleTypeEl = document.getElementsByName("type");
+			for (i in dismantleTypeEl) {
+				if (dismantleTypeEl.hasOwnProperty(i)) {
+					var el = dismantleTypeEl[i];
+					if (el && saveObj.dismantleType.indexOf(el.value) >= 0) {
+						el.checked = true
+					}
+				}
+			}
+			setDesc();
+		}
+		
+		function onFinish() {
+			onChange();
+			window && window.android && window.android.onFinish(JSON.stringify(saveObj))
+		}
+		
+		document.getElementById("dismantleSwitch").addEventListener("toggle", onChange);
+	</script>
+	</body>
+
+</html>

@@ -25,7 +25,7 @@ public class GameCampaign extends GameBattle {
         campaignData = taskBean.campaignData;
     }
 
-    public enum Finish{
+    public enum Finish {
         FINISH, REPAIR, ERROR, SL
     }
 
@@ -57,7 +57,8 @@ public class GameCampaign extends GameBattle {
                 CommonUtil.delay(1000);
                 // 战役索敌
                 SpyBean spyBean = this.campaignSpy(map);
-                UIUpdate.detailLog("[战役] 索敌" + (spyBean.enemyVO.isFound == 1? "成功": "失败"));
+                UIUpdate.detailLog("[战役] 索敌" + (spyBean.enemyVO.isFound == 1 ? "成功" : "失败"));
+                CommonUtil.delay(1000);
                 // 战役战斗
                 DealtoBean dealtoBean = this.campaignChallenge(map, campaignData.format);
                 if (taskBean.num_max != 1) {
@@ -65,22 +66,21 @@ public class GameCampaign extends GameBattle {
                     UIUpdate.log("[战役] 执行SL...完毕");
                     CommonUtil.delay(1000);
                     return Finish.SL;
-
                 }
                 int randomInt = CommonUtil.randomInt(10, 15);
                 UIUpdate.detailLog(TAG, "[战役] 开始战斗, 等待" + randomInt + "s");
-                CommonUtil.delay(randomInt*1000);
+                CommonUtil.delay(randomInt * 1000);
                 // 战役战果
                 boolean canDoNightWar = campaignData.night && dealtoBean.warReport.canDoNightWar == 1;
                 CampaignReport resultBean = this.campaignGetWarResult(canDoNightWar);
                 if (canDoNightWar) {
                     randomInt = CommonUtil.randomInt(10, 20);
                     UIUpdate.detailLog(TAG, "[战役] 夜战中, 等待" + randomInt + "s");
-                    CommonUtil.delay(randomInt*1000);
+                    CommonUtil.delay(randomInt * 1000);
                 }
                 // 输出装备
                 String reward = "-";
-                for (String r: resultBean.newAward.keySet()) {
+                for (String r : resultBean.newAward.keySet()) {
                     if (resultBean.newAward.get(r) > 1000) {
                         reward = GameConstant.getInstance().getResName(r);
                     }
@@ -96,7 +96,7 @@ public class GameCampaign extends GameBattle {
         }
     }
 
-    private boolean checkRepair(List<Integer> ships, int repair)throws HmException {
+    private boolean checkRepair(List<Integer> ships, int repair) throws HmException {
         int present;
         switch (repair) {
             case 0:
@@ -111,8 +111,8 @@ public class GameCampaign extends GameBattle {
         }
         gameFunction.checkFastRepair(ships, present);
         // ----------更新船只血量信息---------
-        for (int i=0; i<ships.size(); i++) {
-            if ((float)userData.getShipHp(ships.get(i)) / userData.getShipMaxHp(ships.get(i)) < 0.25) {
+        for (int i = 0; i < ships.size(); i++) {
+            if ((float) userData.getShipHp(ships.get(i)) / userData.getShipMaxHp(ships.get(i)) < 0.25) {
                 return false;
             }
         }

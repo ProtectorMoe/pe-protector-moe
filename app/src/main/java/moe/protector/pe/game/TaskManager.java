@@ -28,6 +28,7 @@ public class TaskManager {
         }
         return taskManager;
     }
+
     private List<TaskBean> taskBeanList = new ArrayList<>();
 
     private TaskManager() {
@@ -39,14 +40,14 @@ public class TaskManager {
      * 接收来自WebView传过来的数据
      */
     public void addTask(String data) {
-       try {
-           TaskBean bean = JSON.parseObject(data, TaskBean.class);
-           taskBeanList.add(bean);
-           writeFile();
-       } catch (Exception e) {
-           Log.e(TAG, "解析配置出错");
-           e.printStackTrace();
-       }
+        try {
+            TaskBean bean = JSON.parseObject(data, TaskBean.class);
+            taskBeanList.add(bean);
+            writeFile();
+        } catch (Exception e) {
+            Log.e(TAG, "解析配置出错");
+            e.printStackTrace();
+        }
 
     }
 
@@ -54,14 +55,14 @@ public class TaskManager {
         Log.i(TAG, "[任务] 写入任务配置");
         String data = JSON.toJSONString(taskBeanList);
         Log.d(TAG, data);
-        SharedPreferences.Editor editor = App.getContext().getSharedPreferences("task",Context.MODE_PRIVATE).edit();
+        SharedPreferences.Editor editor = App.getContext().getSharedPreferences("task", Context.MODE_PRIVATE).edit();
         editor.putString("list", data);
         editor.apply();
     }
 
     private void readFile() {
         SharedPreferences preferences = App.getContext().getSharedPreferences("task", Context.MODE_PRIVATE);
-        String data = preferences.getString("list","[]");
+        String data = preferences.getString("list", "[]");
         Log.d(TAG, data);
         try {
             Log.d(TAG, "用户任务:" + data);
@@ -83,7 +84,9 @@ public class TaskManager {
     }
 
     public TaskBean getAvailableTask() {
-        if (!isRun) {return null;}
+        if (!isRun) {
+            return null;
+        }
         String time = DateUtil.timeStamp();
         Iterator<TaskBean> iterator = taskBeanList.iterator();
         while (iterator.hasNext()) {
@@ -91,7 +94,7 @@ public class TaskManager {
             // 完成的任务
             if (bean.isFinish()) {
                 iterator.remove();
-                new EventBusUtil(TAG + ".getAvailableTask",EventBusUtil.EVENT_TASK_CHANGE).post();
+                new EventBusUtil(TAG + ".getAvailableTask", EventBusUtil.EVENT_TASK_CHANGE).post();
                 continue;
             }
             // 解冻

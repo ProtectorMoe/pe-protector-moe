@@ -33,7 +33,7 @@ public class TaskListAdapter extends BaseItemDraggableAdapter<TaskBean, BaseView
             helper.setText(R.id.task_item_num, "0/1");
             FleetVo fleetVo = userData.fleet.get(String.valueOf(item.pvpData.fleet));
             helper.setText(R.id.task_item_fleet, fleetVo != null ? fleetVo.title : "未知舰队");
-        } else if(item.type.equals("campaign")) {
+        } else if (item.type.equals("campaign")) {
             helper.setText(R.id.task_item_name, item.name);
             helper.setText(R.id.task_item_num, item.num + "/" + item.num_max);
             helper.setText(R.id.task_item_fleet, "战役舰队");

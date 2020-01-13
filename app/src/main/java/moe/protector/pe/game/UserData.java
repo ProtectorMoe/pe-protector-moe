@@ -183,9 +183,11 @@ public class UserData {
     public PveNode getNode(String id) {
         return pveData.get(id);
     }
+
     public PveLevel getLevel(String id) {
         return pveLevel.get(id);
     }
+
     public PveBuff getBuff(String id) {
         return pveBuff.get(id);
     }
@@ -356,13 +358,15 @@ public class UserData {
 
     // ------------------------ 任务数据 --------------------------
     private HashMap<String, TaskVo> taskVo = new HashMap<>();
+
     public void setTaskVo(List<TaskVo> vo) {
-        for (TaskVo o: vo) {
+        for (TaskVo o : vo) {
             taskVo.put(o.taskCid, o);
         }
     }
+
     public void updateTaskVo(List<UpdateTaskVo> updateTaskVo) {
-        for (UpdateTaskVo vo: updateTaskVo) {
+        for (UpdateTaskVo vo : updateTaskVo) {
             TaskVo t = taskVo.get(vo.taskCid);
             if (t != null) {
                 t.condition = vo.condition;

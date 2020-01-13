@@ -3,63 +3,38 @@ package moe.protector.pe.game;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
 
+import moe.protector.pe.bean.SettingBean;
 import moe.protector.pe.util.App;
 
 public class Setting {
     private static Setting setting;
+
     public static Setting getInstance() {
         if (setting == null) setting = new Setting();
         return setting;
     }
 
+    public SettingBean settingBean = new SettingBean();
+
     public void init() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(App.getContext());
-        dismantleSwitch = preferences.getBoolean("pref_dismantle_switch", false);
-        dismantleEquipment = preferences.getBoolean("pref_dismantle_equipment", false);
-        dismantleStar = preferences.getStringSet("pref_dismantle_star", new HashSet<>());
-        dismantleType = preferences.getStringSet("pref_dismantle_type", new HashSet<>());
+        settingBean.dismantleSwitch = preferences.getBoolean("dismantle_switch", false);
+        settingBean.dismantleEquipment = preferences.getBoolean("dismantle_equipment", false);
+        settingBean.dismantleShip = preferences.getString("dismantle_ship", "");
+        settingBean.dismantleStar = new ArrayList<>(preferences.getStringSet("dismantle_star", new HashSet<>()));
+        settingBean.dismantleType = new ArrayList<>(preferences.getStringSet("dismantle_type", new HashSet<>()));
     }
 
-    public boolean isDismantleSwitch() {
-        return dismantleSwitch;
+    public void save() {
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(App.getContext()).edit();
+        editor.putBoolean("dismantle_switch", settingBean.dismantleSwitch);
+        editor.putBoolean("dismantle_equipment", settingBean.dismantleEquipment);
+        editor.putString("dismantle_ship", settingBean.dismantleShip);
+        editor.putStringSet("dismantle_star", new HashSet<>(settingBean.dismantleStar));
+        editor.putStringSet("dismantle_type", new HashSet<>(settingBean.dismantleType));
+        editor.apply();
     }
-
-    public boolean isDismantleEquipment() {
-        return dismantleEquipment;
-    }
-
-    public Set<String> getDismantleType() {
-        return dismantleType;
-    }
-
-    public Set<String> getDismantleStar() {
-        return dismantleStar;
-    }
-
-    public void setDismantleSwitch(boolean dismantleSwitch) {
-        this.dismantleSwitch = dismantleSwitch;
-    }
-
-    public void setDismantleEquipment(boolean dismantleEquipment) {
-        this.dismantleEquipment = dismantleEquipment;
-    }
-
-    public void setDismantleType(Set<String> dismantleType) {
-        this.dismantleType = dismantleType;
-    }
-
-    public void setDismantleStar(Set<String> dismantleStar) {
-        this.dismantleStar = dismantleStar;
-    }
-
-    private boolean dismantleSwitch;
-    private boolean dismantleEquipment;
-    private Set<String> dismantleType;
-    private Set<String> dismantleStar;
-
-
-
 }

@@ -94,6 +94,8 @@ public class TaskManagerHtml {
     public void onAddPath() {
         Intent intent = new Intent(App.getContext(), HtmlActivity.class);
         intent.putExtra("type", HtmlActivity.HTML_MAP);
+        intent.putExtra("name", "");
+        intent.putExtra("config", "");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         App.getContext().startActivity(intent);
     }

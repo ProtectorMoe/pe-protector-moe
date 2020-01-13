@@ -34,7 +34,8 @@ public class MainFragment extends Fragment {
     private static final String TAG = "MainFragment";
 
 
-    public MainFragment() {}
+    public MainFragment() {
+    }
 
     public static MainFragment getInstance() {
         if (mainFragment == null) {
@@ -51,7 +52,7 @@ public class MainFragment extends Fragment {
             View view = getView();
             if (view == null) return;
             TextView textView;
-            textView= view.findViewById(R.id.tv_now_task);
+            textView = view.findViewById(R.id.tv_now_task);
             textView.setText(savedInstanceState.getString("tv_now_task"));
             textView = view.findViewById(R.id.tv_now_log);
             textView.setText(savedInstanceState.getString("tv_now_log"));
@@ -63,7 +64,6 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
-
 
 
     @Override
@@ -88,10 +88,10 @@ public class MainFragment extends Fragment {
             if (view == null) return;
             ViewPager viewPager = view.findViewById(R.id.view_page_fleet);
             final TextView textView = view.findViewById(R.id.title_fleet);
-            FleetVo fleetVo = userData.fleet.get(String.valueOf(viewPager.getCurrentItem()+1));
-            textView.setText(fleetVo != null? fleetVo.title: "");
+            FleetVo fleetVo = userData.fleet.get(String.valueOf(viewPager.getCurrentItem() + 1));
+            textView.setText(fleetVo != null ? fleetVo.title : "");
             List<FleetRecyclerView> views = new ArrayList<>();
-            for (int i=1; i<=8; i++) {
+            for (int i = 1; i <= 8; i++) {
                 FleetRecyclerView recyclerView = new FleetRecyclerView(getContext());
                 recyclerView.setFleet(String.valueOf(i));
                 views.add(recyclerView);
@@ -106,7 +106,7 @@ public class MainFragment extends Fragment {
 
                 @Override
                 public void onPageSelected(int i) {
-                    FleetVo fleet = userData.fleet.get(String.valueOf(i+1));
+                    FleetVo fleet = userData.fleet.get(String.valueOf(i + 1));
                     if (fleet != null) {
                         textView.setText(fleet.title);
                     }
@@ -154,7 +154,7 @@ public class MainFragment extends Fragment {
             ship.setText(String.format(getResources().getString(R.string.ship_num), userData.allShip.size(), userData.shipNumTop));
             equipment.setText(String.format(getResources().getString(R.string.equipment_num), userData.equipmentSize(), userData.equipmentNumTop));
             repair.setText(String.valueOf(userData.packageGet(UserData.PACKAGE_FAST_REPAIR)));
-        }catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "刷新Res出现问题");
             e.printStackTrace();
         }
@@ -162,7 +162,7 @@ public class MainFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNowTaskChange(EventBusUtil util) {
-        if (util !=  null && util.getCode() == EventBusUtil.EVENT_NOW_TASK_CHANGE) {
+        if (util != null && util.getCode() == EventBusUtil.EVENT_NOW_TASK_CHANGE) {
             View view = getView();
             if (view == null) return;
             TextView textView = view.findViewById(R.id.tv_now_task);
@@ -172,14 +172,13 @@ public class MainFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDetailLog(EventBusUtil util) {
-        if (util !=  null && (util.getCode() == EventBusUtil.EVENT_DETAIL_LOG_ADD || util.getCode() == EventBusUtil.EVENT_LOG_ADD)) {
+        if (util != null && (util.getCode() == EventBusUtil.EVENT_DETAIL_LOG_ADD || util.getCode() == EventBusUtil.EVENT_LOG_ADD)) {
             View view = getView();
             if (view == null) return;
             TextView textView = view.findViewById(R.id.tv_now_log);
             textView.setText(util.getMessage());
         }
     }
-
 
 
     @Override

@@ -12,7 +12,7 @@ public class FleetViewPagerAdapter extends PagerAdapter {
     private List<FleetRecyclerView> fleetList;
 
     public FleetViewPagerAdapter(List<FleetRecyclerView> list) {
-        fleetList=list;
+        fleetList = list;
     }
 
     @Override
@@ -22,7 +22,7 @@ public class FleetViewPagerAdapter extends PagerAdapter {
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
-        return view==object;
+        return view == object;
     }
 
     @Override

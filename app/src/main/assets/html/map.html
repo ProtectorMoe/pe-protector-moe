@@ -17,55 +17,59 @@
 <script src="js/mui.picker.min.js"></script>
 <script src="js/mui.poppicker.js"></script>
 <script src="js/avgrund.js"></script>
-<script src="js/map-data.js"></script>
 <script type="text/javascript" charset="utf-8">
-        mui.init();
-    </script>
+	mui.init();
+</script>
 
 <div id="app">
 	<aside id="point-popup" class="avgrund-popup" style="width: 90%;margin-left: 5%; margin-top: 30%;">
 		<form class="mui-input-group">
 			<div class="mui-input-row">
-				<label>生效点:</label>
-				<input type="text" class="mui-input-clear" placeholder="请输入单点或多点" v-model="add_point" @change="onPointChange" @input="onPointChange">
+				<label>选择点:</label>
+				<input type="text" class="mui-input-clear" placeholder="请选择点" v-model="editPoint.flag" @click="onSelectNode" readonly >
 			</div>
-			<div class="mui-input-row">
+			<div class="mui-input-row" v-show="editPoint.data.nodeType == 1 || editPoint.data.nodeType == 2">
 				<label>夜战</label>
 				<div id="sw-night" class="mui-switch">
 					<div class="mui-switch-handle"></div>
 				</div>
 			</div>
-			<div class="mui-input-row">
+			<div class="mui-input-row" v-show="editPoint.data.roundabout == 1">
 				<label>迂回</label>
 				<div id="sw-round-about" class="mui-switch">
 					<div class="mui-switch-handle"></div>
 				</div>
 			</div>
-			<div class="mui-input-row">
+			<div class="mui-input-row" v-show="editPoint.data.nodeType == 1 || editPoint.data.nodeType == 2 || editPoint.data.nodeType == 10">
 				<label style="font-size: 14px;">索敌失败SL</label>
 				<div id="sw-round-fail" class="mui-switch">
 					<div class="mui-switch-handle"></div>
 				</div>
 			</div>
-			<div class="mui-input-row">
-				<label>回港</label>
+			<div class="mui-input-row" v-show="editPoint.data.nodeType == 3 || editPoint.data.nodeType == 5">
+				<label>SL</label>
 				<div id="sw-sl" class="mui-switch">
 					<div class="mui-switch-handle"></div>
 				</div>
 			</div>
-			<div class="mui-input-row mui-input-range">
-				<label>{{Array("", "单纵", "复纵", "轮型", "梯形", "单横")[add_format]}}</label>
-				<input v-model="add_format" type="range" min="1" max="5">
+			<div class="mui-input-row" v-show="editPoint.data.buff.length != 0">
+				<label>战况</label>
+				<input type="text" class="mui-input-numbox" v-model="editPoint.buffDec" @click="onBuffSelect" readonly>
+			</div>
+			<div class="mui-input-row mui-input-range" v-show="editPoint.data.nodeType == 1 || editPoint.data.nodeType == 2 || editPoint.data.nodeType == 10">
+				<label>{{Array("", "单纵", "复纵", "轮型", "梯形", "单横")[editPoint.format]}}</label>
+				<input v-model="editPoint.format" type="range" min="1" max="5">
 			</div>
 		</form>
 		<div class="mui-button-row">
-			<button class="mui-btn mui-badge-blue" @click="onAddSlClicked" style="margin-top: 5px; margin-left: -5px;">特殊</button>
-			<button class="mui-btn" @click="add_sl=[]" style="margin-top: 5px;">清空</button>
+			<button class="mui-btn mui-badge-blue" @click="onAddSlClicked" style="margin-top: 5px; margin-left: -5px;" v-show="editPoint.data.nodeType == 1 || editPoint.data.nodeType == 2 || editPoint.data.nodeType == 10">敌舰</button>
+			<button class="mui-btn" @click="editPoint.sL=[]" style="margin-top: 5px;" v-show="editPoint.data.nodeType == 1 || editPoint.data.nodeType == 2 || editPoint.data.nodeType == 10">清空</button>
+			<button class="mui-btn mui-btn-danger" @click="onHideClick" style="margin-top: 5px;"> 取消</button>
 			<button class="mui-btn mui-btn-green" @click="onSubmitPointClick" style="margin-top: 5px;"> 提交</button>
 		</div>
 
 		<ul class="mui-table-view" style="margin-top: 5px;">
-			<li class="mui-table-view-cell" v-for="(sl, index) in add_sl">
+			<li class="mui-table-view-cell" v-for="(sl, index) in editPoint.sL">
 				<div class="mui-slider-right mui-disabled">
 					<a class="mui-btn mui-btn-red mui-icon mui-icon-trash" @click="onDelDetail(index)"></a>
 				</div>
@@ -74,8 +78,6 @@
 				</div>
 			</li>
 		</ul>
-
-
 	</aside>
 	<header class="mui-bar mui-bar-nav">
 		<a class="mui-icon mui-icon-left-nav mui-pull-left" @click="onCancel"></a>
@@ -88,16 +90,11 @@
 			<!--页眉，地图和切换按钮-->
 			<div class="mui-card-header">
 				{{map_name}}
-				<a class="mui-btn" @click="onMapChangeClick" style="float: right">切换</a>
+				<a class="mui-btn mui-icon mui-icon-gear" @click="onMapChangeClick" style="float: right">切换</a>
 			</div>
 			<!--地图图片显示-->
 			<div class="mui-card-content">
 				<img v-bind:src="map_src" style="width: 100%; height: 100%;" alt="无图片">
-			</div>
-			<!--页脚 三个功能-->
-			<div class="mui-card-footer">
-				<a class="mui-card-link" @click="onEnemyClick">查看敌军</a>
-				<a class="mui-card-link" @click="onDropClick">查看掉落</a>
 			</div>
 		</div>
 
@@ -111,10 +108,6 @@
 						<label>迂回失败最多</label>
 						<input type="number" v-model="skip_fail_max" class="mui-input-numbox" placeholder="超过这个数就SL">
 					</div>
-					<div class="mui-input-row">
-						<label>战况选择</label>
-						<input type="text" @click="onBuffSelect" v-model="buff" class="mui-input-numbox" readonly>
-					</div>
 				</div>
 			</div>
 		</div>
@@ -122,19 +115,18 @@
 
 		<div class="mui-card">
 			<div class="mui-card-header">
-				点数设定
-				<a class="mui-btn" style="float: right" @click="onAddPointClick">添加点</a>
+				路径点
+				<a class="mui-btn mui-icon mui-icon-plusempty" style="float: right" @click="onAddPointClick">添加</a>
 			</div>
 			<div class="mui-card-content">
 				<ul class="mui-table-view">
 					<li class="mui-table-view-cell" v-for="(value, key) in user_point">
 						<div class="mui-slider-right mui-disabled">
-							<a class="mui-btn mui-btn-blue mui-icon mui-icon-gear" @click="onEditPoint(key)"></a>
 							<a class="mui-btn mui-btn-red mui-icon mui-icon-trash" @click="onDelPoint(key)"></a>
 
 						</div>
 						<div class="mui-slider-handle">
-							{{key}}点 {{format_list[value.format]}} {{value.night? "": "不"}}夜战 {{value.round_about? "": "不"}}迂回 {{value.sl? "": "不"}}SL {{value.detail.length == 0? "无":"有"}}特殊配置
+							{{key}}点 {{format_list[value.format]}} {{value.night? "": "不"}}夜战 {{value.roundabout? "迂回": ""}} {{value.spyFailSl? "索敌失败SL": ""}} {{value.sl? "资源点SL": ""}} {{value.detail.length == 0? "无":"有"}}特殊配置
 						</div>
 					</li>
 				</ul>
@@ -144,304 +136,361 @@
 				<a class="mui-card-link" @click="onSubmit">提交</a>
 			</div>
 		</div>
+		<p style="text-align: center; margin-top: 15px"> -左滑路径点可删除-</p>
 
 	</div>
 </div>
 <script type="text/javascript" charset="utf-8">
-        var app = new Vue({
-            el : "#app",
-			data : {
-				version: 1,
-				map_name: "",
+	var rawPveData;  // 保存传进来的pveData
+	var pveData = {
+		pveMap: [],  // 所有地图数据
+		pveNode: [], // 选择地图以后加载的数据
+		pveBuff: []
+	}
+	
+	var app = new Vue({
+		el : "#app",
+		data : {
+			version: 1,
+			map_name: "",
 
-				config_name: "",
+			config_name: "",
 
-				map_index: "",
-				map_src: "",
-				map_nodes: [],
-				user_point: {}, 
-				skip_fail_max: 2,
-				config_buff: 0,
+			map_index: "",
+			map_src: "",
+			map_nodes: [],
+			user_point: {}, 
+			skip_fail_max: 2,
+			config_buff: "0",
+			
+			
+			// 添加点绑定
+			deal_list: ['SL', '换单纵', '换复纵', '换轮型', '换梯形', '换单横'],
+			format_list: ['', '单纵', '复纵', '轮型', '梯形', '单横'],
+			em_list: ["", "航母", "轻母", "装母", "战列", "航战", "战巡", "重巡", "航巡", "雷巡",
+					"轻巡", "重炮", "驱逐", "潜母", "潜艇", "炮潜", "补给", "导驱", "防驱"],
+					
+					
+			editPoint: {
+				data: {
+					nodeType: "0",
+					roundabout: "0",
+					buff: []
+				},
+				flag: "",
+				format: 1,
+				sL: [],
+				buff: "0",
+				buffDec: "请选择战况",
+			}
+		},
+		methods: {
+			init: function() {
+				pveData.pveMap = [];
+				for (i in rawPveData.pveLevel) {
+					if (rawPveData.pveLevel.hasOwnProperty(i)) {
+						var level = rawPveData.pveLevel[i];
+						pveData.pveMap.push({
+							id: level.id,
+							title: level.title + " | " + level.subTitle,
+							src: "http://ima.ntwikis.com/cancollezh/maps/Map_⑨⑨⑨.png".replace("⑨⑨⑨", level.title)
+						})
+					}
+				}
 				
+				for (i in rawPveData.pveBuff) {
+					if (rawPveData.pveBuff.hasOwnProperty(i)) {
+						var buff = rawPveData.pveBuff[i];
+						pveData.pveBuff.push({
+							id: buff.id,
+							title: buff.desc.replace(/\^.{17}/g, " ").trim()
+						})
+					}
+				}
 				
-
-				// 添加点绑定
-				deal_list: ['SL', '换单纵', '换复纵', '换轮型', '换梯形', '换单横'],
-				format_list: ['', '单纵', '复纵', '轮型', '梯形', '单横'],
-				em_list: ["", "航母", "轻母", "装母", "战列", "航战", "战巡", "重巡", "航巡", "雷巡",
-				        "轻巡", "重炮", "驱逐", "潜母", "潜艇", "炮潜", "补给", "导驱", "防驱"],
-				buff_list: {'0': "无战况", '20000': '机密情报:E 火力+15,命中-10', '20001': '机密情报:E 命中+15,装甲-10', '20002': '机密情报:E 装甲,回避+10,火力-10', '20003': '机密情报:E U国舰船火力+15,装甲-10', '20004': '机密情报:E U国舰船火力+15,装甲-10', '20005': '特殊情报:G 全队航速+3,回避-5', '20006': '特殊情报:G 全队索敌+5,火力-5', '20007': '特殊情报:G 全队回避+10,装甲-10', '20008': '特殊情报:G 全队对空+10,命中-5', '20009': '特殊情报:G 全队装甲+10,索敌-5', '20010': '改装计划:L 战列火力+10,航母火力-10', '20011': '改装计划:L 航母火力+10,驱逐回避-10', '20012': '改装计划:L 驱逐回避+10,驱逐对空+10', '20013': '改装计划:L 轻巡和重巡火力+10,命中+10', '20014': '改装计划:L 潜艇鱼雷+10.航母,战列火力-5', '20015': '封锁条件 战列,战巡的火力-40,装甲-40。战斗S胜以下无法前进。（削弱条件：G,H点各击破一次并取得S胜及以上的战斗评级）', '20016': '封锁条件(削弱) 战列,战巡的火力-10,装甲-10。战斗B胜以下无法前进。', '20017': '小心翼翼 火力-10,命中-10,闪避+15,装甲+15', '20018': '稳步前进 航速-5,火力+5,命中+5', '20019': '火力万岁 火力+15,闪避-15,装甲-15,对空-15', '20020': '瞄准 命中+20,闪避-10,装甲-10', '20021': '搜索阵型 闪避+20,命中-15,火力-10'},
-				add_format: 1,
-				add_point: "",
-				add_sl: []
 			},
-			methods: {
-				// 点击换图时加载数据
-				onMapChangeClick: function() {
-					var picker = new mui.PopPicker();
-					picker.setData(PveMap.getAllMap());
-					picker.pickers[0].setSelectedValue('fourth', 100);
-					picker.show(function(SelectedItem) {
-						var index = SelectedItem[0]["value"];
-						app.onMapChanged(index);
-					});
-				},
-				// 当换图时更新数据
-				onMapChanged: function(index) {
-					app.map_index = index;
-					app.map_name = PveMap.getText(index);
-					app.map_src = PveMap.getSrc(index);
-					app.map_nodes = PveMap.getNode(index);
-				},
-				// 显示敌人时加载数据
-				onEnemyClick: function() {
-					var picker = new mui.PopPicker();
-					var nodes = PveMap.getNode(app.map_index).sort();
-					var data = [];
-					for (var d in nodes) {
-						data.push({
-							value: nodes[d],
-							text: nodes[d]
-						});
+			// 点击换图时加载数据
+			onMapChangeClick: function() {
+				var picker = new mui.PopPicker();
+				var pickerData = [];
+				for (i in pveData.pveMap) {
+					if (pveData.pveMap.hasOwnProperty(i)) {
+						pickerData.push({
+							value: pveData.pveMap[i].id,
+							text: pveData.pveMap[i].title
+						})
 					}
-					picker.setData(data);
-					picker.show(function(SelectedItem) {
-						var enemys = PveMap.getEnemy(app.map_index, SelectedItem[0]["value"]);
-						var d = enemys.join("<br>");
-						mui.alert(d,'结果','确认',function (e) {
-						},'div');
-					});
-				},
-				// 显示掉落时加载数据
-				onDropClick: function() {
-					var picker = new mui.PopPicker();
-					var nodes = PveMap.getNode(app.map_index).sort();
-					var data = [];
-					for (var d in nodes) {
-						data.push({
-							value: nodes[d],
-							text: nodes[d]
-						});
-					}
-					picker.setData(data);
-					picker.show(function(SelectedItem) {
-						var drop = PveMap.getDrop(app.map_index, SelectedItem[0]["value"]);
-						var drop_result = "";
-						for (var d in drop) {
-							if (drop.hasOwnProperty(d)) {
-								var i = drop[d];
-								if (drop.hasOwnProperty(d)) {
-									drop_result += "<font color={color}>{title}</font>".format({
-										color: i.color,
-										title: i.title
-									}) + " ";
+				}
+				picker.setData(pickerData);
+				picker.pickers[0].setSelectedValue('fourth', 100);
+				picker.show(function(SelectedItem) {
+					var index = SelectedItem[0]["value"];
+					app.onMapChanged(index);
+				});
+			},
+			// 当换图时更新数据
+			onMapChanged: function(id) {
+				app.user_point = {};
+				for (i in pveData.pveMap) {
+					if (pveData.pveMap.hasOwnProperty(i)) {
+						if (pveData.pveMap[i].id == id) {
+							//  带入地图数据
+							var level = pveData.pveMap[i];
+							app.map_index = level.id;
+							app.map_name = level.title;
+							app.map_src = level.src;
+							
+							// 解析点数数据
+							pveData.pveNode = [];
+							for (j in rawPveData.pveNode) {
+								if (rawPveData.pveNode.hasOwnProperty(j)) {
+									if (rawPveData.pveNode[j].pveLevelId == level.id) {
+										var node = rawPveData.pveNode[j];
+										pveData.pveNode.push({
+											flag: node.flag,
+											nodeType: node.nodeType,
+											roundabout: node.roundabout,
+											buff: node.buff
+										})
+									}
 								}
 							}
 						}
-						mui.alert(drop_result,'结果','确认',function (e) {
-						},'div');
-					});
-				},
-				// 显示战况选择时的弹窗
-				onBuffSelect: function() {
-					var picker = new mui.PopPicker();
-					var data = [];
-					for (var i in app.buff_list) {
-						if (app.buff_list.hasOwnProperty(i)) {
-							data.push({
-								value: i,
-								text: app.buff_list[i]
+					}
+				}
+			},
+			// 选择点时弹出来的
+			onSelectNode: function() {
+				var picker = new mui.PopPicker();
+				var pickerData = [];
+				var nodeType = {"1": "战斗点", "2": "BOSS点", "3": "资源点", "4": "待机点", "5": "收费站", "10": "航空点"}
+				for (i in pveData.pveNode) {
+					if (pveData.pveNode.hasOwnProperty(i)) {
+						var node = pveData.pveNode[i]
+						if (node.flag === "") {
+							continue;
+						}
+						pickerData.push({
+							text: node.flag + " | " + nodeType[node.nodeType],
+							value: node.flag
+						})
+					}
+				}
+				picker.setData(pickerData);
+				picker.pickers[0].setSelectedValue('fourth', 100);
+				picker.show(function(SelectedItem) {
+					app.onLoadNode(SelectedItem[0]["value"]);
+				});
+			},
+			onLoadNode: function(flag) {
+				for (i in pveData.pveNode) {
+					if (pveData.pveNode.hasOwnProperty(i)) {
+						if (pveData.pveNode[i].flag === flag) {
+							var node = pveData.pveNode[i]
+							app.editPoint.flag = flag,
+							app.editPoint.data.nodeType = node.nodeType,
+							app.editPoint.data.roundabout = node.roundabout,
+							app.editPoint.data.buff = node.buff
+							break;
+						}
+					}
+				}
+			},
+			
+			onBuffSelect: function() {
+				var picker = new mui.PopPicker();
+				var pickerData = [];
+				app.editPoint.data.buff.forEach(function(buff_item) {
+					pveData.pveBuff.forEach(function(buff) {
+						if (buff.id == buff_item) {
+							pickerData.push({
+								text: buff.title,
+								value: buff.id,
 							})
 						}
-					}
-					picker.setData(data);
-					picker.show(function(select){
-						app.config_buff = select[0]['value']
 					})
-				},
-				// 添加点点击时弹出dialog
-				onAddPointClick: function() {
-					app.add_point = "";
-					Avgrund.show("#point-popup");
-				},
-				// 点击关闭时关闭弹窗
-				onHideClick: function() {
-					Avgrund.hide();
-				},
-				// 特殊点时弹出选择器
-				onAddSlClicked: function() {
-					var picker = new mui.PopPicker({
-						layer: 3
-					});
-					var children2 = [];
-					for (var i=0; i<6; i++) {
-						children2.push({
-							value: i,
-							text: app.deal_list[i]
-						});
-					}
-					var children1 = [];
-					for (var i=1; i<=6; i++) {
-						children1.push({
-							value: i,
-							text: "≥" + i,
-							children: children2
-						});
-					}
-					for (var i=1; i<=6; i++) {
-						children1.push({
-							value: i+6,
-							text: "<" + i,
-							children: children2
-						});
-					}
-					var parent = [];
-					for (var i=1; i<=18; i++) {
-						parent.push({
-							value: i,
-							text: app.em_list[i],
-							children: children1
-						});
-					}
-					picker.setData(parent);
-					picker.show(function(SelectedItem) {
-						app.add_sl.push({
-							enemy: SelectedItem[0]["value"],
-							num: SelectedItem[1]["value"],
-							deal: SelectedItem[2]["value"]
-						});
-					});
-				},
-				// 提交多点
-				onSubmitPointClick: function() {
-					// 读取数据
-					var obj = {};
-					var point = app.add_point.toUpperCase().split("");
-					var night = document.getElementById("sw-night").classList.contains("mui-active");
-					var round_about = document.getElementById("sw-round-about").classList.contains("mui-active");
-					var sl = document.getElementById("sw-sl").classList.contains("mui-active");
-					obj.night = night;
-					obj.round_about = round_about;
-					obj.sl = sl;
-					obj.detail = JSON.parse(JSON.stringify(app.add_sl));
-					obj.format = app.add_format;
-					obj.spyFailSl = document.getElementById("sw-round-fail").classList.contains("mui-active");
-
-					// 提交数据
-					for (var node in point) {
-						n = point[node];
-						if (point.hasOwnProperty(node)) {
-							if (app.map_nodes.indexOf(n) > -1) {
-								console.log("提交" + n + "点数据");
-								Vue.set(app.user_point, n, obj);
-							}
-						}
-					}
-					app.onHideClick();
-				},
-				// 限制点的输入
-				onPointChange: function(event) {
-					var val = event.target.value.trim().toUpperCase().split("");
-					var node = app.map_nodes;
-					var data = [];
-					for (var c in val) {
-						if (val.hasOwnProperty(c) && node.indexOf(val[c]) > -1 && data.indexOf(val[c]) === -1) {
-							data.push(val[c]);
-						}
-					}
-					app.add_point = data.join(", ");
-				},
-				onDelPoint: function(index) {
-					Vue.delete(app.user_point, index);
-				},
-				onDelDetail: function(index) {
-					Vue.delete(app.add_sl, index);
-				},
-				onEditPoint: function(index) {
-					var detail = app.user_point[index];
-					app.add_format = detail.format;
-					app.add_point = index;
-					app.add_sl = JSON.parse(JSON.stringify(detail.detail));
-					Avgrund.show("#point-popup");
-				},
+				})
 				
-				onSubmit: function() {
-					mui.prompt('请输入配置名称', app.config_name,'提交',['取消','确认'],function (e) {
-					    if (e["index"] === 1) {
-							var obj = {};
-							obj.map = app.map_index;
-							obj.skipMax = app.skip_fail_max;
-							obj.buff = app.config_buff;
-							obj.detail = app.user_point;
-
-							var len = 0;
-							for (var i in obj.detail) {
-								if (obj.detail.hasOwnProperty(i)) {
-									len += 1;
-								}
-							}
-
-							if (len == 0) {
-								s = false;
-								mui.alert('点数为空, 无法保存','错误','返回',function (e) {
-								},'div');
-								return;
-							}
-
-							var name = e.value.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-							if (name === 0 && app.config_name.length === 0) {
-								s = false;
-								mui.alert('名字为空','错误','返回',function (e) {
-								},'div');
-								return;
-							}
-							onFinish(name || app.config_name, obj);
-						}
-					},'div');
-				},
-				onCancel: function() {
-					mui.confirm('确定取消操作吗? ','返回',['取消','确认'],function (e) {
-						if (e.index === 1) {
-							onCancel();
-						}
-					},'div');
-				},
-				onGetNum: function(num) {
-					return num<=6? (" ≥ " + num + " "): (" < " + String(num-6) + " ");
-				}
-
+				picker.setData(pickerData);
+				picker.pickers[0].setSelectedValue('fourth', 100);
+				picker.show(function(SelectedItem) {
+					app.editPoint.buff = SelectedItem[0].value
+					app.editPoint.buffDec = SelectedItem[0].text
+				});
 			},
-			computed: {
-				buff: function() {
-					return app.buff_list[app.config_buff];
-				}
+			// 添加点点击时弹出dialog
+			onAddPointClick: function() {
+				app.editPoint = {
+				data: {
+					nodeType: "0",
+					roundabout: "0",
+					buff: []
+				},
+				flag: "",
+				format: 1,
+				sL: [],
+				buff: "0",
+				buffDec: "请选择战况",
 			}
-		});
-		app.onMapChanged("101");
-
-		var onLoad = function(name, str) {
-			if (name !== undefined && str !== undefined) {
-				app.config_name = name || "";
-				if (str !== "") {
-					var obj = JSON.parse(str);
-					app.onMapChanged(obj.map);
-					app.user_point = obj.detail;
+				Avgrund.show("#point-popup");
+			},
+			// 点击关闭时关闭弹窗
+			onHideClick: function() {
+				Avgrund.hide();
+			},
+			// 特殊点时弹出选择器
+			onAddSlClicked: function() {
+				var picker = new mui.PopPicker({
+					layer: 3
+				});
+				var children2 = [];
+				for (var i=0; i<6; i++) {
+					children2.push({
+						value: i,
+						text: app.deal_list[i]
+					});
 				}
-				console.log("加载数据:" + JSON.stringify(app.user_point));
+				var children1 = [];
+				for (var i=1; i<=6; i++) {
+					children1.push({
+						value: i,
+						text: "≥" + i,
+						children: children2
+					});
+				}
+				for (var i=1; i<=6; i++) {
+					children1.push({
+						value: i+6,
+						text: "<" + i,
+						children: children2
+					});
+				}
+				var parent = [];
+				for (var i=1; i<=18; i++) {
+					parent.push({
+						value: i,
+						text: app.em_list[i],
+						children: children1
+					});
+				}
+				picker.setData(parent);
+				picker.show(function(SelectedItem) {
+					app.editPoint.sL.push({
+						enemy: SelectedItem[0]["value"],
+						num: SelectedItem[1]["value"],
+						deal: SelectedItem[2]["value"]
+					});
+				});
+			},
+			// 提交多点
+			onSubmitPointClick: function() {
+				// 读取数据
+				var obj = {};
+				if (app.editPoint.flag === "") {
+					app.onHideClick();
+					return;
+				}
+				console.log(app.editPoint.data.buff, app.editPoint.buff)
+				if (app.editPoint.data.buff.length != 0 && app.editPoint.buff == "0") {
+					mui.alert("请选择一个战况!");
+					return;
+				}
+				obj.night = document.getElementById("sw-night").classList.contains("mui-active");
+				obj.roundabout = document.getElementById("sw-round-about").classList.contains("mui-active");
+				obj.sl = document.getElementById("sw-sl").classList.contains("mui-active");
+				obj.detail = JSON.parse(JSON.stringify(app.editPoint.sL));
+				obj.format = app.editPoint.format;
+				obj.buff = app.editPoint.buff
+				obj.spyFailSl = document.getElementById("sw-round-fail").classList.contains("mui-active");
+				Vue.set(app.user_point, app.editPoint.flag, obj);
+				app.onHideClick();
+			},
+			// 限制点的输入
+			onDelPoint: function(index) {
+				Vue.delete(app.user_point, index);
+			},
+			onDelDetail: function(index) {
+				Vue.delete(app.editPoint.sL, index);
+			},
+			onSubmit: function() {
+				mui.prompt('请输入配置名称', app.config_name,'提交',['取消','确认'],function (e) {
+					if (e["index"] === 1) {
+						var obj = {};
+						obj.map = app.map_index;
+						obj.skipMax = app.skip_fail_max;
+						obj.detail = app.user_point;
+
+						var len = 0;
+						for (var i in obj.detail) {
+							if (obj.detail.hasOwnProperty(i)) {
+								len += 1;
+							}
+						}
+
+						if (len == 0) {
+							s = false;
+							mui.alert('点数为空, 无法保存','错误','返回',function (e) {
+							},'div');
+							return;
+						}
+
+						var name = e.value.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+						if (name === 0 && app.config_name.length === 0) {
+							s = false;
+							mui.alert('名字为空','错误','返回',function (e) {
+							},'div');
+							return;
+						}
+						onFinish(name || app.config_name, obj);
+					}
+				},'div');
+			},
+			onCancel: function() {
+				mui.confirm('确定取消操作吗? ','返回',['取消','确认'],function (e) {
+					if (e.index === 1) {
+						onCancel();
+					}
+				},'div');
+			},
+			onGetNum: function(num) {
+				return num<=6? (" ≥ " + num + " "): (" < " + String(num-6) + " ");
 			}
-		};
+		},
+		
+		
+	});
+	
+	
 
-		var onFinish = function(name, obj) {
-			var str = JSON.stringify(obj);
-			console.log("提交数据" + name + str);
-			window.android && window.android.onFinish(name, str);
-		};
+	var onLoad = function(name, str) {
+		rawPveData = JSON.parse(window.android.getPveData());
+		app.init();
+		app.onMapChanged('101')
+		if (name !== undefined && str !== undefined) {
+			app.config_name = name || "";
+			if (str !== "") {
+				var obj = JSON.parse(str);
+				app.onMapChanged(obj.map);
+				app.user_point = obj.detail;
+				app.skip_fail_max = obj.skipMax;
+				app.config_buff = obj.buff;
+			}
+			console.log("加载数据:" + JSON.stringify(app.user_point));
+		}
+	};
 
-		var onCancel = function() {
-			console.log("用户取消操作");
-			window.android && window.android.onCancel();
-		};
-    </script>
+	var onFinish = function(name, obj) {
+		var str = JSON.stringify(obj);
+		console.log("提交数据" + name + str);
+		window.android && window.android.onFinish(name, str);
+	};
+
+	var onCancel = function() {
+		console.log("用户取消操作");
+		window.android && window.android.onCancel();
+	};
+
+</script>
 
 </body>
 </html>

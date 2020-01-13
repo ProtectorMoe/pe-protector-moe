@@ -10,6 +10,7 @@ import android.webkit.WebView;
 import moe.protector.pe.MainActivity;
 import moe.protector.pe.R;
 import moe.protector.pe.html.MapPathHtml;
+import moe.protector.pe.html.SettingHtml;
 import moe.protector.pe.html.TaskAddHtml;
 import moe.protector.pe.html.TaskManagerHtml;
 import moe.protector.pe.interfaces.HttpFinishCallBack;
@@ -19,8 +20,10 @@ public class HtmlActivity extends AppCompatActivity {
     public static final int HTML_MAP = 0;
     public static final int HTML_TASK = 1;
     public static final int HTML_TASK_MANAGER = 2;
+    public static final int HTML_SETTING = 3;
 
     public static final int REQUEST_CODE = 2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +76,21 @@ public class HtmlActivity extends AppCompatActivity {
             case HTML_TASK_MANAGER:
                 // 用于管理任务
                 webview.addJavascriptInterface(new TaskManagerHtml(this, webview, new HttpFinishCallBack() {
+                    @Override
+                    public void onFinish(Bundle bundle) {
+                        setResult(RESULT_OK);
+                        finish();
+                    }
+
+                    @Override
+                    public void onCancel(Bundle bundle) {
+                        setResult(RESULT_CANCELED);
+                        finish();
+                    }
+                }), "android");
+                break;
+            case HTML_SETTING:
+                webview.addJavascriptInterface(new SettingHtml(webview, new HttpFinishCallBack() {
                     @Override
                     public void onFinish(Bundle bundle) {
                         setResult(RESULT_OK);

@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private DrawerLayout mDrawerLayout;
     private boolean isConnected = false;
     private MainService.MainBinder mainBinder;
+    MaterialViewPager materialViewPager;
 
 
     public static final int TASK_CHANGE = 1;
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 注册EventBus
         EventBus.getDefault().register(this);
         // 设置主页面
-        MaterialViewPager materialViewPager = findViewById(R.id.materialViewPager);
+        materialViewPager = findViewById(R.id.materialViewPager);
         materialViewPager.getViewPager().setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int i) {
@@ -127,12 +128,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             actionBar.setDisplayShowTitleEnabled(true);
             actionBar.setDisplayUseLogoEnabled(false);
             actionBar.setHomeButtonEnabled(true);
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu1);
+            actionBar.setHomeAsUpIndicator(R.drawable.right);
         }
 
         materialViewPager.getViewPager().setOffscreenPageLimit(materialViewPager.getViewPager().getAdapter().getCount());
         materialViewPager.getPagerTitleStrip().setViewPager(materialViewPager.getViewPager());
-
         // 设置颜色
         materialViewPager.setMaterialViewPagerListener(page -> {
             switch (page) {
@@ -148,10 +148,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     return HeaderDesign.fromColorResAndUrl(
                             R.color.cyan,
                             Config.SETU[2]);
-//                case 3:
-//                    return HeaderDesign.fromColorResAndUrl(
-//                            R.color.red,
-//                            "https://acg.toubiec.cn/random?size=mw690&r=" + Config.RAND[3]);
             }
             return null;
         });
@@ -164,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         actionButtonSetting.setOnClickListener(this);
 
         // 判断是否登录成功的, 唤起登录activity
-        if (!Config.hasLogin){
+        if (!Config.hasLogin) {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivityForResult(intent, LoginActivity.REQUEST_CODE);
         }
@@ -180,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     break;
                 case R.id.nav_cloud:
                     new SweetAlertDialog(this, SweetAlertDialog.CUSTOM_IMAGE_TYPE)
-                            .setCustomImage(R.drawable.cloud)
+                            .setCustomImage(R.drawable.global)
                             .setTitleText("云服务")
                             .setContentText("云服务是运行在服务器上的'护萌宝', 您可以在不打开软件的情况下进行24小时远征等操作, 保护手机, 且价格极其低廉, 是否去看看?")
                             .setConfirmText("去看看")
@@ -191,8 +187,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 Intent intent1 = new Intent(Intent.ACTION_VIEW, uri);
                                 startActivity(intent1);
                                 sweetAlertDialog.cancel();
-                                setResult(RESULT_CANCELED);
-                                finish();
                             })
 
                             .show();
@@ -224,18 +218,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.action_setting:
                 Log.i(TAG, "[UI] 开启设置界面");
                 floatingActionsMenu.collapse();
-                Intent intent1 = new Intent(MainActivity.this, FragmentActivity.class);
-                intent1.putExtra("type", FragmentActivity.SETTING_FRAGMENT);
-                startActivity(intent1);
+                Intent intent3 = new Intent(MainActivity.this, HtmlActivity.class);
+                intent3.putExtra("type", HtmlActivity.HTML_SETTING);
+                startActivity(intent3);
                 break;
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        switch (requestCode){
+        switch (requestCode) {
             case LoginActivity.REQUEST_CODE: // 登录界面的返回值
-                if (resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK) {
                     new EventBusUtil("MainActivity.onActivityResult", EVENT_LOGIN_FINISH, "登录完成").post();
                     new EventBusUtil("MainActivity.onActivityResult", EVENT_RES_CHANGE).post();
                     new EventBusUtil("MainActivity.onActivityResult", EVENT_FLEET_CHANGE).post();
@@ -290,11 +284,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.menu_play:
                 TaskManager.isRun = !TaskManager.isRun;
-                item.setIcon(TaskManager.isRun? R.drawable.play: R.drawable.stop);
+                item.setIcon(TaskManager.isRun ? R.drawable.play : R.drawable.stop);
                 View v = getWindow().getDecorView().findViewById(R.id.coordinatorLayout);
-                Snackbar.make(v, "已" + (TaskManager.isRun? "开始": "停止") + "任务", Snackbar.LENGTH_SHORT)
-                .show();
+                Snackbar.make(v, "已" + (TaskManager.isRun ? "开始" : "停止") + "任务", Snackbar.LENGTH_SHORT)
+                        .show();
                 break;
+            case R.id.menu_download:
+                Uri uri = Uri.parse(Config.SETU[materialViewPager.getViewPager().getCurrentItem()].replace("mw690", "large"));
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
         }
         return true;
     }
@@ -302,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mainBinder = (MainService.MainBinder)service;
+            mainBinder = (MainService.MainBinder) service;
         }
 
         @Override

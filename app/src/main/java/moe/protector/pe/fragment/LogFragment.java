@@ -122,16 +122,15 @@ public class LogFragment extends Fragment {
                 TextView tv_sl_num = view.findViewById(R.id.tv_sl_num);
 
 
-
                 int oil = userData.userBaseData.userVo.oil - counter.getOil();
                 int ammo = userData.userBaseData.userVo.ammo - counter.getAmmo();
                 int steel = userData.userBaseData.userVo.steel - counter.getSteel();
                 int aluminium = userData.userBaseData.userVo.aluminium - counter.getAl();
 
-                tv_oil_change.setText((oil >= 0? "+": "") + oil);
-                tv_ammo_change.setText((ammo >= 0? "+": "") + ammo);
-                tv_steel_change.setText((steel >= 0? "+": "") + steel);
-                tv_aluminium_change.setText((aluminium >= 0? "+": "") + aluminium);
+                tv_oil_change.setText((oil >= 0 ? "+" : "") + oil);
+                tv_ammo_change.setText((ammo >= 0 ? "+" : "") + ammo);
+                tv_steel_change.setText((steel >= 0 ? "+" : "") + steel);
+                tv_aluminium_change.setText((aluminium >= 0 ? "+" : "") + aluminium);
 
                 tv_battle_num.setText(String.valueOf(counter.getBattleNum()));
                 tv_node_num.setText(String.valueOf(counter.getNodeNum()));

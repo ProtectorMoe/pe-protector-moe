@@ -23,7 +23,8 @@ public class GamePvp extends GameBattle {
     private int format;
     private int fleet;
     private boolean doNightWar;
-    public GamePvp (TaskBean taskBean){
+
+    public GamePvp(TaskBean taskBean) {
         this.format = taskBean.pvpData.format;
         this.fleet = taskBean.pvpData.fleet;
         this.doNightWar = taskBean.pvpData.night;
@@ -38,7 +39,7 @@ public class GamePvp extends GameBattle {
             List<PvpUser> pvpList = new ArrayList<>();
             // 获取演习列表
             GetChallengeListBean getPvpList = this.getChallengeList();
-            for (GetChallengeListBean.UserList user: getPvpList.list) {
+            for (GetChallengeListBean.UserList user : getPvpList.list) {
                 if (user.resultLevel == 0) {
                     pvpList.add(new PvpUser(user.uid, "pvp", user.username, user.fleetName));
                 }
@@ -47,13 +48,13 @@ public class GamePvp extends GameBattle {
             List<PvpUser> friendList = new ArrayList<>();
             String friendData = netSender.friendGetlist();
             FriendGetlistBean friendGetlistBean = JSON.parseObject(friendData, FriendGetlistBean.class);
-            for (FriendGetlistBean.Friend friend: friendGetlistBean.list) {
+            for (FriendGetlistBean.Friend friend : friendGetlistBean.list) {
                 String data = netSender.friendVisitorFriend(friend.uid);
                 FriendVisitorFriendBean visitorFriend = JSON.parseObject(data, FriendVisitorFriendBean.class);
                 if (3 - visitorFriend.challengeNum - friendList.size() <= 0) {
                     break;
                 }
-                if (visitorFriend.challengeScore == 0 && visitorFriend.friendFleet.size() > 0 ) {
+                if (visitorFriend.challengeScore == 0 && visitorFriend.friendFleet.size() > 0) {
                     friendList.add(new PvpUser(friend.uid, "friend", friend.username, "驻防编队"));
                 }
             }
@@ -67,26 +68,26 @@ public class GamePvp extends GameBattle {
                 head = user.type;
                 // 演习索敌
                 SpyBean spyBean = this.pvpSpy(head, user.uid, this.fleet);  // 获取索敌数据
-                UIUpdate.detailLog(TAG, "[演习] " + (user.type.equals("pvp")? "对手": "好友") + ": " + user.username + "-" + user.fleetName);
+                UIUpdate.detailLog(TAG, "[演习] " + (user.type.equals("pvp") ? "对手" : "好友") + ": " + user.username + "-" + user.fleetName);
                 CommonUtil.delay(2000);
                 // 开始战斗
                 DealtoBean dealtoBean = this.pvpChallenge(head, user.uid, this.fleet, this.format);
                 int randomInt = CommonUtil.randomInt(10, 20);
                 UIUpdate.detailLog(TAG, "[演习] 开始战斗, 等待" + randomInt + "s");
-                CommonUtil.delay(randomInt*1000);
+                CommonUtil.delay(randomInt * 1000);
                 // 准备夜战
                 GetResultBean resultBean = this.challengeGetWarResult(head, dealtoBean.warReport.canDoNightWar == 1 && this.doNightWar);
                 if (dealtoBean.warReport.canDoNightWar == 1) {
                     randomInt = CommonUtil.randomInt(10, 15);
                     UIUpdate.detailLog(TAG, "[演习] 夜战中, 等待" + randomInt + "s");
-                    CommonUtil.delay(randomInt*1000);
+                    CommonUtil.delay(randomInt * 1000);
                 }
                 // 战斗结束
-                String [] assess = {"-", "SS", "S", "A", "B", "C", "D"};
+                String[] assess = {"-", "SS", "S", "A", "B", "C", "D"};
                 String resultLevel = assess[resultBean.warResult.resultLevel];
                 // 获取mvp
                 String mvp = "-";
-                for (int i=0; i<fleetVo.ships.size(); i++) {
+                for (int i = 0; i < fleetVo.ships.size(); i++) {
                     GetResultBean.ShipResult result = resultBean.warResult.selfShipResults.get(i);
                     if (result.isMvp == 1) {
                         mvp = userData.getShipName(fleetVo.ships.get(i));
@@ -110,6 +111,7 @@ class PvpUser {
     String type;
     String username;
     String fleetName;
+
     PvpUser(String uid, String type, String username, String fleetName) {
         this.uid = uid;
         this.type = type;

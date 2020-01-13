@@ -11,11 +11,13 @@ import java.util.List;
 
 import moe.protector.pe.interfaces.HttpFinishCallBack;
 import moe.protector.pe.sqlite.MapConfigBean;
+import moe.protector.pe.util.Config;
 
 public class MapPathHtml {
     private HttpFinishCallBack callBack;
     private static final String TAG = "MapPathHtml";
-    public MapPathHtml(String name, String config, WebView webview, HttpFinishCallBack callBack){
+
+    public MapPathHtml(String name, String config, WebView webview, HttpFinishCallBack callBack) {
         this.callBack = callBack;
         webview.loadUrl("file:///android_asset/html/map.html");
         webview.setWebViewClient(new WebViewClient() {
@@ -50,7 +52,7 @@ public class MapPathHtml {
         List<MapConfigBean> list = LitePal.select("*")
                 .where("name=?", name)
                 .find(MapConfigBean.class);
-        for (MapConfigBean b: list) {
+        for (MapConfigBean b : list) {
             b.delete();
         }
         MapConfigBean bean = new MapConfigBean();
@@ -63,6 +65,11 @@ public class MapPathHtml {
     @JavascriptInterface
     public void onCancel() {
         callBack.onCancel(null);
+    }
+
+    @JavascriptInterface
+    public String getPveData() {
+        return Config.pveData;
     }
 
 }

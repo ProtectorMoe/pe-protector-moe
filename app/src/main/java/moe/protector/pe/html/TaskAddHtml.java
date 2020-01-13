@@ -20,15 +20,15 @@ public class TaskAddHtml {
     private static final String TAG = "TaskAddHtml";
     private HttpFinishCallBack callBack;
 
-    public TaskAddHtml(WebView webview, HttpFinishCallBack callBack){
+    public TaskAddHtml(WebView webview, HttpFinishCallBack callBack) {
         this.callBack = callBack;
         List<MapConfigBean> list = LitePal.findAll(MapConfigBean.class);
         List<String> name = new ArrayList<>();
-        for (MapConfigBean m: list) {
+        for (MapConfigBean m : list) {
             name.add(m.name);
         }
         webview.loadUrl("file:///android_asset/html/task.html");
-        webview.setWebViewClient(new WebViewClient(){
+        webview.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);

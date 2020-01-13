@@ -65,7 +65,7 @@ public abstract class GameBattle {
 
     }
 
-    protected DealtoBean challengeDealTo(String node, String fleet, String format) throws HmException{
+    protected DealtoBean challengeDealTo(String node, String fleet, String format) throws HmException {
         try {
             String data = netSender.battleDealto(head, node, fleet, format);
             return JSON.parseObject(data, DealtoBean.class);
@@ -75,7 +75,7 @@ public abstract class GameBattle {
         }
     }
 
-    protected GetResultBean challengeGetWarResult(String head, boolean isNightFight) throws HmException{
+    protected GetResultBean challengeGetWarResult(String head, boolean isNightFight) throws HmException {
         try {
             String data = netSender.battleGetWarResult(head, isNightFight);
             return JSON.parseObject(data, GetResultBean.class);
@@ -85,7 +85,7 @@ public abstract class GameBattle {
         }
     }
 
-    protected void backToPort() throws HmException{
+    protected void backToPort() throws HmException {
         netSender.bseaGetData();
         netSender.liveGetUserInfo();
         netSender.activeGetUserData();
@@ -123,7 +123,7 @@ public abstract class GameBattle {
         }
     }
 
-    protected CampaignGetUserData campaignGetUserData() throws HmException{
+    protected CampaignGetUserData campaignGetUserData() throws HmException {
         try {
             String data = netSender.campaignGetUserData();
             return JSON.parseObject(data, CampaignGetUserData.class);
@@ -133,7 +133,7 @@ public abstract class GameBattle {
         }
     }
 
-    protected CampaignGetFleet campaignGetFleet(String map) throws HmException{
+    protected CampaignGetFleet campaignGetFleet(String map) throws HmException {
         try {
             String data = netSender.campaignGetFleet(map);
             return JSON.parseObject(data, CampaignGetFleet.class);
@@ -143,7 +143,7 @@ public abstract class GameBattle {
         }
     }
 
-    protected SpyBean campaignSpy(String map) throws HmException{
+    protected SpyBean campaignSpy(String map) throws HmException {
         try {
             String data = netSender.campaignSpy(map);
             return JSON.parseObject(data, SpyBean.class);
@@ -153,7 +153,7 @@ public abstract class GameBattle {
         }
     }
 
-    protected DealtoBean campaignChallenge(String map, int format) throws HmException{
+    protected DealtoBean campaignChallenge(String map, int format) throws HmException {
         try {
             String data = netSender.campaignChallenge(map, format);
             return JSON.parseObject(data, DealtoBean.class);
@@ -163,7 +163,7 @@ public abstract class GameBattle {
         }
     }
 
-    protected CampaignReport campaignGetWarResult(boolean isNightFight) throws HmException{
+    protected CampaignReport campaignGetWarResult(boolean isNightFight) throws HmException {
         try {
             String data = netSender.battleGetWarResult("campaign", isNightFight);
             return JSON.parseObject(data, CampaignReport.class);

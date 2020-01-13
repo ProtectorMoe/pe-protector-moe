@@ -17,9 +17,10 @@ import moe.protector.pe.util.FileUtil;
 
 public class FleetMemberAdapter extends RecyclerView.Adapter<FleetMemberAdapter.ViewHolder> {
     private List<FleetMember> mFleetMember;
+
     public FleetMemberAdapter(List<Integer> fleet) {
         mFleetMember = new ArrayList<>();
-        for (int i: fleet){
+        for (int i : fleet) {
             mFleetMember.add(new FleetMember(i));
         }
     }
@@ -29,6 +30,7 @@ public class FleetMemberAdapter extends RecyclerView.Adapter<FleetMemberAdapter.
         TextView textViewName;
         TextView textViewLevel;
         TextView textViewHp;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.fleet_item_photo);

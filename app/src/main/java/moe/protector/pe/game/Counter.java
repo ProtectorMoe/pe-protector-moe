@@ -4,8 +4,12 @@ import moe.protector.pe.util.EventBusUtil;
 
 public class Counter {
     private static final String TAG = "Counter";
-    private Counter () {}
+
+    private Counter() {
+    }
+
     private static Counter mCounter;
+
     public static Counter getInstance() {
         if (mCounter == null) mCounter = new Counter();
         return mCounter;
@@ -64,14 +68,17 @@ public class Counter {
         battleNum++;
         new EventBusUtil(TAG, EventBusUtil.EVENT_RES_CHANGE).post();
     }
+
     public void slNumAdd() {
         slNum++;
         new EventBusUtil(TAG, EventBusUtil.EVENT_RES_CHANGE).post();
     }
+
     public void nodeNumAdd() {
         nodeNum++;
         new EventBusUtil(TAG, EventBusUtil.EVENT_RES_CHANGE).post();
     }
+
     public void finishNumAdd() {
         finishNum++;
         new EventBusUtil(TAG, EventBusUtil.EVENT_RES_CHANGE).post();

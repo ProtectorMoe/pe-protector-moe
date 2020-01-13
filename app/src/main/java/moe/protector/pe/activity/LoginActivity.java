@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
     public static final int LOGIN_RES = 4;
 
     Handler loginHandler = new Handler(msg -> {
-        switch (msg.what){
+        switch (msg.what) {
             case LOGIN_SHOW_DIALOG:
                 loginAlertDialog.show();
                 break;
@@ -65,12 +65,12 @@ public class LoginActivity extends AppCompatActivity {
                 loginAlertDialog.cancel();
                 new SweetAlertDialog(LoginActivity.this)
                         .setTitleText("出错了!")
-                        .setContentText((String)msg.obj)
+                        .setContentText((String) msg.obj)
                         .show();
                 break;
             case LOGIN_SHOW_SERVER:  // 登录成功
-                String [] serverArray = msg.getData().getStringArray("serverArray");
-                String [] hostArray = msg.getData().getStringArray("hostArray");
+                String[] serverArray = msg.getData().getStringArray("serverArray");
+                String[] hostArray = msg.getData().getStringArray("hostArray");
                 AlertDialog.Builder dialog = new AlertDialog.Builder(LoginActivity.this);
                 dialog.setTitle("选择服务器");
                 dialog.setIcon(R.mipmap.icon);
@@ -94,7 +94,7 @@ public class LoginActivity extends AppCompatActivity {
                 dialog.show();
                 break;
             case LOGIN_RES:
-                loginAlertDialog.setTitleText((String)msg.obj);
+                loginAlertDialog.setTitleText((String) msg.obj);
                 break;
         }
         return true;
@@ -190,6 +190,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     long lastPressTime = 0;
+
     @Override
     public void onBackPressed() {
         if (new Date().getTime() - lastPressTime < 1000) {
@@ -205,7 +206,7 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * 第一次登录, 返回host, uid, cookie
      */
-    private void firstLogin(){
+    private void firstLogin() {
         // 获取id值
         showLoginDialog();
         final EditText ed_username = findViewById(R.id.ed_username);
@@ -221,20 +222,20 @@ public class LoginActivity extends AppCompatActivity {
         edit.putInt("server", server);
         edit.apply();
         // 正式进行登录
-        Log.i(TAG,"[登录] 第一次登录准备开始");
+        Log.i(TAG, "[登录] 第一次登录准备开始");
         FirstLogin login = FirstLogin.getInstance();
         login.initialize(username, pwd, server);
         new Thread(() -> login.readLogin(new FirstLoginCallBack() {
             @Override
             public void onFinish(SparseArray<LoginServerListBean.ServerList> serverList, int defaultServer) {
                 // 登录成功, 获取项目
-                Log.i(TAG,"[登录] 第一次登录成功, 显示服务器");
+                Log.i(TAG, "[登录] 第一次登录成功, 显示服务器");
                 Message message = new Message();
                 message.what = LOGIN_SHOW_SERVER;
 
-                String [] serverArray = new String[serverList.size()];
+                String[] serverArray = new String[serverList.size()];
                 String[] hostArray = new String[serverList.size()];
-                for (int i=0; i<serverList.size(); i++){
+                for (int i = 0; i < serverList.size(); i++) {
                     serverArray[i] = serverList.valueAt(i).name;
                     hostArray[i] = serverList.valueAt(i).host;
                 }
@@ -247,6 +248,7 @@ public class LoginActivity extends AppCompatActivity {
                 message.setData(bundle);
                 loginHandler.sendMessage(message);
             }
+
             @Override
             public void onError(String errMsg) {
                 Log.i(TAG, "[登录] 第一次登陆失败!" + errMsg);
@@ -263,9 +265,9 @@ public class LoginActivity extends AppCompatActivity {
         })).start();
     }
 
-    private void secondLogin(){
+    private void secondLogin() {
         // 第二次登录
-        Log.i(TAG,"[登录] 第二次登录准备开始...");
+        Log.i(TAG, "[登录] 第二次登录准备开始...");
         Message message = new Message();
         message.what = LOGIN_RES;
         message.obj = "登录中, 请稍候...";
@@ -274,7 +276,7 @@ public class LoginActivity extends AppCompatActivity {
         new Thread(() -> secondLogin.login(new SecondLoginCallBack() {
             @Override
             public void onFinish() {
-                Log.i(TAG,"[登录] 登录成功, 开始跳转主界面...");
+                Log.i(TAG, "[登录] 登录成功, 开始跳转主界面...");
                 Config.hasLogin = true;
                 stopLoginDialog();
                 setResult(RESULT_OK);
@@ -282,10 +284,11 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
             }
+
             @Override
             public void onError(String errMsg) {
                 // 取消加载信息
-                Log.e(TAG,"第二次登录错误");
+                Log.e(TAG, "第二次登录错误");
                 stopLoginDialog();
                 // 显示错误信息
                 showMessageDialog(errMsg);
@@ -293,19 +296,19 @@ public class LoginActivity extends AppCompatActivity {
         })).start();
     }
 
-    private void showLoginDialog(){
+    private void showLoginDialog() {
         Message message = new Message();
         message.what = LOGIN_SHOW_DIALOG;
         loginHandler.sendMessage(message);
     }
 
-    private void stopLoginDialog(){
+    private void stopLoginDialog() {
         Message message = new Message();
         message.what = LOGIN_CANCEL_DIALOG;
         loginHandler.sendMessage(message);
     }
 
-    private void showMessageDialog(String errMsg){
+    private void showMessageDialog(String errMsg) {
         Message message = new Message();
         message.what = LOGIN_ERROR;
         message.obj = errMsg;

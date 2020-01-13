@@ -20,4 +20,5 @@ public class Config {
     public static boolean isRepairFleet = false;
     public static final StringBuilder errMsg = new StringBuilder();
     public static String [] SETU = {Img.getRandomSetu(), Img.getRandomSetu(), Img.getRandomSetu()};
+    public static String pveData;
 }

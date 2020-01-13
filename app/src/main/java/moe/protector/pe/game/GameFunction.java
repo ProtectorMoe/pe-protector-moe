@@ -8,7 +8,6 @@ import com.alibaba.fastjson.JSON;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import moe.protector.pe.bean.DismantleBean;
 import moe.protector.pe.bean.FastRepairBean;
@@ -16,6 +15,7 @@ import moe.protector.pe.bean.GetExploreBean;
 import moe.protector.pe.bean.LoginServerListBean;
 import moe.protector.pe.bean.RepairCompleteBean;
 import moe.protector.pe.bean.RubdownBean;
+import moe.protector.pe.bean.SettingBean;
 import moe.protector.pe.bean.StartExploreBean;
 import moe.protector.pe.bean.SupplyBean;
 import moe.protector.pe.bean.common.PveExploreVo;
@@ -208,13 +208,14 @@ public class GameFunction {
 
     public void checkSupply(List<Integer> ships) throws HmException {
         try {
+            CommonUtil.delay(1000);
             Log.i(TAG, "[出征] 船只补给...");
             String supplyData = netSender.boatSupplyBoats(ships);
             SupplyBean supplyBean = JSON.parseObject(supplyData, SupplyBean.class);
             // 更新船只信息
             userData.userVoUpdate(supplyBean.userVo);
             userData.allShipSetAllShipVO(supplyBean.shipVO);
-            CommonUtil.delay(2000);
+            CommonUtil.delay(1000);
         } catch (Exception e) {
             Log.e(TAG, "检测补给出错:" + e.getMessage());
             throw new HmException(e);
@@ -230,12 +231,14 @@ public class GameFunction {
         if (userData.allShip.size() < userData.shipNumTop) {
             return true;
         }
-        if (Setting.getInstance().isDismantleSwitch()) {
+        if (Setting.getInstance().settingBean.dismantleSwitch) {
             List<Integer> needDismantle = new ArrayList<>();
-            Set<String> type = Setting.getInstance().getDismantleType();
-            Set<String> saveStar = Setting.getInstance().getDismantleStar();
-            boolean isSave = Setting.getInstance().isDismantleEquipment();
-
+            SettingBean settingBean = Setting.getInstance().settingBean;
+            List<String> type = settingBean.dismantleType;
+            List<String> saveStar = settingBean.dismantleStar;
+            boolean isSave = settingBean.dismantleEquipment;
+            String[] dismantleShip = settingBean.dismantleShip.split("-");
+            outer:
             for (int i = 0; i < userData.allShip.size(); i++) {
                 UserShipVO userShipVO = userData.allShip.valueAt(i);
                 // 分析船只信息
@@ -248,6 +251,14 @@ public class GameFunction {
                 if (userShipVO.isLocked == 1 || userShipVO.fleet_id != 0) {
                     continue;
                 }
+                if (dismantleShip.length > 0 && !dismantleShip[0].equals("")) {
+                    for (String savingShipName: dismantleShip) {
+                        if (userShipVO.title.contains(savingShipName)) {
+                            continue outer;
+                        }
+                    }
+                }
+
                 needDismantle.add(userShipVO.id);
             }
             if (needDismantle.size() != 0) {
@@ -288,7 +299,7 @@ public class GameFunction {
         for (int ship : shipList) {
             UserShipVO userShipVO = userData.allShip.get(ship);
             if (userShipVO != null) {
-                if ((float)userShipVO.battleProps.hp / (float)userShipVO.battlePropsMax.hp * 100 <= present) {
+                if ((float) userShipVO.battleProps.hp / (float) userShipVO.battlePropsMax.hp * 100 <= present) {
                     needRepair.add(userShipVO.id);
                 }
             }
@@ -313,7 +324,6 @@ public class GameFunction {
             UIUpdate.log("[修理] 修理船只:" + shipName);
         }
     }
-
 
 
     private void reLogin(final ReloginCallBack callBack) {
@@ -369,7 +379,6 @@ public class GameFunction {
         }
         return true;
     }
-
 
 
 }
