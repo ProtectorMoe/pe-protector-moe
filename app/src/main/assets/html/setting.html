@@ -106,6 +106,32 @@
 			</header>
 			<div class="mui-content">
 				<div class="mui-card">
+					<div class="mui-card-header">
+						软件设置 (重启软件生效)
+					</div>
+					<div class="mui-card-content">
+						<div class="mui-input-group">
+						    <div class="mui-input-row">
+						        <label>后台保活</label>
+						        <div class="mui-switch mui-switch-mini" id="backgroundServer">
+						          <div class="mui-switch-handle"></div>
+						        </div>	
+						    </div>
+							<div class="mui-input-row">
+							    <label>重置数据库</label>
+							    <div class="mui-switch mui-switch-mini" id="resetDatabase">
+							      <div class="mui-switch-handle"></div>
+							    </div>	
+							</div>
+						</div>
+					</div>
+					<div class="mui-card-footer">
+						后台保活将会消耗更多电量<br>
+						重置数据库用于修复船只数据异常问题
+					</div>
+				</div>
+				
+				<div class="mui-card">
 					<!--页眉，放置标题-->
 					<div class="mui-card-header">
 						分解设置
@@ -141,7 +167,7 @@
 			<button class="mui-btn mui-btn-primary" style="display:block; margin:0 auto; width: 95%;" onclick="onFinish()"><strong>保存</strong></button>
 		</div>
 		
-		<div class="mui-card" style="margin-top: 300px;">
+		<div class="mui-card" style="margin-top: 200px;">
 			<!--页眉，放置标题-->
 			<div class="mui-card-header mui-card-media">
 				<img src="http://q1.qlogo.cn/g?b=qq&nk=805757448&s=640" />
@@ -210,7 +236,9 @@
 			dismantleEquipment: false,
 			dismantleShip: "",
 			dismantleType: [],
-			dismantleStar: []
+			dismantleStar: [],
+			resetDatabase: false,
+			backgroundServer: false,
 		};
 		var em_list = ["全部船只", "航母", "轻母", "装母", "战列", "航战", "战巡", "重巡", "航巡", "雷巡",
 				"轻巡", "重炮", "驱逐", "潜母", "潜艇", "炮潜", "补给", "导驱", "防驱"];
@@ -229,6 +257,8 @@
 			saveObj.dismantleSwitch = document.getElementById("dismantleSwitch").classList.contains("mui-active");
 			saveObj.dismantleEquipment = document.getElementById("dismantleEquipment").classList.contains("mui-active");
 			saveObj.dismantleShip = document.getElementById("dismantleShip").value;
+			saveObj.resetDatabase = document.getElementById("resetDatabase").classList.contains("mui-active");
+			saveObj.backgroundServer = document.getElementById("backgroundServer").classList.contains("mui-active");
 			
 			var dismantleStarEl = document.getElementsByName("star");
 			saveObj.dismantleStar = []
@@ -276,15 +306,30 @@
 			el.innerHTML = dec;
 		}
 		
+		function setSwitchAction(id, state) {
+			var el = document.getElementById(id);
+			if (!el) return;
+			var classList = el.classList;
+			if (state && !classList.contains("mui-active")) {
+				classList.add("mui-active")
+			}
+			if (!state && classList.contains("mui-active")) {
+				classList.remove("mui-active")
+			}
+		}
+		
 		function onLoad(text) {
 			console.log("[设置]" + text)
 			saveObj = JSON.parse(text);
-			if (saveObj.dismantleSwitch) {
-				document.getElementById('dismantleSwitch').classList.add("mui-active");
-			} 
-			if (saveObj.dismantleEquipment) {
-				document.getElementById('dismantleEquipment').classList.add("mui-active");
-			}
+			
+			setSwitchAction("dismantleSwitch", saveObj.dismantleSwitch);
+			setSwitchAction("dismantleEquipment", saveObj.dismantleEquipment);
+			setSwitchAction("dismantleSwitch", saveObj.dismantleSwitch);
+			setSwitchAction("resetDatabase", saveObj.resetDatabase);
+			setSwitchAction("backgroundServer", saveObj.backgroundServer);
+			
+			
+			
 			document.getElementById("dismantleShip").value = saveObj.dismantleShip || "";
 			
 			var dismantleStarEl = document.getElementsByName("star");

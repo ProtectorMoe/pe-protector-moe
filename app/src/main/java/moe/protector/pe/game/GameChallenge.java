@@ -117,7 +117,7 @@ public class GameChallenge extends GameBattle {
                 UIUpdate.detailLog(TAG, String.format("[出征] 进点%s → %s", nowFlag, configBean.detail.containsKey(nowFlag) ? "继续" : "SL"));
                 CommonUtil.delay(1000);
                 if (!configBean.detail.containsKey(nowFlag)) {  // 当前点是否为期望点
-                    UIUpdate.log("[出征] 进错点, SL");
+                    UIUpdate.detailLog("[出征] 进错点, SL");
                     throw new ChallengeException(ChallengeException.EXCEPTION_SL); //  进行SL
                 }
                 int nodeType = Integer.valueOf(pveNode.nodeType);  // 当前点的类型

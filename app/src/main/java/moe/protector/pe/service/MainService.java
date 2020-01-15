@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -22,12 +23,11 @@ import moe.protector.pe.exception.OperateException;
 import moe.protector.pe.game.Counter;
 import moe.protector.pe.game.GameCampaign;
 import moe.protector.pe.game.GameChallenge;
-import moe.protector.pe.game.GameConstant;
 import moe.protector.pe.game.GameFunction;
 import moe.protector.pe.game.GamePvp;
+import moe.protector.pe.game.Setting;
 import moe.protector.pe.game.TaskManager;
 import moe.protector.pe.game.UIUpdate;
-import moe.protector.pe.game.UserData;
 import moe.protector.pe.util.CommonUtil;
 import moe.protector.pe.util.EventBusUtil;
 import moe.protector.pe.util.Util;
@@ -39,10 +39,11 @@ public class MainService extends Service {
     private MainBinder mBinder = new MainBinder();
     private Thread thread;
     private GameFunction gameFunction = GameFunction.getInstance();
-    private GameConstant gameConstant = GameConstant.getInstance();
-    private UserData userData = UserData.getInstance();
     private TaskManager taskManager = TaskManager.getInstance();
     private static boolean inRun = false;
+
+    private MediaPlayer mMediaPlayer;
+    private Thread mediaThread;
 
     @Override
     public void onCreate() {
@@ -72,11 +73,36 @@ public class MainService extends Service {
                 .setOngoing(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         manager.notify(1, builder.build());
+
+        mMediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.no_notice);
+        mMediaPlayer.setLooping(true);
+
     }
+
+    private void startPlayMusic() {
+        if (mMediaPlayer != null && !mMediaPlayer.isPlaying()) {
+            Log.e(TAG, "启动后台播放音乐");
+            mediaThread = new Thread(() -> mMediaPlayer.start());
+            mediaThread.start();
+        }
+    }
+
+    private void stopPlayMusic() {
+        if (mMediaPlayer != null) {
+            Log.e(TAG, "关闭后台播放音乐");
+            mMediaPlayer.stop();
+        }
+    }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // 主进程开始
+        if (Setting.getInstance().settingBean.backgroundServer) {
+            startPlayMusic();
+        }
+
+
         thread = new Thread(() -> {
             UIUpdate.log("[线程] 开启主线程");
             inRun = true;
@@ -231,6 +257,9 @@ public class MainService extends Service {
         stopForeground(true);
         if (inRun) {
             thread.interrupt();
+            mediaThread.interrupt();
+            mMediaPlayer.stop();
+            mMediaPlayer.release();
         }
         manager.cancel(1);
         Log.i(TAG, "[服务] 主服务停止");

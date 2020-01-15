@@ -3,9 +3,11 @@ package moe.protector.pe.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.LinearLayout;
 
 import moe.protector.pe.MainActivity;
 import moe.protector.pe.R;
@@ -17,6 +19,7 @@ import moe.protector.pe.interfaces.HttpFinishCallBack;
 
 public class HtmlActivity extends AppCompatActivity {
     private WebView webview;
+    LinearLayout webLayout;
     public static final int HTML_MAP = 0;
     public static final int HTML_TASK = 1;
     public static final int HTML_TASK_MANAGER = 2;
@@ -30,13 +33,15 @@ public class HtmlActivity extends AppCompatActivity {
         setContentView(R.layout.activity_html);
 
         // 对web进行初始设置
-        webview = findViewById(R.id.webView);
+        webLayout = findViewById(R.id.webview_parent);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        webview = new WebView(getApplicationContext());
+        webview.setLayoutParams(layoutParams);
         WebSettings webSettings = webview.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setDefaultTextEncodingName("UTF-8");
         webSettings.setDomStorageEnabled(true);
         webview.setWebChromeClient(new WebChromeClient());
-
         Intent intent = getIntent();
         switch (intent.getIntExtra("type", HTML_MAP)) {
             case HTML_MAP:
@@ -105,7 +110,19 @@ public class HtmlActivity extends AppCompatActivity {
                 }), "android");
                 break;
         }
+        webLayout.addView(webview);
 
+    }
 
+    @Override
+    protected void onDestroy() {
+        if (webview != null) {
+            webview.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
+            webview.clearHistory();
+            ((ViewGroup) webview.getParent()).removeView(webview);
+            webview.destroy();
+            webview = null;
+        }
+        super.onDestroy();
     }
 }

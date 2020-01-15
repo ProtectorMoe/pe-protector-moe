@@ -6,8 +6,8 @@ android {
         applicationId "moe.protector.pe"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 8
-        versionName "1.0.5.1"
+        versionCode 9
+        versionName "1.0.5.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -21,6 +21,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     buildToolsVersion '28.0.3'
+    sourceSets { main { res.srcDirs = ['src/main/res', 'src/main/res/raw'] } }
 }
 
 dependencies {

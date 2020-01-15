@@ -232,8 +232,10 @@ public class FirstLogin {
             // 读取版本号
             Log.i(TAG, "[登录] 加载init数据...");
             long dataVersion = Long.valueOf(gameConstant.getVersion());
-            if (Long.valueOf(Config.resVersion) > dataVersion) {
+            if (Long.valueOf(Config.resVersion) > dataVersion || Setting.getInstance().settingBean.resetDatabase) {
                 // 开始下载资料
+                Setting.getInstance().settingBean.resetDatabase = false;
+                Setting.getInstance().save();
                 Log.i(TAG, "[登录] 数据过期, 加载新数据...");
                 callBack.onChange("下载游戏基础数据....");
                 initData = netSender.getInitData();

@@ -26,6 +26,8 @@ public class Setting {
         settingBean.dismantleShip = preferences.getString("dismantle_ship", "");
         settingBean.dismantleStar = new ArrayList<>(preferences.getStringSet("dismantle_star", new HashSet<>()));
         settingBean.dismantleType = new ArrayList<>(preferences.getStringSet("dismantle_type", new HashSet<>()));
+        settingBean.backgroundServer = preferences.getBoolean("background_server", false);
+        settingBean.resetDatabase = preferences.getBoolean("reset_database", false);
     }
 
     public void save() {
@@ -35,6 +37,8 @@ public class Setting {
         editor.putString("dismantle_ship", settingBean.dismantleShip);
         editor.putStringSet("dismantle_star", new HashSet<>(settingBean.dismantleStar));
         editor.putStringSet("dismantle_type", new HashSet<>(settingBean.dismantleType));
+        editor.putBoolean("background_server", settingBean.backgroundServer);
+        editor.putBoolean("reset_database", settingBean.resetDatabase);
         editor.apply();
     }
 }

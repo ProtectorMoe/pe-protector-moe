@@ -8,4 +8,7 @@ public class SettingBean {
     public String dismantleShip;
     public List<String> dismantleType;
     public List<String> dismantleStar;
+
+    public boolean resetDatabase;
+    public boolean backgroundServer;
 }
