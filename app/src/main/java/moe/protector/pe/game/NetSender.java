@@ -194,6 +194,7 @@ public class NetSender {
         return data;
     }
 
+
     /**
      * 获取活动的点数信息
      *
@@ -609,9 +610,9 @@ public class NetSender {
      * @param fleet 队伍
      * @throws HmException 服务器错误信息
      */
-    public void battleChallenge(String map, String fleet) throws HmException {
+    public void battleChallenge(String head, String map, String fleet) throws HmException {
         try {
-            String url = Config.host + String.format(Locale.CHINA, "pve/cha11enge/%s/%s/0/", map, fleet) + this.getUrlEnd();
+            String url = Config.host + String.format(Locale.CHINA, "%s/cha11enge/%s/%s/0/", head, map, fleet) + this.getUrlEnd();
             Requests requests = new Requests.Builder()
                     .url(url)
                     .get()
@@ -713,7 +714,8 @@ public class NetSender {
      */
     public String battleDealto(String head, String node, String fleet, String format) throws HmException {
         try {
-            String url = Config.host + String.format(Locale.CHINA, "%s/dealto/%s/%s/%s/", head, node, fleet, format) + this.getUrlEnd();
+            String deal = head.equals("five") ? "deal" : "dealto";
+            String url = Config.host + String.format(Locale.CHINA, "%s/%s/%s/%s/%s/", head, deal, node, fleet, format) + this.getUrlEnd();
             Requests requests = new Requests.Builder()
                     .url(url)
                     .get()

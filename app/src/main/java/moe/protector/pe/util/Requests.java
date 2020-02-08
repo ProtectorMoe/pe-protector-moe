@@ -7,11 +7,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import moe.protector.pe.interceptor.HeaderInterceptor;
 import moe.protector.pe.interceptor.LoggingInterceptor;
 
 import moe.protector.pe.interceptor.RetryInterceptor;
+import okhttp3.ConnectionPool;
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.FormBody;
@@ -30,26 +32,33 @@ public class Requests {
     public byte[] content;
 
     // 私有的构建器
-    private Requests(){}
+    private Requests() {
+    }
+
     private static List<Cookie> cookieStore = new ArrayList<>();
     private static OkHttpClient okHttpClient = new OkHttpClient.Builder()
             .cookieJar(new CookieJar() {
                 @Override
                 public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
-                    if (url.host().contains("login")){
+                    if (url.host().contains("login")) {
                         cookieStore = cookies;
                     }
                 }
+
                 @Override
                 public List<Cookie> loadForRequest(HttpUrl url) {
                     List<Cookie> cookies = cookieStore;
                     String host = url.host();
-                    if (host.contains("passport") || host.contains("login")){
+                    if (host.contains("passport") || host.contains("login")) {
                         return new ArrayList<>();
                     }
                     return cookies != null ? cookies : new ArrayList<>();
                 }
             })
+            .readTimeout(100, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            .connectionPool(new ConnectionPool(32, 5, TimeUnit.SECONDS))
             .addInterceptor(new HeaderInterceptor())
             .addInterceptor(new LoggingInterceptor())
             .addInterceptor(new RetryInterceptor(3))
@@ -71,7 +80,7 @@ public class Requests {
     private boolean isGZipDecompress = false;
 
     // 工厂函数进行构建
-    public static class Builder{
+    public static class Builder {
         private int method = 0;
         private String url = "";
         private Map<String, String> header = null;
@@ -82,42 +91,48 @@ public class Requests {
         private boolean isZlibDecompress = false;
         private boolean isGZipDecompress = false;
 
-        public Builder url(String url){
+        public Builder url(String url) {
             this.url = url;
             return this;
         }
-        public Builder get(){
+
+        public Builder get() {
             this.method = GET;
             return this;
         }
-        public Builder header(Map<String, String> header){
+
+        public Builder header(Map<String, String> header) {
             this.header = header;
             return this;
         }
-        public Builder post(String data){
+
+        public Builder post(String data) {
             this.method = POST;
             this.post_method = STRING_DATA;
             this.data_string = data;
             return this;
         }
-        public Builder post(Map<String, String> data){
+
+        public Builder post(Map<String, String> data) {
             this.method = POST;
             this.post_method = MAP_DATA;
             this.data_map = data;
             return this;
         }
-        public Builder zlib(){
+
+        public Builder zlib() {
             this.isZlibDecompress = true;
             this.isGZipDecompress = false;
             return this;
         }
-        public Builder gzip(){
+
+        public Builder gzip() {
             this.isZlibDecompress = false;
             this.isGZipDecompress = true;
             return this;
         }
 
-        public Requests build(){
+        public Requests build() {
             Requests requests = new Requests();
             requests.method = this.method;
             requests.url = this.url;
@@ -132,24 +147,24 @@ public class Requests {
     }
 
     // 执行
-    public Requests execute(){
+    public Requests execute() {
         try {
             final Request.Builder requestBuilder = new Request.Builder();
             requestBuilder.url(this.url);
             // 获取请求模式
-            if (this.method == GET){
+            if (this.method == GET) {
                 // get模式
                 requestBuilder.get();
-            }else {
+            } else {
                 // post模式
-                if (this.post_method == STRING_DATA){
+                if (this.post_method == STRING_DATA) {
                     // post模式且数据为String
                     MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
                     requestBuilder.post(RequestBody.create(mediaType, this.data_string));
-                }else if (this.post_method == MAP_DATA){
+                } else if (this.post_method == MAP_DATA) {
                     // post模式且数据为Map
                     FormBody.Builder formBody = new FormBody.Builder();
-                    for (String key: this.data_map.keySet()){
+                    for (String key : this.data_map.keySet()) {
                         formBody.add(key, this.data_map.get(key));
                     }
                     RequestBody requestBody = formBody.build();
@@ -157,8 +172,8 @@ public class Requests {
                 }
             }
             // 添加header
-            if (this.header != null){
-                for (String key: header.keySet()){
+            if (this.header != null) {
+                for (String key : header.keySet()) {
                     requestBuilder.addHeader(key, header.get(key));
                 }
             }
@@ -170,22 +185,26 @@ public class Requests {
             // 获取byte
             this.content = Encode.ioToByteArray(io);
             // 获取字符串
-            if (this.isZlibDecompress){  // zlib解压
+            if (this.isZlibDecompress) {  // zlib解压
                 this.text = new String(Encode.zlib_decompress(this.content));
-            } else if (this.isGZipDecompress){  //gzip解压
+            } else if (this.isGZipDecompress) {  //gzip解压
                 this.text = Encode.gzipUncompress(this.content);
             } else {
                 this.text = new String(this.content);  // 直接获取字符串
             }
             return this;
-        }catch (IOException e){
+        } catch (IOException e) {
+            e.printStackTrace();
             Log.e(TAG, e.getMessage());
             this.text = e.getMessage();
+            return this;
+        } catch (Exception e) {
+            e.printStackTrace();
             return this;
         }
     }
 
-    public static void clearCookie(){
+    public static void clearCookie() {
         cookieStore.clear();
     }
 }

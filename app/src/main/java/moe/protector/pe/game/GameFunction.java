@@ -134,7 +134,7 @@ public class GameFunction {
                 userData.updateTaskVos(taskAdd);
             }
         } catch (HmException e) {
-            System.out.println(e.getMessage());
+            Log.e(TAG, e.getMessage());
             e.printStackTrace();
         }
     }

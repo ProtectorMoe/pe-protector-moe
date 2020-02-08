@@ -86,10 +86,7 @@ public class GameChallenge extends GameBattle {
             mapName = userData.getLevel(this.map).title;
             // 活动关的设置舰队
             if (Integer.valueOf(this.map) > 1000) {
-                netSender.setFleet(1);
-                netSender.setFleet(2);
-                netSender.setFleet(3);
-                netSender.setFleet(4);
+                this.head = "five";
             }
             // -----------进行补给------------
             UIUpdate.detailLog(TAG, "[出征] 补给检测");
@@ -135,7 +132,7 @@ public class GameChallenge extends GameBattle {
                     CommonUtil.delay(2000);
                 }
                 // 1:普通点, 2:BOSS点, 3:资源点 4:待机点, 5:收费站, 10:航空站
-                if (nodeType == 1 || nodeType == 2 || nodeType == 10) {
+                if (nodeType == 1 || nodeType == 2 || nodeType == 10 || nodeType == 11) {
                     // --------------开始索敌-------------
                     UIUpdate.detailLog(TAG, "[出征] 进行索敌");
                     CommonUtil.delay(2000);
@@ -192,7 +189,7 @@ public class GameChallenge extends GameBattle {
                 }
                 // ------------------开始战斗----------------
                 DealtoBean dealtoBean = challengeDealTo(nowNode, this.fleet, nowFormat);
-                if (nodeType == 1 || nodeType == 2 || nodeType == 10) {
+                if (nodeType == 1 || nodeType == 2 || nodeType == 10 || nodeType == 11) {
                     // 正常点需要延迟
                     counter.battleNumAdd();
                     int randomInt = CommonUtil.randomInt(10, 15);

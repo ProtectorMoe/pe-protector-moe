@@ -1,8 +1,8 @@
 package moe.protector.pe.bean.common;
 
 public class DockVo {
-    int id;
-    int locked;
-    String shipId;
-    String endTime;
+    public int id;
+    public int locked;
+    public String shipId;
+    public String endTime;
 }

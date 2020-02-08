@@ -23,7 +23,6 @@ import moe.protector.pe.util.Util;
 public class FirstLogin {
     private static final String TAG = "FirstLogin";
 
-    // 私有构造器
     private FirstLogin() {
     }
 
@@ -141,14 +140,14 @@ public class FirstLogin {
         // 获取没有卵用的init数据
 
         getResData(callBack);
-        netSender.loginInitConfig();
+        // netSender.loginInitConfig();
 
         // 读取token
         SharedPreferences preferences = context.getSharedPreferences("token", Context.MODE_PRIVATE);
         String token = preferences.getString(this.username, "");
 
         while (true) {
-            if (token.length() < 10) {
+            if (token.length() < 10 || true) {
                 token = this.getToken();
             }
             // 验证token

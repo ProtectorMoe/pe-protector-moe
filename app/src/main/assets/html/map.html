@@ -40,7 +40,7 @@
 					<div class="mui-switch-handle"></div>
 				</div>
 			</div>
-			<div class="mui-input-row" v-show="editPoint.data.nodeType == 1 || editPoint.data.nodeType == 2 || editPoint.data.nodeType == 10">
+			<div class="mui-input-row" v-show="editPoint.data.nodeType == 1 || editPoint.data.nodeType == 2 || editPoint.data.nodeType == 10 || editPoint.data.nodeType == 11">
 				<label style="font-size: 14px;">索敌失败SL</label>
 				<div id="sw-round-fail" class="mui-switch">
 					<div class="mui-switch-handle"></div>
@@ -56,14 +56,14 @@
 				<label>战况</label>
 				<input type="text" class="mui-input-numbox" v-model="editPoint.buffDec" @click="onBuffSelect" readonly>
 			</div>
-			<div class="mui-input-row mui-input-range" v-show="editPoint.data.nodeType == 1 || editPoint.data.nodeType == 2 || editPoint.data.nodeType == 10">
+			<div class="mui-input-row mui-input-range" v-show="editPoint.data.nodeType == 1 || editPoint.data.nodeType == 2 || editPoint.data.nodeType == 10 || editPoint.data.nodeType == 11">
 				<label>{{Array("", "单纵", "复纵", "轮型", "梯形", "单横")[editPoint.format]}}</label>
 				<input v-model="editPoint.format" type="range" min="1" max="5">
 			</div>
 		</form>
 		<div class="mui-button-row">
-			<button class="mui-btn mui-badge-blue" @click="onAddSlClicked" style="margin-top: 5px; margin-left: -5px;" v-show="editPoint.data.nodeType == 1 || editPoint.data.nodeType == 2 || editPoint.data.nodeType == 10">敌舰</button>
-			<button class="mui-btn" @click="editPoint.sL=[]" style="margin-top: 5px;" v-show="editPoint.data.nodeType == 1 || editPoint.data.nodeType == 2 || editPoint.data.nodeType == 10">清空</button>
+			<button class="mui-btn mui-badge-blue" @click="onAddSlClicked" style="margin-top: 5px; margin-left: -5px;" v-show="editPoint.data.nodeType == 1 || editPoint.data.nodeType == 2 || editPoint.data.nodeType == 10 || editPoint.data.nodeType == 11">敌舰</button>
+			<button class="mui-btn" @click="editPoint.sL=[]" style="margin-top: 5px;" v-show="editPoint.data.nodeType == 1 || editPoint.data.nodeType == 2 || editPoint.data.nodeType == 10 || editPoint.data.nodeType == 11">清空</button>
 			<button class="mui-btn mui-btn-danger" @click="onHideClick" style="margin-top: 5px;"> 取消</button>
 			<button class="mui-btn mui-btn-green" @click="onSubmitPointClick" style="margin-top: 5px;"> 提交</button>
 		</div>
@@ -141,6 +141,7 @@
 	</div>
 </div>
 <script type="text/javascript" charset="utf-8">
+	var debug = !(window && window.android);
 	var rawPveData;  // 保存传进来的pveData
 	var pveData = {
 		pveMap: [],  // 所有地图数据
@@ -167,8 +168,9 @@
 			// 添加点绑定
 			deal_list: ['SL', '换单纵', '换复纵', '换轮型', '换梯形', '换单横'],
 			format_list: ['', '单纵', '复纵', '轮型', '梯形', '单横'],
-			em_list: ["", "航母", "轻母", "装母", "战列", "航战", "战巡", "重巡", "航巡", "雷巡",
-					"轻巡", "重炮", "驱逐", "潜母", "潜艇", "炮潜", "补给", "导驱", "防驱"],
+			em_list: {1: "航母",2: "轻母",3: "装母",4: "战列",5: "航战",6: "战巡",7: "重巡",8: "航巡",
+					9: "雷巡",10: "轻巡",11: "重炮",12: "驱逐",13: "潜母",14: "潜艇",15: "炮潜",16: "补给",
+					23: "导驱", 24: "防驱", 26: "导战"},
 					
 					
 			editPoint: {
@@ -193,7 +195,7 @@
 						pveData.pveMap.push({
 							id: level.id,
 							title: level.title + " | " + level.subTitle,
-							src: "http://ima.ntwikis.com/cancollezh/maps/Map_⑨⑨⑨.png".replace("⑨⑨⑨", level.title)
+							src: "http://update.protector.moe/map/⑨⑨⑨.png".replace("⑨⑨⑨", level.id)
 						})
 					}
 				}
@@ -263,7 +265,7 @@
 			onSelectNode: function() {
 				var picker = new mui.PopPicker();
 				var pickerData = [];
-				var nodeType = {"1": "战斗点", "2": "BOSS点", "3": "资源点", "4": "待机点", "5": "收费站", "10": "航空点"}
+				var nodeType = {"1": "战斗点", "2": "BOSS点", "3": "资源点", "4": "待机点", "5": "收费站", "10": "航空点", "11": "BOSS点"}
 				for (i in pveData.pveNode) {
 					if (pveData.pveNode.hasOwnProperty(i)) {
 						var node = pveData.pveNode[i]
@@ -366,7 +368,7 @@
 					});
 				}
 				var parent = [];
-				for (var i=1; i<=18; i++) {
+				for (var i in app.em_list) {
 					parent.push({
 						value: i,
 						text: app.em_list[i],
@@ -460,6 +462,17 @@
 		
 	});
 	
+	window.onload = function() {
+		if (debug) {
+			fetch('http://127.0.0.1:5000/pve/getPveData/')
+				.then(_ => _.json())
+				.then(pve => {
+					rawPveData = pve;
+					app.init();
+					app.onMapChanged('101')
+				})
+		}
+	}
 	
 
 	var onLoad = function(name, str) {

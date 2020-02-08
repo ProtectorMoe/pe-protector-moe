@@ -25,8 +25,8 @@ public class HeaderInterceptor  implements Interceptor {
         if (host.contains("passport")){  // 新api登录的header
             String gmtDate = DateUtil.getGMTDate();
             String stringToSign = request.method() + "\n" + gmtDate + "\n" + uri.getPath();
-            stringToSign = CommonUtil.encryptionHMAC(stringToSign);
-            String authorization = Config.head + ":" + stringToSign;
+            String newStringToSign = CommonUtil.encryptionHMAC(stringToSign);
+            String authorization = Config.head + ":" + newStringToSign;
             builder.header("Authorization", authorization);
             builder.header("Date", gmtDate);
             builder.header("Content-Type", "application/json");

@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        new EventBusUtil("MainActivity.onActivityResult", EVENT_RES_CHANGE).post();
         setContentView(R.layout.activity_main);
         // 绑定服务
         Intent bindIntent = new Intent(this, MainService.class);

@@ -24,7 +24,7 @@ public abstract class GameBattle {
     // 各个程序的子功能
     protected void challengeStart(String map, String fleet) throws HmException {
         try {
-            netSender.battleChallenge(map, fleet);
+            netSender.battleChallenge(head, map, fleet);
         } catch (HmException e) {
             Log.e(TAG, "出征开始错误:" + e.toString());
             throw e;
