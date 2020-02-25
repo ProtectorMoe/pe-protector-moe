@@ -135,6 +135,9 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onUpgrade(String newVersion, String newData) {
+                if (Config.hasLogin) {
+                    return;
+                }
                 Looper.prepare();
                 new SweetAlertDialog(LoginActivity.this, SweetAlertDialog.WARNING_TYPE)
                         .setTitleText("发现新版本")
@@ -156,6 +159,9 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onError(String errMsg) {
+                if (Config.hasLogin) {
+                    return;
+                }
                 Looper.prepare();
                 new SweetAlertDialog(LoginActivity.this, SweetAlertDialog.ERROR_TYPE)
                         .setTitleText("错误")

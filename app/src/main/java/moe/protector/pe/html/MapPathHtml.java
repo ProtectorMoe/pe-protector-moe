@@ -72,9 +72,5 @@ public class MapPathHtml {
         return Config.pveData;
     }
 
-    @JavascriptInterface
-    public String getFivePveData() {
-        return Config.fifthData;
-    }
 
 }

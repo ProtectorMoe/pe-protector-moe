@@ -357,8 +357,9 @@ public class GameChallenge extends GameBattle {
         if (pveNode.nextNode.size() == 0) {
             return true;
         } else {
-            for (int node : pveNode.nextNode) {
-                if (configBean.detail.containsKey(userData.getNode(String.valueOf(node)).flag)) {
+            for (int nodeId : pveNode.nextNode) {
+                PveNode node = userData.getNode(String.valueOf(nodeId));
+                if (node.flag != null && configBean.detail.containsKey(node.flag)) {
                     return false;
                 }
             }

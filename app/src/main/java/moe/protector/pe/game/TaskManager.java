@@ -98,7 +98,7 @@ public class TaskManager {
                 continue;
             }
             // 解冻
-            if (Integer.valueOf(time) > bean.locked && bean.locked != -1) {
+            if (bean.locked != -1 && Integer.valueOf(time) > bean.locked) {
                 bean.locked = -1;
             }
             // 剔除做完的任务

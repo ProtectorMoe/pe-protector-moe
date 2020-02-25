@@ -21,5 +21,4 @@ public class Config {
     public static final StringBuilder errMsg = new StringBuilder();
     public static String [] SETU = {Img.getRandomSetu(), Img.getRandomSetu(), Img.getRandomSetu()};
     public static String pveData;
-    public static String fifthData;
 }

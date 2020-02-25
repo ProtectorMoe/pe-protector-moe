@@ -15,7 +15,8 @@ import moe.protector.pe.bean.challenge.SkipWarBean;
 import moe.protector.pe.bean.challenge.SpyBean;
 import moe.protector.pe.exception.HmException;
 
-public abstract class GameBattle {
+public abstract class
+GameBattle {
     private static final String TAG = "GameBattle";
     protected NetSender netSender = NetSender.getInstance();
 

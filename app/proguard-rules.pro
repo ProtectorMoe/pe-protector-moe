@@ -177,5 +177,4 @@
 -keep class !moe.protector.pe.** {*;}
 -dontwarn **
 
--keep class moe.protector.pe.bean.** { *; }
--keep class moe.protector.pe.sqlite.** { *; }
+-keep class moe.protector.pe.** { *; }
