@@ -5,13 +5,17 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.alibaba.fastjson.JSON;
+
 import org.litepal.LitePal;
 
 import java.util.List;
 
+import moe.protector.pe.bean.PveDataBean;
+import moe.protector.pe.game.UserData;
 import moe.protector.pe.interfaces.HttpFinishCallBack;
 import moe.protector.pe.sqlite.MapConfigBean;
-import moe.protector.pe.util.Config;
+import moe.protector.pe.util.Util;
 
 public class MapPathHtml {
     private HttpFinishCallBack callBack;
@@ -69,7 +73,11 @@ public class MapPathHtml {
 
     @JavascriptInterface
     public String getPveData() {
-        return Config.pveData;
+        UserData userData = UserData.getInstance();
+        PveDataBean pveDataBean = new PveDataBean(userData.pveNode, userData.pveLevel, userData.pveBuff);
+        String data = JSON.toJSONString(pveDataBean);
+        Util.writeFile("test", data);
+        return data;
     }
 
 

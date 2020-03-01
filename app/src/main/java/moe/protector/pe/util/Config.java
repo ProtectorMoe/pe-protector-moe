@@ -12,6 +12,7 @@ public class Config {
     public static String resVersion = "";  // res的版本
 
     public static String host = "";  // 游戏地址
+    public static String username;  // 用户账号
     public static String userId;  // 用户标识码
     public static String loginHead;  // 登录地址
     public static String loginApiHead;  // 登录api地址
@@ -20,5 +21,4 @@ public class Config {
     public static boolean isRepairFleet = false;
     public static final StringBuilder errMsg = new StringBuilder();
     public static String [] SETU = {Img.getRandomSetu(), Img.getRandomSetu(), Img.getRandomSetu()};
-    public static String pveData;
 }

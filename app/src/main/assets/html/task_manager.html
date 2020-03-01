@@ -1,130 +1,296 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<meta charset="utf-8">
-	<title>任务管理文件</title>
-	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-	<link href="https://cdn.bootcss.com/mui/3.7.1/css/mui.min.css" rel="stylesheet">
-</head>
-<body>
-	<script src="https://cdn.bootcss.com/mui/3.7.1/js/mui.min.js"></script>
-	<script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
-<script type="text/javascript">
-			mui.init();
-</script>
+    <head>
+        <meta charset="utf-8" />
+        <title>任务管理文件</title>
+        <meta
+            name="viewport"
+            content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+        />
+        <link
+            href="https://cdn.bootcss.com/mui/3.7.1/css/mui.min.css"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="css/avgrund.css" />
+    </head>
+    <body>
+        <script src="https://cdn.bootcss.com/mui/3.7.1/js/mui.min.js"></script>
+        <script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
+        <script type="text/javascript">
+            mui.init();
+        </script>
+        <script src="js/avgrund.js"></script>
+        <div id="app">
+            <aside id="upload-popup" class="avgrund-popup" style="width: 90%;margin-left: 5%; margin-top: 30%;">
+                <form class="mui-input-group">
+                    <div class="mui-input-row">
+                        <label>标题</label>
+                        <input
+                            type="text"
+                            v-model="upload.title"
+                            class="mui-input-clear"
+                            placeholder="请输入发布标题"
+                        />
+                    </div>
+                    <div class="mui-input-row">
+                        <label>简介</label>
+                        <input
+                            v-model="upload.desc"
+                            type="text"
+                            class="mui-input-clear"
+                            placeholder="请输入配置简介"
+                        />
+                    </div>
+                    <div class="mui-input-row">
+                        <label>昵称</label>
+                        <input
+                            type="text"
+                            v-model="upload.author"
+                            class="mui-input-clear"
+                            placeholder="默认匿名"
+                        />
+                    </div>
+                </form>
+                <div class="mui-button-row">
+                    <button
+                        class="mui-btn mui-btn-danger"
+                        style="margin-top: 5px;"
+                        @click="Avgrund.hide()"
+                    >
+                        取消
+                    </button>
+                    <button
+                        class="mui-btn mui-btn-green"
+                        style="margin-top: 5px;"
+                        @click="onUpload"
+                    >
+                        提交
+                    </button>
+                </div>
+            </aside>
+			
+			
+			<aside id="detail-popup" class="avgrund-popup" style="width: 90%;margin-left: 5%; margin-top: 30%;">
+			    <form class="mui-input-group">
+			        <div class="mui-input-row">
+			            <label>标题</label>
+						<input v-model="detailItem.item" type="text" readonly>
+			        </div>
+					<div class="mui-input-row">
+					    <label>简介</label>
+						<input v-model="detailItem.desc" type="text" readonly>
+					</div>
+					<div class="mui-input-row">
+					    <label>地图</label>
+						<input v-model="detailItem.map" type="text" readonly>
+					</div>
+					<div class="mui-input-row">
+					    <label>经过点</label>
+						<input v-model="detailItem.flag" type="text" readonly>
+					</div>
+					<img style="width: 80%; margin-left: 10%; margin-top: 10px;" src="http://update.protector.moe/map/101.png" />
+					<div class="mui-button-row">
+						<button class="mui-btn mui-btn-green" style="margin-top: 5px;" @click="onPathOutput(detailItem.item)">
+						    导出
+						</button>
+						<button class="mui-btn mui-btn-primary" style="margin-top: 5px;" @click="onPathEdit(detailItem.item)">
+						    编辑
+						</button>
+						<button class="mui-btn mui-btn mui-btn-danger" style="margin-top: 5px;" @click="onPathDel(detailItem.item)">
+						    删除
+						</button>
+						<button class="mui-btn" style="margin-top: 5px;" @click="Avgrund.hide()">
+						    取消
+						</button>
+					</div>
+			    </form>
+				
+			    
+			</aside>
+			
+			
+			
+			
+			
+			
+			
 
-<div id="app">
-	<header class="mui-bar mui-bar-nav">
-		<a class="mui-icon mui-icon-left-nav" @click="onCancel"></a>
-		<h1 class="mui-title">护萌宝 配置列表</h1>
-	</header>
-	<div class="mui-content">
-		<div class="mui-input-group">
-			<div class="mui-button-row">
-				<button class="mui-btn mui-icon mui-btn-success" @click="onAddPath()">新建</button>
-				<button class="mui-btn mui-icon mui-btn-blue" @click="onInputPath()">导入</button>
-				<button class="mui-btn mui-icon" @click="onDownload()">下载</button>
-				<button class="mui-btn mui-icon" @click="onRefresh()">刷新</button>
-			</div>
-		</div>
-		<div class="mui-table-view">
-			<li class="mui-table-view-cell" v-for="item in task_list">
-				<div class="mui-slider-right mui-disabled">
-					<a class="mui-btn mui-btn-success mui-icon mui-icon-paperplane" @click="onPathOutput(item)"></a>
-					<a class="mui-btn mui-btn-blue mui-icon mui-icon-gear" @click="onPathEdit(item)"></a>
-					<a class="mui-btn mui-btn-red mui-icon mui-icon-trash" @click="onPathDel(item)"></a>
-				</div>
-				<div class="mui-slider-handle">
-					{{item}}
-				</div>
-			</li>
-		</div>
-		
-		<p style="text-align: center; margin-top: 15px"> -左滑项目可导出编辑与删除-</p>
-	</div>
-</div>
+            <header class="mui-bar mui-bar-nav">
+                <a class="mui-icon mui-icon-left-nav" @click="onCancel"></a>
+                <h1 class="mui-title">护萌宝 配置列表</h1>
+            </header>
+            <div class="mui-content">
+                <div class="mui-input-group">
+                    <div class="mui-button-row">
+                        <button
+                            class="mui-btn mui-icon mui-btn-success"
+                            @click="onAddPath()"
+                        >
+                            新建
+                        </button>
+                        <button
+                            class="mui-btn mui-icon mui-btn-blue"
+                            @click="onDownload()"
+                        >
+                            下载
+                        </button>
+                        <button class="mui-btn mui-icon" @click="onRefresh()">
+                            刷新
+                        </button>
+                    </div>
+                </div>
+                <div class="mui-table-view">
+                    <li class="mui-table-view-cell" v-for="item in task_list" @click="showDetail(item)">
+                        <div class="mui-slider-right mui-disabled">
+                            <a
+                                class="mui-btn mui-btn-success mui-icon mui-icon-upload"
+                                @click="onPathOutput(item)"
+                            ></a>
+                            <a
+                                class="mui-btn mui-btn-blue mui-icon mui-icon-gear"
+                                @click="onPathEdit(item)"
+                            ></a>
+                            <a
+                                class="mui-btn mui-btn-red mui-icon mui-icon-trash"
+                                @click="onPathDel(item)"
+                            ></a>
+                        </div>
+                        <div class="mui-slider-handle">
+                            {{item}}
+                        </div>
+                    </li>
+                </div>
 
-<script>
-	var app = new Vue({
-		el: "#app",
-		data: {
-			task_list: ["测试1", "测试2", "测试3"]
-		},
-		methods: {
-			onPathDel: function(task_name) {
-				mui.confirm('确认删除任务?','删除任务',['取消','确认'],function (e) {
-					if (e.index == 1) {
-						console.log("用户请求删除任务:" + task_name);
-						var path_list = window.android && window.android.onPathDel(task_name);
-						if (path_list) {
-							app.task_list = JSON.parse(path_list);
-						}
+                <p style="text-align: center; margin-top: 15px">
+                    -左滑项目可上传编辑与删除-
+                </p>
+            </div>
+        </div>
+
+        <script>
+            var app = new Vue({
+                el: "#app",
+                data: {
+                    task_list: ["测试1", "测试2", "测试3"],
+                    upload: {
+                        config: "",
+                        title: "",
+                        desc: "",
+                        author: ""
+                    },
+					detailItem: {
+						item: "",
+						map: "101",
+						flag: "A B C D E F",
+						desc: "测试测试测试测试"
 					}
-				},'div')
-			},
-			onPathEdit: function(task_name) {
-				console.log("用户请求编辑任务:" + task_name);
-				window.android  && window.android.onPathEdit(task_name);
-			},
-			onAddPath: function() {
-				console.log("用户请求添加配置");
-				window.android && window.android.onAddPath();
-			},
-			onCancel: function() {
-				onCancel();
-			},
-			onRefresh: function() {
-				var path_list = window.android && window.android.onRefresh();
-				if (path_list) {
-					app.task_list = JSON.parse(path_list).sort();
-				}
-			},
-			onDownload: function() {
-				onDownload();
-			},
-			onPathOutput: function(item) {
-				onPathOutput(item);
-			},
-			onInputPath: function() {
-				mui.prompt('请输入配置字符串','','导入配置',['取消','确认'],function (e) {
-					if (e.index == 1) {
-						window.android && window.android.onInputPath(e.value)
+                },
+                methods: {
+                    onPathDel: function(task_name) {
+                        mui.confirm(
+                            "确认删除任务?",
+                            "删除任务",
+                            ["取消", "确认"],
+                            function(e) {
+                                if (e.index == 1) {
+                                    console.log(
+                                        "用户请求删除任务:" + task_name
+                                    );
+                                    var path_list =
+                                        window.android &&
+                                        window.android.onPathDel(task_name);
+                                    if (path_list) {
+                                        app.task_list = JSON.parse(path_list);
+                                    }
+                                }
+                            },
+                            "div"
+                        );
+                    },
+                    onPathEdit: function(task_name) {
+                        console.log("用户请求编辑任务:" + task_name);
+                        window.android && window.android.onPathEdit(task_name);
+                    },
+                    onAddPath: function() {
+                        console.log("用户请求添加配置");
+                        window.android && window.android.onAddPath();
+                    },
+                    onCancel: function() {
+                        onCancel();
+                    },
+                    onRefresh: function() {
+                        var path_list =
+                            window.android && window.android.onRefresh();
+                        if (path_list) {
+                            app.task_list = JSON.parse(path_list).sort();
+                        }
+                    },
+                    onPathOutput: function(item) {
+                        Avgrund.show("#upload-popup");
+                        app.upload.title = item;
+                        app.upload.config = item;
+                    },
+                    onDownload: function() {
+                        window.android && window.android.onDownload();
+                    },
+                    onUpload: function() {
+                        mui.confirm(
+                            "确定要上传吗? ",
+                            "返回",
+                            ["取消", "确认"],
+                            function(e) {
+                                if (e.index === 1) {
+									if (app.upload.title.length == 0) {
+										mui.toast("请输入标题")
+									}
+									if (app.upload.desc.length == 0) {
+										app.upload.desc = "没有简介哦"
+									}
+									if (app.upload.author.length == 0) {
+										app.upload.author = "匿名"
+									}
+									
+                                    window.android.upLoad(
+                                        JSON.stringify({
+                                            title: app.upload.title,
+                                            desc: app.upload.desc,
+											author: app.upload.author,
+											config: app.upload.config
+                                        })
+									);
+									Avgrund.hide()
+									mui.toast("上传成功!")
+                                }
+                            },
+                            "div"
+                        );
+                    },
+					showDetail: function(item) {
+						// Avgrund.show("#detail-popup");
+						// app.detailItem.item = item;
+						// if (window.android) {
+						// 	var config = JSON.parse(window.android.getConfig(item));
+						// 	app.detailItem.map = config.map.replace("0", "-");
+						// 	app.detailItem.desc = config.desc;
+						// 	app.detailItem.flag = Object.keys(config.detail).join(" ");
+						// } else {
+						// 	app.detailItem.map = "101";
+						// 	app.detailItem.desc = "测试";
+						// 	app.detailItem.flag = ["A", "B", "C"].join(" ");
+						// }
 					}
-				},'div')
-			}
-		},
-	});
+                }
+            });
 
-	var onLoad = function(str) {  // 初始化任务列表
-		app.task_list = JSON.parse(str).sort();
-	};
+            var onLoad = function(str) {
+                // 初始化任务列表
+                app.task_list = JSON.parse(str).sort();
+            };
 
-	var onCancel = function() {
-		console.log("用户取消操作");
-		window.android && window.android.onCancel();
-	};
-
-	var onDownload = function() {
-		mui.alert("下载中, 请返回后再查看", "提示", function(e) {
-			window.android && window.android.onDownload();
-			window.android && window.android.onCancel();
-		});
-	};
-	
-	
-	var onPathOutput = function(item) {
-		mui.confirm('将配置导出至剪贴板?','导出配置',['取消','确认'],function (e) {
-			if (e.index == 1) {
-				mui.toast('操作成功!')
-				window.android && window.android.onPathOutput(item);
-			} else {
-				mui.toast('操作取消')
-			}
-		},'div')
-	}
-	
-</script>
-
-
-</body>
+            var onCancel = function() {
+                console.log("用户取消操作");
+                window.android && window.android.onCancel();
+            };
+        </script>
+    </body>
 </html>

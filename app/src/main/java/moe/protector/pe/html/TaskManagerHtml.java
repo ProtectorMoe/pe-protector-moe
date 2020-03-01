@@ -1,9 +1,7 @@
 package moe.protector.pe.html;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
+import android.os.Looper;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
@@ -14,27 +12,23 @@ import com.alibaba.fastjson.JSON;
 import org.litepal.LitePal;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import moe.protector.pe.activity.HtmlActivity;
-import moe.protector.pe.bean.challenge.PathConfigBean;
-import moe.protector.pe.game.NetSender;
 import moe.protector.pe.interfaces.HttpFinishCallBack;
 import moe.protector.pe.sqlite.MapConfigBean;
 import moe.protector.pe.util.App;
-import moe.protector.pe.util.Encode;
+import moe.protector.pe.util.Config;
+import moe.protector.pe.util.Requests;
 
 public class TaskManagerHtml {
     private static final String TAG = "TaskManagerHtml";
-    private WebView webView;
     private HttpFinishCallBack callBack;
     private HtmlActivity activity;
 
-    public TaskManagerHtml(HtmlActivity activity, WebView webview, HttpFinishCallBack callBack){
+    public TaskManagerHtml(HtmlActivity activity, WebView webview, HttpFinishCallBack callBack) {
         this.callBack = callBack;
-        this.webView = webview;
         this.activity = activity;
         webview.loadUrl("file:///android_asset/html/task_manager.html");
         webview.setWebViewClient(new WebViewClient() {
@@ -45,7 +39,7 @@ public class TaskManagerHtml {
                 List<MapConfigBean> list = LitePal
                         .findAll(MapConfigBean.class);
                 List<String> name = new ArrayList<>();
-                for (MapConfigBean bean: list) {
+                for (MapConfigBean bean : list) {
                     name.add(bean.name);
                 }
                 String code = String.format("javascript:onLoad(\'%s\')", JSON.toJSONString(name));
@@ -53,7 +47,6 @@ public class TaskManagerHtml {
                 view.loadUrl(code);
             }
         });
-
 
 
     }
@@ -74,7 +67,7 @@ public class TaskManagerHtml {
                 .where("name=?", taskName)
                 .limit(1)
                 .find(MapConfigBean.class);
-        for (MapConfigBean bean: list) {
+        for (MapConfigBean bean : list) {
             bean.delete();
         }
         return onRefresh();
@@ -105,76 +98,75 @@ public class TaskManagerHtml {
         List<MapConfigBean> list = LitePal
                 .findAll(MapConfigBean.class);
         List<String> name = new ArrayList<>();
-        for (MapConfigBean bean: list) {
+        for (MapConfigBean bean : list) {
             name.add(bean.name);
         }
         return JSON.toJSONString(name);
     }
 
-    private interface OnDownLoadCallBack {
-        void onFinish(HashMap<String, PathConfigBean> data);
-        void onError(String errMsg);
-    }
-
     @JavascriptInterface
     public void onDownload() {
-        new Thread(() -> {
-            HashMap<String, PathConfigBean> data = NetSender.getInstance().getPath();
-            for (String key: data.keySet()) {
-                // 寻找重名
-                List<MapConfigBean> list = LitePal
-                        .where("name=?", key)
-                        .find(MapConfigBean.class);
-                for (MapConfigBean l: list) {
-                    l.delete();
-                }
-                MapConfigBean bean = new MapConfigBean();
-                String config = JSON.toJSONString(data.get(key));
-                Log.i(TAG, config);
-                bean.name = key;
-                bean.data = config;
-                bean.save();
-            }
-        }).start();
+        Intent intent = new Intent(App.getContext(), HtmlActivity.class);
+        intent.putExtra("type", HtmlActivity.HTML_PATH_DOWNLOAD);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        App.getContext().startActivity(intent);
     }
 
-    @JavascriptInterface
-    public void onPathOutput(String name) {
-        String config = LitePal
+
+    private String getConfig(String name) {
+        return LitePal
                 .limit(1)
                 .where("name=?", name)
                 .find(MapConfigBean.class)
                 .get(0).data;
-        String md5 = Encode.stringToMD5(config);
-        String bs64 = Encode.base64_encode(config);
-        Log.i(TAG, bs64);
-        ClipboardManager cm = (ClipboardManager) App.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData mClipData = ClipData.newPlainText("Label", md5+bs64);
-        cm.setPrimaryClip(mClipData);
     }
 
-    @JavascriptInterface
-    public void onInputPath(String data) {
-        try {
-            String md5 = data.substring(0, 32);
-            String bs64 = data.substring(32);
-            String config = Encode.base64_decode(bs64);
-            String nowMd5 = Encode.stringToMD5(config);
-            if (md5.equals(nowMd5)) {
-                Intent intent = new Intent(App.getContext(), HtmlActivity.class);
-                intent.putExtra("type", HtmlActivity.HTML_MAP);
-                intent.putExtra("name", "");
-                intent.putExtra("config", config);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                App.getContext().startActivity(intent);
-            } else {
-                throw new Exception();
-            }
-        }catch (Exception e) {
-            new SweetAlertDialog(activity, SweetAlertDialog.ERROR_TYPE)
-                    .setTitleText("数据解析失败")
-                    .setConfirmText("取消")
-                    .show();
-        }
+
+    static class UpLoadDataBean {
+        public String title;
+        public String desc;
+        public String author;
+        public String config;
+        public String path;
+        public int uid;
+        public String username;
     }
+
+
+    @JavascriptInterface
+    public boolean upLoad(String uploadData) {
+        UpLoadDataBean bean = JSON.parseObject(uploadData, UpLoadDataBean.class);
+        bean.username = Config.username;
+        bean.uid = Integer.valueOf(Config.userId);
+        bean.path = getConfig(bean.config);
+
+        new Thread(() -> {
+            Requests requests = new Requests.Builder()
+                    .url("http://cloud.protector.moe/config/paths/")
+                    .json(JSON.toJSONString(bean))
+                    .build()
+                    .execute();
+            Log.i(TAG, "上传文件" + requests.status);
+            Looper.prepare();
+            if (requests.status == 201) {
+                new SweetAlertDialog(this.activity, SweetAlertDialog.SUCCESS_TYPE)
+                        .setTitleText("在线配置")
+                        .setContentText("上传成功")
+                        .setConfirmText("确定")
+                        .setConfirmClickListener(SweetAlertDialog::cancel)
+                        .show();
+            } else {
+                new SweetAlertDialog(this.activity, SweetAlertDialog.ERROR_TYPE)
+                        .setTitleText("在线配置")
+                        .setContentText("上传失败")
+                        .setCancelText("确定")
+                        .setCancelClickListener(SweetAlertDialog::cancel)
+                        .show();
+            }
+            Looper.loop();
+        }).start();
+        return true;
+    }
+
+
 }

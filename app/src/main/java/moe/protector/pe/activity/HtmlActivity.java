@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import moe.protector.pe.MainActivity;
 import moe.protector.pe.R;
 import moe.protector.pe.html.MapPathHtml;
+import moe.protector.pe.html.PathDownloadHtml;
 import moe.protector.pe.html.SettingHtml;
 import moe.protector.pe.html.TaskAddHtml;
 import moe.protector.pe.html.TaskManagerHtml;
@@ -24,6 +25,7 @@ public class HtmlActivity extends AppCompatActivity {
     public static final int HTML_TASK = 1;
     public static final int HTML_TASK_MANAGER = 2;
     public static final int HTML_SETTING = 3;
+    public static final int HTML_PATH_DOWNLOAD = 4;
 
     public static final int REQUEST_CODE = 2;
 
@@ -96,6 +98,21 @@ public class HtmlActivity extends AppCompatActivity {
                 break;
             case HTML_SETTING:
                 webview.addJavascriptInterface(new SettingHtml(webview, new HttpFinishCallBack() {
+                    @Override
+                    public void onFinish(Bundle bundle) {
+                        setResult(RESULT_OK);
+                        finish();
+                    }
+
+                    @Override
+                    public void onCancel(Bundle bundle) {
+                        setResult(RESULT_CANCELED);
+                        finish();
+                    }
+                }), "android");
+                break;
+            case HTML_PATH_DOWNLOAD:
+                webview.addJavascriptInterface(new PathDownloadHtml(this, webview, new HttpFinishCallBack() {
                     @Override
                     public void onFinish(Bundle bundle) {
                         setResult(RESULT_OK);

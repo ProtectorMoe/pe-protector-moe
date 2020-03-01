@@ -127,7 +127,8 @@ public class GameChallenge extends GameBattle {
                 List<PathConfigBean.NodeDetail> flagDetails = nodeDetail.detail;  // 当前点的路径数据
                 // 选择战况
                 if (pveNode.buff.size() != 0) {
-                    netSender.selectBuff(nodeDetail.buff);
+                    String buff = Integer.valueOf(nodeDetail.buff) < 5? pveNode.buff.get(Integer.valueOf(nodeDetail.buff)).toString(): nodeDetail.buff;
+                    netSender.selectBuff(buff);
                     UIUpdate.detailLog(TAG, String.format("[出征] 选择战况 %s", userData.getBuff(nodeDetail.buff).title));
                     CommonUtil.delay(2000);
                 }
@@ -175,7 +176,7 @@ public class GameChallenge extends GameBattle {
                             UIUpdate.detailLog(TAG, "[出征] 迂回失败, 开始判定");
                             CommonUtil.delay(1000);
                             skipFailCount++;
-                            if (configBean.skipMax <= skipFailCount) {
+                            if (configBean.skipMax != 0 && configBean.skipMax <= skipFailCount) {
                                 UIUpdate.detailLog(TAG, "[出征] 迂回次数达到最大, 进行SL");
                                 CommonUtil.delay(1000);
                                 throw new ChallengeException(ChallengeException.EXCEPTION_SL);

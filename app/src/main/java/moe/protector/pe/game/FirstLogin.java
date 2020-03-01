@@ -52,6 +52,7 @@ public class FirstLogin {
      * @param serverType 游戏登录类型
      */
     public void initialize(String username, String pwd, int serverType) {
+        Config.username = username;
         this.username = username;
         this.pwd = pwd;
         Config.serverType = serverType;

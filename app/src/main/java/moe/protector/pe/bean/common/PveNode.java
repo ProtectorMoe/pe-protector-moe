@@ -6,10 +6,11 @@ import java.util.List;
 public class PveNode {
     public String id;
     public String roundabout;
-    public String flag;
+    public String flag = "-";
     public List<Integer> nextNode;
     public String nodeType;
     public List<Integer> buff;
+    public String pveLevelId;
 
     public HashMap<String, Integer> gain;
     public HashMap<String, Integer> loss;

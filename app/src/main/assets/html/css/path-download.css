@@ -1,0 +1,21 @@
+.task-card-container {
+    padding: 11px 15px !important;
+
+}
+
+.task-card-title {
+    position: absolute;
+}
+
+.task-card-author {
+    float: right;
+}
+
+.task-card-desc {
+    margin: 5px 0;
+}
+
+.task-card-like {
+    float: right;
+    margin-right: 5px;
+}

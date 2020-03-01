@@ -55,8 +55,7 @@ public class SecondLogin {
             String apiInitGame = netSender.apiInitGame();
             userData.parseUserData(apiInitGame);
             // 初始化点数信息
-            Config.pveData = netSender.pveGetPveData();
-            userData.pveNodeGet(Config.pveData);
+            userData.pveNodeGet(netSender.pveGetPveData());
             String pveData = netSender.peventGetPveData();
             if (userData.userBaseData.marketingData.continueLoginAward.canGetDay != -1) {
                 UIUpdate.log("领取签到奖励");

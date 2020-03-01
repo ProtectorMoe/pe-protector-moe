@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html style="height: 100%;">
+<head>
+    <meta charset="UTF-8"/>
+    <title>护萌宝 在线配置</title>
+    <link href="css/path-download.css" rel="stylesheet"/>
+	<link href="https://cdn.bootcss.com/mui/3.7.1/css/mui.min.css" rel="stylesheet"/>
+</head>
+
+<body>
+<script src="js/avgrund.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/mui/3.7.1/js/mui.min.js"></script>
+
+<div id="app">
+	<header class="mui-bar mui-bar-nav">
+	    <a @click="window.android && window.android.onCancel()" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
+	    <h1 class="mui-title">护萌宝 在线配置</h1>
+	</header>
+    <div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+        <div class="mui-scroll">
+            <ul class="mui-table-view mui-table-view-chevron">
+                <li v-for="task in taskList" class="mui-table-view-cell task-card-container">
+                    <div>
+                        {{task.title}}
+                        <p class="task-card-author">
+                    <span class="mui-badge mui-badge-primary">
+                        {{task.author}}
+                    </span>
+                        </p>
+                    </div>
+                    <p class="task-card-desc">{{task.desc}}</p>
+                    <p>
+                        上传时间: {{getLocalTime(task.create_time)}}
+                        <span>
+                    <button 
+    					class="task-card-like mui-btn mui-btn-primary mui-btn-outlined" 
+    					@click="onDownloadClick(task.id)">
+                        下载
+                    </button>
+                    <button
+                        class="task-card-like mui-btn  mui-btn-danger mui-btn-outlined"
+                        @click="onLikeClick(task.id)"
+                    >
+                    赞:{{task.user_like}}
+                    </button>
+                </span>
+                    </p>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    const Ajax = {
+        get: function(url, fun) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", url, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    fun(xhr);
+                }
+            };
+            xhr.send();
+        },
+        post: function(url, data, fun) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    fun(xhr);
+                }
+            };
+            xhr.send(data);
+        }
+    };
+    var app = new Vue({
+        el: "#app",
+        data: {
+			sign: "",
+            user: {
+                username: window.android && window.android.getUsername(),
+                uid: window.android && window.android.getUid(),
+                salt: window.android && window.android.getSalt()
+            },
+            taskList: [],
+            nextPage: "http://cloud.protector.moe/config/paths/"
+        },
+		mounted: function() {
+			var self = this;
+			mui.init({
+			    pullRefresh: {
+			        container: "#pullrefresh", //待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等
+			        up: {
+			            height: 50, //可选.默认50.触发上拉加载拖动距离
+			            auto: true, //可选,默认false.自动上拉加载一次
+			            contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
+			            contentnomore: "没有更多数据了", //可选，请求完毕若没有更多数据时显示的提醒内容；
+			            callback: function() {
+							Ajax.get(app.nextPage, function(value) {
+							    if (value.status == 200) {
+							        const path = JSON.parse(value.responseText);
+							        mui.toast("加载了" + path.results.length + "条信息");
+									for (i in path.results) {
+										if (path.results.hasOwnProperty(i)) {
+											app.taskList.push(path.results[i])
+										}
+									}
+									app.nextPage = path.next != null
+							                    ? path.next.replace(
+							                          "127.0.0.1:5678",
+							                          "cloud.protector.moe"
+							                      )
+							                    : null
+							        mui("#pullrefresh")
+							            .pullRefresh()
+							            .endPullupToRefresh(path.next == null);
+							    }
+							});
+						}
+			        }
+			    }
+			});
+		},
+        methods: {
+			onLikeClick: function(id) {
+				Ajax.post(
+				    "http://cloud.protector.moe/config/likes/",
+				    JSON.stringify({
+				        uid: app.user.uid,
+				        username: app.user.username,
+				        salt: app.user.salt,
+				        id: id
+				    }),
+				    function(value) {
+				        if (value.status == 201) {
+				            mui.toast("点赞成功");
+							for (i in app.taskList) {
+								if (app.taskList.hasOwnProperty(i)) {
+									if (app.taskList[i].id == id) {
+										app.taskList[i].user_like += 1;
+										break;
+									}
+								}
+							}
+				        } else {
+				            mui.toast("您已点赞过");
+				        }
+				    }
+				);
+			},
+			onDownloadClick: function(id) {
+				Ajax.get(
+				    "http://cloud.protector.moe/config/paths/" + id,
+				    function(value) {
+				        if (value.status == 200) {
+				            const data = JSON.parse(value.responseText);
+				            console.log("下载配置: " + value.responseText);
+				            window.android && window.android.download(value.responseText);
+							mui.toast("下载完成")
+				        }
+				    }
+				);
+			},
+			getLocalTime: function(nS) {
+				var date = new Date(parseInt(nS) * 1000);
+				return date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes()
+			}
+        }
+    })
+</script>
+
+</body>
+</html>

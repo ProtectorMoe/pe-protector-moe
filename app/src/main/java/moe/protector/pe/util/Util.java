@@ -1,7 +1,12 @@
 package moe.protector.pe.util;
 
+import android.content.Context;
 import android.util.Log;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -41,5 +46,25 @@ public class Util {
                 .append("\r\n")
                 .append(errMsg)
                 .append("\r\n");
+    }
+
+    public static void writeFile(String fileName, String data) {
+        FileOutputStream out;
+        BufferedWriter writer = null;
+        try {
+            out = App.getContext().openFileOutput(fileName, Context.MODE_PRIVATE);
+            writer = new BufferedWriter(new OutputStreamWriter(out));
+            writer.write(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

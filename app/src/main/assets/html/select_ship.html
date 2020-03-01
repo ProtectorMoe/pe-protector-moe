@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="https://cdn.bootcss.com/mui/3.7.1/css/mui.min.css" rel="stylesheet"/>
+		<link rel="stylesheet" href="css/avgrund.css">
+	</head>
+
+	<body>
+		<script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
+		<script src="https://cdn.bootcss.com/mui/3.7.1/js/mui.min.js"></script>
+		<script src="js/avgrund.js"></script>
+		<script type="text/javascript">
+			mui.init()
+		</script>
+		
+		<div id="app">
+			<header class="mui-bar mui-bar-nav">
+				<a class="mui-icon mui-icon-left-nav" @click="onCancel"></a>
+				<h1 class="mui-title">护萌宝 选择船只</h1>
+			</header>
+			
+			<div class="mui-content">
+				<div class="mui-card">
+					<div class="mui-card-header">已选船只</div>
+					<div class="mui-card-content">
+						<ul class="mui-table-view">
+						    <li class="mui-table-view-cell mui-media" 
+								v-for="ship in selectShip">
+								<img class="mui-media-object mui-pull-left" :src="getImgUrl(ship.shipIndex)">
+								<div class="mui-media-body">
+									{{ship.title}}
+									<table style="width: 100%;">
+										<tr>
+											<td width="25%">Lv.{{ship.level}}</td>
+											<td width="25%"><p>{{enemy_list[ship.type]}}</p></td>
+											<td width="25%"><p>队伍 {{ship.fleet_id}}</p></td>
+											<td width="25%"><a class="mui-icon mui-icon-closeempty" @click="onRemoveClick(ship.id)" style="float: right;"></a></td>
+										</tr>
+									</table>
+								</div> 
+							</li>
+						</ul>
+					</div>
+					<div class="mui-card-footer">
+						<a class="mui-card-link" @click="">取消</a>
+						<a class="mui-card-link" @click="">提交</a>
+					</div>
+				</div>
+				<div class="mui-card">
+					<!--页眉，放置标题-->
+					<div class="mui-card-header">待选船只</div>
+					<div class="mui-card-content">
+						<ul class="mui-table-view mui-input-group">
+							<div class="mui-input-row mui-search">
+							    <input type="search" placeholder="" v-model="serach">
+							</div>
+						    <li class="mui-table-view-cell mui-media" v-for="ship in shipFilter">
+								<img class="mui-media-object mui-pull-left" :src="getImgUrl(ship.shipIndex)" style="max-width: 55px !important;">
+								<div class="mui-media-body">
+									{{ship.title}}
+									<table style="width: 100%;">
+										<tr>
+											<td width="25%">Lv.{{ship.level}}</td>
+											<td width="25%"><p>{{enemy_list[ship.type]}}</p></td>
+											<td width="25%"><p>队伍 {{ship.fleet_id}}</p></td>
+											<td width="25%"><a class="mui-icon mui-icon-plusempty" @click="onAddClick(ship.id)" style="float: right;"></a></td>
+										</tr>
+									</table>
+								</div> 
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	
+		<script charset="UTF-8">
+			var debug = !(window && window.android);
+			var app = new Vue({
+				el: "#app",
+				data: {
+					serach: '',
+					enemy_list: {1: "航母",2: "轻母",3: "装母",4: "战列",5: "航战",6: "战巡",7: "重巡",8: "航巡",
+								 9: "雷巡",10: "轻巡",11: "重炮",12: "驱逐",13: "潜母",14: "潜艇",15: "炮潜",16: "补给",
+								 23: "导驱", 24: "防驱", 26: "导战"},
+					allShip: [],
+					selectShip: []
+				},
+				methods: {
+					getImgUrl: function(index) {
+						return 'images/ship/' + index + '.png'
+					},
+					onAddClick: function(id) {
+						var self = this;
+						for (i=0; i<self.allShip.length; i++) {
+							if (self.allShip[i].id == id) {
+								self.selectShip.push(self.allShip[i]);
+								self.allShip.splice(i, 1);
+								break;
+							}
+						}
+						self.selectShip.sort(function(value1, value2) {return value1.shipIndex-value2.shipIndex})
+					},
+					onRemoveClick: function(id) {
+						var self = this;
+						for (i=0; i<self.selectShip.length; i++) {
+							if (self.selectShip[i].id == id) {
+								self.allShip.push(self.selectShip[i]);
+								self.selectShip.splice(i, 1);
+								break;
+							}
+						}
+						self.allShip.sort(function(value1, value2) {return value1.shipIndex-value2.shipIndex})
+					}
+				},
+				computed: {
+					shipFilter: function() {
+						var self = this;
+						return self.allShip.filter(function(value) {
+							return function f(ship) {
+								if (self.serach.length == 0) {
+									return true;
+								}
+								if (ship.title.indexOf(self.serach) >= 0) {
+									return true;
+								} 
+								if (ship.raw_title.indexOf(self.serach) >= 0) {
+									return true;
+								} 
+								if (self.enemy_list[ship.type].indexOf(self.serach) >= 0) {
+									return true;
+								} 
+								if (ship.level == parseInt(self.serach)) {
+									return true;
+								}
+								return false;
+							}(value)
+						})
+					}
+				}
+			});
+			
+			
+			
+			var onCancel = function() {
+				console.log("用户取消操作");
+				window.android && window.android.onCancel();
+			}
+			
+			var onLoad = function() {
+				
+			}
+			
+			window.onload = function() {
+				if (debug) {
+					fetch('http://127.0.0.1:5000/data/userShip')
+					.then(value => value.json())
+					.then(value => app.allShip = value)
+				}
+			}
+		</script>
+		
+		
+		
+		
+		
+		
+	</body>
+
+</html>

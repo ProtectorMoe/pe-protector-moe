@@ -30,6 +30,7 @@ public class Requests {
     // 可以获取的内容
     public String text;
     public byte[] content;
+    public int  status;
 
     // 私有的构建器
     private Requests() {
@@ -68,6 +69,7 @@ public class Requests {
     private static final int POST = 1;
     private static final int STRING_DATA = 0;
     private static final int MAP_DATA = 1;
+    private static final int JSON_DATA = 2;
 
     private int method = 0;
     private String url = "";
@@ -109,6 +111,13 @@ public class Requests {
         public Builder post(String data) {
             this.method = POST;
             this.post_method = STRING_DATA;
+            this.data_string = data;
+            return this;
+        }
+
+        public Builder json(String data) {
+            this.method = POST;
+            this.post_method = JSON_DATA;
             this.data_string = data;
             return this;
         }
@@ -169,6 +178,9 @@ public class Requests {
                     }
                     RequestBody requestBody = formBody.build();
                     requestBuilder.post(requestBody);
+                } else if (this.post_method == JSON_DATA) {
+                    MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
+                    requestBuilder.post(RequestBody.create(mediaType, this.data_string));
                 }
             }
             // 添加header
@@ -180,6 +192,7 @@ public class Requests {
             // 执行
             Request request = requestBuilder.build();
             Response okResponse = okHttpClient.newCall(request).execute();
+            this.status = okResponse.code();
             // 取出网络流
             InputStream io = okResponse.body().byteStream();
             // 获取byte

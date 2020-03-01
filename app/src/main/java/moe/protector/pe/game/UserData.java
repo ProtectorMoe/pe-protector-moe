@@ -138,9 +138,9 @@ public class UserData {
 
 
     // ----------------- 点数数据 -----------------
-    private HashMap<String, PveNode> pveData = new HashMap<>();
-    private HashMap<String, PveLevel> pveLevel = new HashMap<>();
-    private HashMap<String, PveBuff> pveBuff = new HashMap<>();
+    public HashMap<String, PveNode> pveNode = new HashMap<>();
+    public HashMap<String, PveLevel> pveLevel = new HashMap<>();
+    public HashMap<String, PveBuff> pveBuff = new HashMap<>();
 
     /**
      * 获取最新的点数信息
@@ -150,7 +150,7 @@ public class UserData {
     public void pveNodeGet(String pveStringData) {
         PveDataBean pveDataBean = JSON.parseObject(pveStringData, PveDataBean.class);
         for (PveNode node : pveDataBean.pveNode) {
-            this.pveData.put(node.id, node);
+            this.pveNode.put(node.id, node);
         }
         for (PveLevel level : pveDataBean.pveLevel) {
             this.pveLevel.put(level.id, level);
@@ -166,7 +166,7 @@ public class UserData {
         try {
             if (pveDataBean.pveNode != null) {
                 for (PveNode node : pveDataBean.pveNode) {
-                    this.pveData.put(node.id, node);
+                    this.pveNode.put(node.id, node);
                 }
             }
             if (pveDataBean.pveEventLevel != null) {
@@ -181,7 +181,7 @@ public class UserData {
 
 
     public PveNode getNode(String id) {
-        return pveData.get(id);
+        return pveNode.get(id);
     }
 
     public PveLevel getLevel(String id) {

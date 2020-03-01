@@ -141,8 +141,8 @@
 	</div>
 </div>
 <script type="text/javascript" charset="utf-8">
+	var rawPveData;
 	var debug = !(window && window.android);
-	var rawPveData;  // 保存传进来的pveData
 	var pveData = {
 		pveMap: [],  // 所有地图数据
 		pveNode: [], // 选择地图以后加载的数据
@@ -171,7 +171,6 @@
 			em_list: {1: "航母",2: "轻母",3: "装母",4: "战列",5: "航战",6: "战巡",7: "重巡",8: "航巡",
 					9: "雷巡",10: "轻巡",11: "重炮",12: "驱逐",13: "潜母",14: "潜艇",15: "炮潜",16: "补给",
 					23: "导驱", 24: "防驱", 26: "导战"},
-					
 					
 			editPoint: {
 				data: {
@@ -331,7 +330,7 @@
 				flag: "",
 				format: 1,
 				sL: [],
-				buff: "0",
+				buff: "-1",
 				buffDec: "请选择战况",
 			}
 				Avgrund.show("#point-popup");
@@ -463,11 +462,11 @@
 	});
 	
 	window.onload = function() {
-		if (debug) {
+		if (!(window && window.android)) {
 			fetch('http://127.0.0.1:5000/pve/getPveData/')
-				.then(_ => _.json())
-				.then(pve => {
-					rawPveData = pve;
+				.then(function(value){return value.json();})
+				.then(function(pve) {
+					rawPveData = pve
 					app.init();
 					app.onMapChanged('101')
 				})
@@ -476,7 +475,8 @@
 	
 
 	var onLoad = function(name, str) {
-		rawPveData = JSON.parse(window.android.getPveData());
+		rawPveData = JSON.parse(window.android.getPveData())
+		console.log('接受数据' + rawPveData)
 		app.init();
 		app.onMapChanged('101')
 		if (name !== undefined && str !== undefined) {
