@@ -104,6 +104,7 @@
 				<a class="mui-icon mui-icon-left-nav" onclick="window && window.android && window.android.onCancel()"></a>
 				<h1 class="mui-title">护萌宝 设置</h1>
 			</header>
+			
 			<div class="mui-content">
 				<div class="mui-card">
 					<div class="mui-card-header">
@@ -128,6 +129,38 @@
 					<div class="mui-card-footer">
 						后台保活将会消耗更多电量<br>
 						重置数据库用于修复船只数据异常问题
+					</div>
+				</div>
+				
+				<div class="mui-card">
+					<!--页眉，放置标题-->
+					<div class="mui-card-header">
+						 战斗设置
+					</div>
+					<!--内容区-->
+					<div class="mui-card-content">
+						<div class="mui-input-group">
+							<div class="mui-input-row">
+								<label>战斗最小</label>
+								<input id="challengeTimeMin" type="number" class="mui-input-clear" placeholder="">
+							</div>
+							<div class="mui-input-row">
+								<label>战斗最大</label>
+								<input id="challengeTimeMax" type="number" class="mui-input-clear" placeholder="">
+							</div>
+							<div class="mui-input-row">
+								<label>夜战最小</label>
+								<input id="nightFightMin" type="number" class="mui-input-clear" placeholder="">
+							</div>
+							<div class="mui-input-row">
+								<label>夜战最大</label>
+								<input id="nightFightMax" type="number" class="mui-input-clear" placeholder="">
+							</div>
+						</div>
+					</div>
+					<div class="mui-card-footer">
+						此为设置战斗时间, 取随机数<br/>
+						设置太小容易出现错误代码
 					</div>
 				</div>
 				
@@ -167,7 +200,7 @@
 			<button class="mui-btn mui-btn-primary" style="display:block; margin:0 auto; width: 95%;" onclick="onFinish()"><strong>保存</strong></button>
 		</div>
 		
-		<div class="mui-card" style="margin-top: 200px;">
+		<div class="mui-card" style="margin-top: 100px;">
 			<!--页眉，放置标题-->
 			<div class="mui-card-header mui-card-media">
 				<img src="http://q1.qlogo.cn/g?b=qq&nk=805757448&s=640" />
@@ -260,6 +293,11 @@
 			saveObj.resetDatabase = document.getElementById("resetDatabase").classList.contains("mui-active");
 			saveObj.backgroundServer = document.getElementById("backgroundServer").classList.contains("mui-active");
 			
+			saveObj.challengeTimeMin = document.getElementById("challengeTimeMin").value || 20
+			saveObj.challengeTimeMax = document.getElementById("challengeTimeMax").value || 30
+			saveObj.nightFightMin = document.getElementById("nightFightMin").value || 10
+			saveObj.nightFightMax = document.getElementById("nightFightMax").value || 20
+			
 			var dismantleStarEl = document.getElementsByName("star");
 			saveObj.dismantleStar = []
 			for (i in dismantleStarEl) {
@@ -318,6 +356,10 @@
 			}
 		}
 		
+		function setInputNumber(id, data, defaultInt) {
+			document.getElementById(id).value = parseInt(data) || defaultInt
+		}
+		
 		function onLoad(text) {
 			console.log("[设置]" + text)
 			saveObj = JSON.parse(text);
@@ -328,9 +370,13 @@
 			setSwitchAction("resetDatabase", saveObj.resetDatabase);
 			setSwitchAction("backgroundServer", saveObj.backgroundServer);
 			
-			
-			
 			document.getElementById("dismantleShip").value = saveObj.dismantleShip || "";
+			
+			setInputNumber("challengeTimeMin", saveObj.challengeTimeMin, 20);
+			setInputNumber("challengeTimeMax", saveObj.challengeTimeMax, 30);
+			setInputNumber("nightFightMin", saveObj.nightFightMin, 10);
+			setInputNumber("nightFightMax", saveObj.nightFightMax, 20);
+			
 			
 			var dismantleStarEl = document.getElementsByName("star");
 			for (i in dismantleStarEl) {

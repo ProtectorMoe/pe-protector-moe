@@ -28,6 +28,12 @@ public class Setting {
         settingBean.dismantleType = new ArrayList<>(preferences.getStringSet("dismantle_type", new HashSet<>()));
         settingBean.backgroundServer = preferences.getBoolean("background_server", false);
         settingBean.resetDatabase = preferences.getBoolean("reset_database", false);
+
+        settingBean.challengeTimeMin = preferences.getInt("challenge_time_min", 20);
+        settingBean.challengeTimeMax = preferences.getInt("challenge_time_max", 30);
+        settingBean.nightFightMin = preferences.getInt("night_fight_min", 10);
+        settingBean.nightFightMax = preferences.getInt("night_fight_max", 20);
+
     }
 
     public void save() {
@@ -39,6 +45,12 @@ public class Setting {
         editor.putStringSet("dismantle_type", new HashSet<>(settingBean.dismantleType));
         editor.putBoolean("background_server", settingBean.backgroundServer);
         editor.putBoolean("reset_database", settingBean.resetDatabase);
+
+        editor.putInt("challenge_time_min", settingBean.challengeTimeMin);
+        editor.putInt("challenge_time_max", settingBean.challengeTimeMax);
+        editor.putInt("night_fight_min", settingBean.nightFightMin);
+        editor.putInt("night_fight_max", settingBean.nightFightMax);
+
         editor.apply();
     }
 }

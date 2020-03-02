@@ -80,7 +80,7 @@ public class GameChallenge extends GameBattle {
             //-------------战前准备页面---------------
             // 进行出征前准备
             UIUpdate.detailLog(TAG, "[出征] 准备开始出征");
-            CommonUtil.delay(2000);
+            CommonUtil.delay(1000);
             fleetVo = userData.getFleet().get(fleet);
             ships = fleetVo.ships;
             mapName = userData.getLevel(this.map).title;
@@ -101,7 +101,7 @@ public class GameChallenge extends GameBattle {
             // ----------------出征页面---------------------
             // 开始出征
             UIUpdate.detailLog(TAG, "[出征] 开始出征");
-            CommonUtil.delay(2000);
+            CommonUtil.delay(1000);
             challengeStart(this.map, this.fleet);
             while (true) {  // 出征总循环
                 // ----------------选路页面-------------
@@ -127,22 +127,24 @@ public class GameChallenge extends GameBattle {
                 List<PathConfigBean.NodeDetail> flagDetails = nodeDetail.detail;  // 当前点的路径数据
                 // 选择战况
                 if (pveNode.buff.size() != 0) {
-                    String buff = Integer.valueOf(nodeDetail.buff) < 5? pveNode.buff.get(Integer.valueOf(nodeDetail.buff)).toString(): nodeDetail.buff;
+                    int buffIndex = Integer.valueOf(nodeDetail.buff);
+
+                    String buff = buffIndex < 10? pveNode.buff.get(buffIndex).toString(): nodeDetail.buff;
                     netSender.selectBuff(buff);
                     UIUpdate.detailLog(TAG, String.format("[出征] 选择战况 %s", userData.getBuff(nodeDetail.buff).title));
-                    CommonUtil.delay(2000);
+                    CommonUtil.delay(1000);
                 }
                 // 1:普通点, 2:BOSS点, 3:资源点 4:待机点, 5:收费站, 10:航空站
                 if (nodeType == 1 || nodeType == 2 || nodeType == 10 || nodeType == 11) {
                     // --------------开始索敌-------------
                     UIUpdate.detailLog(TAG, "[出征] 进行索敌");
-                    CommonUtil.delay(2000);
+                    CommonUtil.delay(1000);
                     SpyBean spyBean = challengeSpy();  // 获取索敌数据
 
                     // 索敌失败SL
                     if (spyBean.enemyVO.isFound == 0 && nodeDetail.spyFailSl) {
                         UIUpdate.detailLog(TAG, "[出征] 索敌失败, 设置需要SL");
-                        CommonUtil.delay(2000);
+                        CommonUtil.delay(1000);
                         throw new ChallengeException(ChallengeException.EXCEPTION_SL);
                     }
                     // 取得敌人数量
@@ -193,7 +195,10 @@ public class GameChallenge extends GameBattle {
                 if (nodeType == 1 || nodeType == 2 || nodeType == 10 || nodeType == 11) {
                     // 正常点需要延迟
                     counter.battleNumAdd();
-                    int randomInt = CommonUtil.randomInt(10, 15);
+                    int randomInt = CommonUtil.randomInt(
+                            Setting.getInstance().settingBean.challengeTimeMin,
+                            Setting.getInstance().settingBean.challengeTimeMax
+                    );
                     UIUpdate.detailLog(TAG, "[出征] 开始战斗, 等待" + randomInt + "s");
                     CommonUtil.delay(randomInt * 1000);
                 } else if (nodeType == 3 || nodeType == 5) {
@@ -209,17 +214,17 @@ public class GameChallenge extends GameBattle {
                         log = new StringBuilder(String.format("[出征] 资源点, %s %s", access, log.toString()));
                         Log.i(TAG, log.toString());
                         UIUpdate.log(log.toString());
-                        CommonUtil.delay(2000);
+                        CommonUtil.delay(1000);
                     }
                     if (nodeDetail.sl) {  // 资源点进行SL
                         UIUpdate.detailLog(TAG, "[出征] 资源点, 进行SL");
-                        CommonUtil.delay(2000);
+                        CommonUtil.delay(1000);
                         return Finish.FINISH;
                     }
                     if (isLastPoint) {
                         // 完成任务, 回港
                         UIUpdate.detailLog(TAG, "[出征] 完成任务, 回港");
-                        CommonUtil.delay(2000);
+                        CommonUtil.delay(1000);
                         return Finish.FINISH;
                     }
                     continue;
@@ -228,10 +233,13 @@ public class GameChallenge extends GameBattle {
                 }
                 // -------------进行夜战结算-----------
                 UIUpdate.detailLog(TAG, "[出征] 准备进行夜战或结算");
-                CommonUtil.delay(2000);
+                CommonUtil.delay(1000);
                 GetResultBean resultBean = challengeGetWarResult(head, nodeDetail.night && dealtoBean.warReport.canDoNightWar == 1);  // 判断是否进行夜战
                 if (nodeDetail.night && dealtoBean.warReport.canDoNightWar == 1) {
-                    int randomInt = CommonUtil.randomInt(10, 20);
+                    int randomInt = CommonUtil.randomInt(
+                            Setting.getInstance().settingBean.nightFightMin,
+                            Setting.getInstance().settingBean.nightFightMax
+                    );
                     UIUpdate.detailLog(TAG, "[出征] 夜战中, 等待" + randomInt + "s");
                     CommonUtil.delay(randomInt * 1000);
                 }
@@ -255,7 +263,7 @@ public class GameChallenge extends GameBattle {
                         if (!userData.isUnlock(shipVO.shipCid)) {
                             // 出新船
                             UIUpdate.log(String.format("[重要] 出新船 <%s> 锁船", gameConstant.getShipName(shipVO.shipCid)));
-                            CommonUtil.delay(2000);
+                            CommonUtil.delay(1000);
                             netSender.boatLock(shipVO.id);
                         }
                     }
@@ -282,11 +290,11 @@ public class GameChallenge extends GameBattle {
                 if (isLastPoint) {
                     // 完成任务, 回港
                     UIUpdate.detailLog(TAG, "[出征] 完成任务, 回港");
-                    CommonUtil.delay(2000);
+                    CommonUtil.delay(1000);
                     return Finish.FINISH;
                 } else {
                     UIUpdate.detailLog(TAG, "[出征] 完成, 进行下一点");
-                    CommonUtil.delay(2000);
+                    CommonUtil.delay(1000);
                 }
             }
 
@@ -310,7 +318,7 @@ public class GameChallenge extends GameBattle {
             Util.getErrMsg(e);
             return Finish.ERROR;
         } finally {
-            CommonUtil.delay(2000);
+            CommonUtil.delay(1000);
             try {
                 backToPort();
             } catch (Exception e) {

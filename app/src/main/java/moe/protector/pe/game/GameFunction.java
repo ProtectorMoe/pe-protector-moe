@@ -240,19 +240,37 @@ public class GameFunction {
 
     public void checkSupply(List<Integer> ships) throws HmException {
         try {
-            CommonUtil.delay(1000);
-            Log.i(TAG, "[出征] 船只补给...");
-            String supplyData = netSender.boatSupplyBoats(ships);
-            SupplyBean supplyBean = JSON.parseObject(supplyData, SupplyBean.class);
-            // 更新任务
-            if (supplyBean.updateTaskVo != null) {
-                userData.updateTaskVo(supplyBean.updateTaskVo);
+            Log.i(TAG, "[出征] 检测船只补给情况...");
+            boolean needSupply = false;
+            // 寻找需要补给的船只
+            for (int ship: ships) {
+                UserShipVO userShipVO = userData.allShip.get(ship);
+                if (userShipVO != null) {
+                    if (userShipVO.battleProps.oil != userShipVO.battlePropsMax.oil) {
+                        needSupply = true;
+                        break;
+                    }
+                    if (userShipVO.battleProps.ammo != userShipVO.battlePropsMax.ammo) {
+                        needSupply = true;
+                        break;
+                    }
+                    if (userShipVO.battleProps.aluminium != userShipVO.battlePropsMax.aluminium) {
+                        needSupply = true;
+                        break;
+                    }
+                }
             }
-            // 更新船只信息
-            userData.userVoUpdate(supplyBean.userVo);
-            userData.allShipSetAllShipVO(supplyBean.shipVO);
-            CommonUtil.delay(1000);
-        } catch (Exception e) {
+
+            // 整合需要补给的船只
+            if (needSupply){
+                CommonUtil.delay(2000);
+                String supplyData = netSender.boatSupplyBoats(ships);
+                SupplyBean supplyBean = JSON.parseObject(supplyData, SupplyBean.class);
+                // 更新船只信息
+                userData.userVoUpdate(supplyBean.userVo);
+                userData.allShipSetAllShipVO(supplyBean.shipVO);
+            }
+        }catch (Exception e){
             Log.e(TAG, "检测补给出错:" + e.getMessage());
             throw new HmException(e);
         }

@@ -11,4 +11,9 @@ public class SettingBean {
 
     public boolean resetDatabase;
     public boolean backgroundServer;
+
+    public int challengeTimeMin;
+    public int challengeTimeMax;
+    public int nightFightMin;
+    public int nightFightMax;
 }
