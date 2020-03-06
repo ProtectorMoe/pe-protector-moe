@@ -90,10 +90,14 @@ public class GameChallenge extends GameBattle {
             }
             // -----------进行补给------------
             UIUpdate.detailLog(TAG, "[出征] 补给检测");
-            gameFunction.checkSupply(ships);
+            gameFunction.checkSupply(ships, false);
             // -----------检测修理----------
             UIUpdate.detailLog(TAG, "[出征] 修理检测");
+            gameFunction.repairComplete();
             checkRepair(ships);
+            if (gameFunction.hasShipInDock(ships) != -1) {
+                return Finish.REPAIR;
+            }
             // -------------检测船舱-------------
             if (!gameFunction.checkDismantle()) {
                 return Finish.DISMANTLE;

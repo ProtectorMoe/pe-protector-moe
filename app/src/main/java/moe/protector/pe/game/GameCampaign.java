@@ -47,7 +47,7 @@ public class GameCampaign extends GameBattle {
                 CampaignGetFleet campaignGetFleet = this.campaignGetFleet(map);
                 fleet = campaignGetFleet.campaignLevelFleet;
                 // 战役补给
-                gameFunction.checkSupply(fleet);
+                gameFunction.checkSupply(fleet, true);
                 CommonUtil.delay(1000);
                 UIUpdate.detailLog("[战役] 进行补给");
                 // 战役修理

@@ -170,6 +170,24 @@ public class GameFunction {
     }
 
     /**
+     * 检测船只是否还在泡澡
+     * @param ships
+     * @return
+     */
+    public int hasShipInDock(List<Integer> ships) {
+        for (RepairDockVo dockVo: userData.repairDockVo) {
+            long nowTime = new Date().getTime() / 1000;
+            if (dockVo.locked == 0
+                    && dockVo.endTime != null
+                    && Integer.parseInt(dockVo.endTime) < nowTime
+                    && ships.contains(Integer.parseInt(dockVo.shipId))) {
+                return Integer.parseInt(dockVo.endTime);
+            }
+        }
+        return -1;
+    }
+
+    /**
      * 寻找所有船只的泡澡信息
      *
      * @throws HmException 参数错误信息
@@ -238,7 +256,7 @@ public class GameFunction {
         }
     }
 
-    public void checkSupply(List<Integer> ships) throws HmException {
+    public void checkSupply(List<Integer> ships, boolean supply) throws HmException {
         try {
             Log.i(TAG, "[出征] 检测船只补给情况...");
             boolean needSupply = false;
@@ -262,7 +280,7 @@ public class GameFunction {
             }
 
             // 整合需要补给的船只
-            if (needSupply){
+            if (needSupply || supply){
                 CommonUtil.delay(2000);
                 String supplyData = netSender.boatSupplyBoats(ships);
                 SupplyBean supplyBean = JSON.parseObject(supplyData, SupplyBean.class);
