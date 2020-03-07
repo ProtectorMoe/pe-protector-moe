@@ -149,7 +149,7 @@ public class GameFunction {
         RepairCompleteBean repairCompleteBean = null;
         long nowTime = new Date().getTime() / 1000;
         for (RepairDockVo d : userData.repairDockVo) {
-            if (d.locked == 0) {
+            if (d.locked == 0 && d.endTime != null) {
                 int endTime = Integer.valueOf(d.endTime);
                 if (endTime > 0 && endTime < nowTime && d.shipId != null) {
                     // 说明需要出浴
@@ -160,7 +160,7 @@ public class GameFunction {
                     UIUpdate.log(data);
                     // 更新出浴船只信息
                     userData.allShip.put(repairCompleteBean.shipVO.id, repairCompleteBean.shipVO);
-                    CommonUtil.delay(3000);
+                    CommonUtil.delay(500);
                 }
             }
         }
