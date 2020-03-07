@@ -68,7 +68,7 @@ public class GameConstant {
             int p = Math.round(count / len * 100);
             if (progress != p) {
                 progress = p;
-                callBack.onChange("更新数据库:" + p + "%");
+                callBack.onChange("初始化数据库:" + p + "%");
             }
         }
         for (ShipCard shipCard : initDataBean.shipCard) {
@@ -77,7 +77,7 @@ public class GameConstant {
             int p = Math.round(count / len * 100);
             if (progress != p) {
                 progress = p;
-                callBack.onChange("更新数据库:" + p + "%");
+                callBack.onChange("初始化数据库:" + p + "%");
             }
         }
         for (ShipEquipmnt e : initDataBean.shipEquipmnt) {
@@ -86,13 +86,13 @@ public class GameConstant {
             int p = Math.round(count / len * 100);
             if (progress != p) {
                 progress = p;
-                callBack.onChange("更新数据库:" + p + "%");
+                callBack.onChange("初始化数据库:" + p + "%");
             }
         }
         SharedPreferences.Editor editor = App.getContext().getSharedPreferences("init", Context.MODE_PRIVATE).edit();
         editor.putString("version", initDataBean.DataVersion);
         editor.apply();
-        Log.i(TAG, "[登录] 更新数据库完成!");
+        Log.i(TAG, "[登录] 初始化数据库完成!");
     }
 
     public String getVersion() {

@@ -4,7 +4,8 @@
     package="moe.protector.pe">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
     <application
         android:name="moe.protector.pe.util.App"
         android:allowBackup="true"

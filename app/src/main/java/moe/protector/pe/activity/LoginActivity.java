@@ -66,10 +66,7 @@ public class LoginActivity extends AppCompatActivity {
                 new SweetAlertDialog(LoginActivity.this)
                         .setTitleText("出错了!")
                         .setContentText((String) msg.obj)
-                        .setConfirmClickListener(sweetAlertDialog -> {
-                            loginAlertDialog.cancel();
-                            sweetAlertDialog.cancel();
-                        })
+                        .setConfirmClickListener(SweetAlertDialog::cancel)
                         .show();
                 break;
             case LOGIN_SHOW_SERVER:  // 登录成功

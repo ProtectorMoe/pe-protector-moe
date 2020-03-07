@@ -1,12 +1,16 @@
 package moe.protector.pe;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -189,7 +193,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 startActivity(intent1);
                                 sweetAlertDialog.cancel();
                             })
-
                             .show();
                     break;
             }
@@ -314,8 +317,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onLoginFinish(EventBusUtil util) {
         if (util.getCode() == EVENT_LOGIN_FINISH) {
             // 启动服务
-            Intent intent = new Intent(MainActivity.this, MainService.class);
-            startService(intent);
+            startService(new Intent(MainActivity.this, MainService.class));
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                PowerManager pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
+                boolean isIgnoreBattery = pm.isIgnoringBatteryOptimizations("moe.protector.pe");
+                Log.i(TAG, isIgnoreBattery? "保活": "未保活");
+                if (!isIgnoreBattery) {
+                    new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                            .setTitleText("后台运行")
+                            .setContentText("为保证此软件在后台正常运行\n向您请求'忽略电池优化'权限\n请在下一个对话框中点击确定")
+                            .setConfirmText("确定")
+                            .setConfirmClickListener(sweetAlertDialog -> {
+                                Intent intent = new Intent();
+                                intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                                intent.setData(Uri.parse("package:" + getPackageName()));
+                                startActivity(intent);
+                                sweetAlertDialog.cancel();
+                            })
+                            .setCancelText("算了")
+                            .setCancelClickListener(SweetAlertDialog::cancel)
+                            .show();
+                }
+            }
         }
     }
 
