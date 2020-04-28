@@ -11,6 +11,8 @@ public class DealtoBean {
         public int pveType;
         public String isExploreSuccess;
         public int canDoNightWar;
+        public Integer nightDo;
     }
     public WarReport warReport;
+
 }

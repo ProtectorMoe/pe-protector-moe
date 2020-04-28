@@ -109,23 +109,39 @@ public class TaskFragment extends Fragment {
             adapter.setOnItemChildClickListener((adapter1, view1, position) -> {
                 Activity activity = getActivity();
                 if (activity != null) {
-                    new SweetAlertDialog(activity, SweetAlertDialog.WARNING_TYPE)
-                            .setTitleText("任务")
-                            .setContentText("确定删除此任务?")
-                            .setCancelText("取消")
-                            .setConfirmText("删除")
-                            .showCancelButton(true)
-                            .setCancelClickListener(sweetAlertDialog -> {
-                                Log.i(TAG, "[任务] 删除取消");
-                                sweetAlertDialog.cancel();
-                            })
-                            .setConfirmClickListener(sweetAlertDialog -> {
-                                Log.i(TAG, "[任务] 删除确认");
-                                manager.delTask(position);
-                                updateTask();
-                                sweetAlertDialog.cancel();
-                            })
-                            .show();
+                    switch (view1.getId()) {
+                        case R.id.task_item_setting:
+                            new SweetAlertDialog(activity, SweetAlertDialog.WARNING_TYPE)
+                                    .setTitleText("任务")
+                                    .setContentText("确定删除此任务?")
+                                    .setCancelText("取消")
+                                    .setConfirmText("删除")
+                                    .showCancelButton(true)
+                                    .setCancelClickListener(sweetAlertDialog -> {
+                                        Log.i(TAG, "[任务] 删除取消");
+                                        sweetAlertDialog.cancel();
+                                    })
+                                    .setConfirmClickListener(sweetAlertDialog -> {
+                                        Log.i(TAG, "[任务] 删除确认");
+                                        manager.delTask(position);
+                                        updateTask();
+                                        sweetAlertDialog.cancel();
+                                    })
+                                    .show();
+                            break;
+                        case R.id.task_item_lock:
+                            TaskBean taskBean = manager.getTask(position);
+                            if (taskBean.isLocked()) {
+                                taskBean.unlock();
+                            } else {
+                                taskBean.lockForever();
+                            }
+                            manager.writeFile();
+                            updateTask();
+                            break;
+
+                    }
+
                 }
             });
             recyclerView.setAdapter(adapter);

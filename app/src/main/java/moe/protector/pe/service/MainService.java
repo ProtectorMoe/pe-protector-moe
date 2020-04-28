@@ -171,15 +171,19 @@ public class MainService extends Service {
                                 counter.finishNumAdd();
                                 taskBean.num++;
                                 taskManager.writeFile();
-                                new EventBusUtil(TAG + "mainThread", EventBusUtil.EVENT_TASK_CHANGE).post();
+                                new EventBusUtil(TAG + ".mainThread", EventBusUtil.EVENT_TASK_CHANGE).post();
                                 break;
                             case DISMANTLE:
                                 UIUpdate.log("[错误] 船舱已满, 无法进行出征");
-                                taskBean.finish();
+                                taskBean.lockForever();
+                                new EventBusUtil(TAG + ".mainThread", EventBusUtil.EVENT_TASK_CHANGE).post();
+                                taskManager.writeFile();
                                 break;
                             case REPAIR:
                                 UIUpdate.log("[错误] 无法修理船只, 停止任务");
-                                taskBean.finish();
+                                taskBean.lockForever();
+                                new EventBusUtil(TAG + ".mainThread", EventBusUtil.EVENT_TASK_CHANGE).post();
+                                taskManager.writeFile();
                                 break;
                             case ERROR:
                                 UIUpdate.detailLog("[错误] 出现错误, 尝试重新登录");

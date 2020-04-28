@@ -18,8 +18,6 @@ public class TaskListAdapter extends BaseItemDraggableAdapter<TaskBean, BaseView
     @Override
     protected void convert(BaseViewHolder helper, TaskBean item) {
         // 显示控件
-
-
         UserData userData = UserData.getInstance();
         if (item.type.equals("battle")) {
             // 战役显示
@@ -38,7 +36,11 @@ public class TaskListAdapter extends BaseItemDraggableAdapter<TaskBean, BaseView
             helper.setText(R.id.task_item_num, item.num + "/" + item.num_max);
             helper.setText(R.id.task_item_fleet, "战役舰队");
         }
+        helper.setText(R.id.task_item_status, item.isLocked()? "已冻结": "");
+        helper.setImageResource(R.id.task_item_lock, item.isLocked()? R.drawable.lock: R.drawable.unlock);
+
         // 绑定点击事件
-        helper.addOnClickListener(R.id.task_item_setting);
+        helper.addOnClickListener(R.id.task_item_setting)
+                .addOnClickListener(R.id.task_item_lock);
     }
 }

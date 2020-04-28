@@ -7,6 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="10dp">
+
         <TextView
             android:id="@+id/task_item_name"
             android:layout_width="match_parent"
@@ -30,6 +31,15 @@
             android:layout_marginLeft="20dp"/>
 
 
+        <TextView
+            android:id="@+id/task_item_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="20dp"
+            android:layout_toLeftOf="@+id/task_item_lock"
+            android:text="已冻结" />
+
         <ImageView
             android:id="@+id/task_item_drug"
             android:layout_width="24dp"
@@ -46,6 +56,16 @@
             android:layout_toLeftOf="@+id/task_item_drug"
             android:layout_alignParentBottom="true"
             android:layout_marginRight="30dp"
+            />
+
+        <ImageView
+            android:id="@+id/task_item_lock"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/unlock"
+            android:layout_toLeftOf="@+id/task_item_drug"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="60dp"
             />
 
     </RelativeLayout>

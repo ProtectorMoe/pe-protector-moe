@@ -59,7 +59,7 @@ public class GameChallenge extends GameBattle {
     }
 
     // 返回值
-    public enum Finish{
+    public enum Finish {
         FINISH, SL, REPAIR, BROKEN, DISMANTLE, ERROR
     }
     // 当前数据寄存
@@ -86,7 +86,10 @@ public class GameChallenge extends GameBattle {
             mapName = userData.getLevel(this.map).title;
             // 活动关的设置舰队
             if (Integer.valueOf(this.map) > 1000) {
-                this.head = "five";
+                netSender.setFleet(this.map, 1);
+                netSender.setFleet(this.map, 2);
+                netSender.setFleet(this.map, 3);
+                netSender.setFleet(this.map, 4);
             }
             // -----------进行补给------------
             UIUpdate.detailLog(TAG, "[出征] 补给检测");
@@ -130,10 +133,9 @@ public class GameChallenge extends GameBattle {
                 String nowFormat = nodeDetail.format;  // 初始化阵形数据
                 List<PathConfigBean.NodeDetail> flagDetails = nodeDetail.detail;  // 当前点的路径数据
                 // 选择战况
-                if (pveNode.buff.size() != 0) {
+                if (pveNode.buff.size() > 3) {
                     int buffIndex = Integer.valueOf(nodeDetail.buff);
-
-                    String buff = buffIndex < 10? pveNode.buff.get(buffIndex).toString(): nodeDetail.buff;
+                    String buff = buffIndex < 10 ? pveNode.buff.get(buffIndex).toString() : nodeDetail.buff;
                     netSender.selectBuff(buff);
                     UIUpdate.detailLog(TAG, String.format("[出征] 选择战况 %s", userData.getBuff(nodeDetail.buff).title));
                     CommonUtil.delay(1000);
@@ -196,7 +198,10 @@ public class GameChallenge extends GameBattle {
                 }
                 // ------------------开始战斗----------------
                 DealtoBean dealtoBean = challengeDealTo(nowNode, this.fleet, nowFormat);
-                if (nodeType == 1 || nodeType == 2 || nodeType == 10 || nodeType == 11) {
+                if (dealtoBean.warReport.nightDo != null && dealtoBean.warReport.nightDo == 1) {
+                    // 当前为夜战点, 什么也不做
+                    CommonUtil.delay(2000);
+                } else if (nodeType == 1 || nodeType == 2 || nodeType == 10 || nodeType == 11) {
                     // 正常点需要延迟
                     counter.battleNumAdd();
                     int randomInt = CommonUtil.randomInt(
@@ -208,10 +213,10 @@ public class GameChallenge extends GameBattle {
                 } else if (nodeType == 3 || nodeType == 5) {
                     // 资源点或收费站
                     if (pveNode.gain != null || pveNode.loss != null) {
-                        String access = pveNode.gain != null? "获得": "损失";
-                        HashMap<String, Integer> res = pveNode.gain != null ? pveNode.gain: pveNode.loss;
+                        String access = pveNode.gain != null ? "获得" : "损失";
+                        HashMap<String, Integer> res = pveNode.gain != null ? pveNode.gain : pveNode.loss;
                         StringBuilder log = new StringBuilder();
-                        for (String resId: res.keySet()) {
+                        for (String resId : res.keySet()) {
                             String resName = gameConstant.getResName(resId);
                             log.append(resName != null ? (resName + ":" + res.get(resId) + " ") : "");
                         }
@@ -238,8 +243,9 @@ public class GameChallenge extends GameBattle {
                 // -------------进行夜战结算-----------
                 UIUpdate.detailLog(TAG, "[出征] 准备进行夜战或结算");
                 CommonUtil.delay(1000);
-                GetResultBean resultBean = challengeGetWarResult(head, nodeDetail.night && dealtoBean.warReport.canDoNightWar == 1);  // 判断是否进行夜战
-                if (nodeDetail.night && dealtoBean.warReport.canDoNightWar == 1) {
+                boolean canDoNightWar = (nodeDetail.night && dealtoBean.warReport.canDoNightWar == 1) || (dealtoBean.warReport.nightDo != null && dealtoBean.warReport.nightDo == 1);
+                GetResultBean resultBean = challengeGetWarResult(head, canDoNightWar);  // 判断是否进行夜战
+                if (canDoNightWar) {
                     int randomInt = CommonUtil.randomInt(
                             Setting.getInstance().settingBean.nightFightMin,
                             Setting.getInstance().settingBean.nightFightMax

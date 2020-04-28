@@ -788,9 +788,9 @@ public class NetSender {
      * @param fleet 舰队
      * @throws HmException 服务器错误
      */
-    public void setFleet(int fleet) throws HmException {
+    public void setFleet(String map, int fleet) throws HmException {
         try {
-            String url = Config.host + String.format(Locale.CHINA, "pevent/setFleet/%d/", fleet) + this.getUrlEnd();
+            String url = Config.host + String.format(Locale.CHINA, "pevent/setFleet/%s/%d", map, fleet) + this.getUrlEnd();
             Requests requests = new Requests.Builder()
                     .url(url)
                     .get()

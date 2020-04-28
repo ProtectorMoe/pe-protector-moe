@@ -8,14 +8,14 @@
             content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
         />
         <link
-            href="https://cdn.bootcss.com/mui/3.7.1/css/mui.min.css"
+            href="css/mui.min.css"
             rel="stylesheet"
         />
         <link rel="stylesheet" href="css/avgrund.css" />
     </head>
     <body>
-        <script src="https://cdn.bootcss.com/mui/3.7.1/js/mui.min.js"></script>
-        <script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
+        <script src="js/mui.min.js"></script>
+        <script src="js/vue.min.js"></script>
         <script type="text/javascript">
             mui.init();
         </script>
@@ -123,20 +123,20 @@
                 <div class="mui-input-group">
                     <div class="mui-button-row">
                         <button
-                            class="mui-btn mui-icon mui-btn-success"
+                            class="mui-btn mui-icon mui-btn-success mui-icon mui-icon-plusempty"
                             @click="onAddPath()"
                         >
                             新建
                         </button>
-                        <button
-                            class="mui-btn mui-icon mui-btn-blue"
-                            @click="onDownload()"
-                        >
-                            下载
-                        </button>
-                        <button class="mui-btn mui-icon" @click="onRefresh()">
+                        <button class="mui-btn mui-icon mui-icon mui-icon-loop" @click="onRefresh()">
                             刷新
                         </button>
+						<button
+						    class="mui-btn mui-icon mui-btn-blue mui-icon mui-icon-paperplane"
+						    @click="onDownload()"
+						>
+						    更多
+						</button>
                     </div>
                 </div>
                 <div class="mui-table-view">

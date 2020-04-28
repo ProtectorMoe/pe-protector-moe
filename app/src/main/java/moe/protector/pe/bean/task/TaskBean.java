@@ -15,7 +15,9 @@ public class TaskBean {
     public String type;
     public int num;
     public int num_max;
-    public int locked;
+
+    // 锁定任务 -1为没锁定
+    public String locked;
 
     public static class BattleData {
         public int repair;
@@ -40,5 +42,19 @@ public class TaskBean {
 
     public CampaignData campaignData;
 
+    public void lockForever() {
+        this.locked = "9999999999999";
+    }
 
+    public void lock(String timestamp) {
+        this.locked = timestamp;
+    }
+
+    public void unlock() {
+        this.locked = "-1";
+    }
+
+    public boolean isLocked() {
+        return !this.locked.equals("-1");
+    }
 }

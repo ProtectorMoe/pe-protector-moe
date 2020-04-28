@@ -83,6 +83,10 @@ public class TaskManager {
         writeFile();
     }
 
+    public TaskBean getTask(int p) {
+        return taskBeanList.get(p);
+    }
+
     public TaskBean getAvailableTask() {
         if (!isRun) {
             return null;
@@ -98,8 +102,8 @@ public class TaskManager {
                 continue;
             }
             // 解冻
-            if (bean.locked != -1 && Integer.valueOf(time) > bean.locked) {
-                bean.locked = -1;
+            if (!bean.locked.equals("-1") && Long.valueOf(time) > Long.valueOf(bean.locked)) {
+                bean.locked = "-1";
             }
             // 剔除做完的任务
             if (bean.num >= bean.num_max) {
@@ -109,7 +113,7 @@ public class TaskManager {
                 continue;
             }
             // 合条件, 返回任务
-            if (bean.locked == -1) {
+            if (bean.locked.equals("-1")) {
                 return bean;
             }
         }

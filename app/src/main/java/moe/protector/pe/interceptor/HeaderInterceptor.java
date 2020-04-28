@@ -33,7 +33,6 @@ public class HeaderInterceptor  implements Interceptor {
         } else {
             builder.header("User-Agent", String.format("Dalvik/2.1.0 (Linux; U; Android %s; %s Build/LMY48Z)", android.os.Build.VERSION.RELEASE, android.os.Build.MODEL));
             builder.header("Accept-Encoding", "identity");
-
         }
         return chain.proceed(builder.build());
     }
