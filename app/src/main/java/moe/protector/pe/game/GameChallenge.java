@@ -198,7 +198,7 @@ public class GameChallenge extends GameBattle {
                 }
                 // ------------------开始战斗----------------
                 DealtoBean dealtoBean = challengeDealTo(nowNode, this.fleet, nowFormat);
-                if (dealtoBean.warReport.nightDo != null && dealtoBean.warReport.nightDo == 1) {
+                if (dealtoBean.warReport != null && dealtoBean.warReport.nightDo != null && dealtoBean.warReport.nightDo == 1) {
                     // 当前为夜战点, 什么也不做
                     CommonUtil.delay(2000);
                 } else if (nodeType == 1 || nodeType == 2 || nodeType == 10 || nodeType == 11) {
@@ -243,7 +243,7 @@ public class GameChallenge extends GameBattle {
                 // -------------进行夜战结算-----------
                 UIUpdate.detailLog(TAG, "[出征] 准备进行夜战或结算");
                 CommonUtil.delay(1000);
-                boolean canDoNightWar = (nodeDetail.night && dealtoBean.warReport.canDoNightWar == 1) || (dealtoBean.warReport.nightDo != null && dealtoBean.warReport.nightDo == 1);
+                boolean canDoNightWar = (nodeDetail.night && dealtoBean.warReport.canDoNightWar == 1) || (dealtoBean.warReport != null && dealtoBean.warReport.nightDo != null && dealtoBean.warReport.nightDo == 1);
                 GetResultBean resultBean = challengeGetWarResult(head, canDoNightWar);  // 判断是否进行夜战
                 if (canDoNightWar) {
                     int randomInt = CommonUtil.randomInt(
