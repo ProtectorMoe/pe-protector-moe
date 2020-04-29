@@ -86,10 +86,13 @@ public class GameChallenge extends GameBattle {
             mapName = userData.getLevel(this.map).title;
             // 活动关的设置舰队
             if (Integer.valueOf(this.map) > 1000) {
-                netSender.setFleet(this.map, 1);
-                netSender.setFleet(this.map, 2);
-                netSender.setFleet(this.map, 3);
-                netSender.setFleet(this.map, 4);
+                for (int i=1; i<=4; i++) {
+                    try {
+                        netSender.setFleet(this.map, i);
+                    } catch (Exception e) {
+                        // 游戏本身也会报错, 不处理
+                    }
+                }
             }
             // -----------进行补给------------
             UIUpdate.detailLog(TAG, "[出征] 补给检测");

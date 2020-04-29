@@ -16,7 +16,6 @@ public class TaskBean {
     public int num;
     public int num_max;
 
-    // 锁定任务 -1为没锁定
     public String locked;
 
     public static class BattleData {
@@ -54,7 +53,7 @@ public class TaskBean {
         this.locked = "-1";
     }
 
-    public boolean isLocked() {
+    public boolean hasLocked() {
         return !this.locked.equals("-1");
     }
 }

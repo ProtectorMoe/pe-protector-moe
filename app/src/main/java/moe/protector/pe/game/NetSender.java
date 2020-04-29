@@ -790,7 +790,7 @@ public class NetSender {
      */
     public void setFleet(String map, int fleet) throws HmException {
         try {
-            String url = Config.host + String.format(Locale.CHINA, "pevent/setFleet/%s/%d", map, fleet) + this.getUrlEnd();
+            String url = Config.host + String.format(Locale.CHINA, "pevent/setFleet/%s/%d/", map, fleet) + this.getUrlEnd();
             Requests requests = new Requests.Builder()
                     .url(url)
                     .get()

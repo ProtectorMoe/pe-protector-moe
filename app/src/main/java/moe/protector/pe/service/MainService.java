@@ -106,9 +106,10 @@ public class MainService extends Service {
         if (Setting.getInstance().settingBean.backgroundServer) {
             startPlayMusic();
         }
-
-
         thread = new Thread(() -> {
+            new EventBusUtil(TAG + ".onStartCommand", EventBusUtil.EVENT_RES_CHANGE).post();
+            UIUpdate.log("[任务] 10s后开始执行任务");
+            CommonUtil.delay(1000*10);
             UIUpdate.log("[线程] 开启主线程");
             inRun = true;
             while (true) {

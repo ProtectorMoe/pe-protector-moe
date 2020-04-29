@@ -131,7 +131,7 @@ public class TaskFragment extends Fragment {
                             break;
                         case R.id.task_item_lock:
                             TaskBean taskBean = manager.getTask(position);
-                            if (taskBean.isLocked()) {
+                            if (taskBean.hasLocked()) {
                                 taskBean.unlock();
                             } else {
                                 taskBean.lockForever();

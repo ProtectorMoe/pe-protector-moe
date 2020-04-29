@@ -36,8 +36,8 @@ public class TaskListAdapter extends BaseItemDraggableAdapter<TaskBean, BaseView
             helper.setText(R.id.task_item_num, item.num + "/" + item.num_max);
             helper.setText(R.id.task_item_fleet, "战役舰队");
         }
-        helper.setText(R.id.task_item_status, item.isLocked()? "已冻结": "");
-        helper.setImageResource(R.id.task_item_lock, item.isLocked()? R.drawable.lock: R.drawable.unlock);
+        helper.setText(R.id.task_item_status, item.hasLocked()? "已冻结": "");
+        helper.setImageResource(R.id.task_item_lock, item.hasLocked()? R.drawable.lock: R.drawable.unlock);
 
         // 绑定点击事件
         helper.addOnClickListener(R.id.task_item_setting)
