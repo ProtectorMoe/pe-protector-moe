@@ -27,6 +27,7 @@ import moe.protector.pe.bean.common.ShipVO;
 import moe.protector.pe.bean.common.UserResVo;
 import moe.protector.pe.bean.common.UserShipVO;
 import moe.protector.pe.bean.common.UserVo;
+import moe.protector.pe.bean.login.ApiGetShipList;
 import moe.protector.pe.bean.task.TaskVo;
 import moe.protector.pe.bean.task.UpdateTaskVo;
 import moe.protector.pe.util.Config;
@@ -71,7 +72,7 @@ public class UserData {
         // 用户舰队
         this.fleetSetAll(userBaseData.fleetVo);
         // 用户船只
-        this.allShipSetAllUserShipVO(userBaseData.userShipVO);
+//        this.allShipSetAllUserShipVO(userBaseData.userShipVO);
         // 远征数据
         this.exploreSetAll(userBaseData.pveExploreVo.levels);
         // 包裹信息
@@ -93,6 +94,11 @@ public class UserData {
                     userBaseData.userVo.aluminium);
             Config.isFirstLogin = false;
         }
+    }
+
+    public void parseUserShip(String userShipVo) {
+        ApiGetShipList shipList = JSON.parseObject(userShipVo, ApiGetShipList.class);
+        this.allShipSetAllUserShipVO(shipList.userShipVO);
     }
 
     // ----------------- 更新用户数据--------------

@@ -1051,4 +1051,17 @@ public class NetSender {
         HmException.errorFind("task/getAward出错:", data);
         return data;
     }
+
+    public String getShipList() throws HmException {
+        String url = Config.host + "api/getShipList" + this.getUrlEnd();
+        Requests requests = new Requests.Builder()
+                .url(url)
+                .get()
+                .zlib()
+                .build()
+                .execute();
+        String data = requests.text;
+        HmException.errorFind("api/getShipList出错:", data);
+        return data;
+    }
 }

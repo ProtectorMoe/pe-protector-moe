@@ -54,6 +54,9 @@ public class SecondLogin {
             // 初始化用户基本信息
             String apiInitGame = netSender.apiInitGame();
             userData.parseUserData(apiInitGame);
+            // 获取船只信息
+            String userShipList = netSender.getShipList();
+            userData.parseUserShip(userShipList);
             // 初始化点数信息
             userData.pveNodeGet(netSender.pveGetPveData());
             String pveData = netSender.peventGetPveData();

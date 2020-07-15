@@ -15,7 +15,7 @@ import moe.protector.pe.bean.task.TaskVo;
 
 public class UserDataBean {
     public UserVo userVo;
-    public List<UserShipVO> userShipVO;
+//    public List<UserShipVO> userShipVO;
     public List<EquipmentVo> equipmentVo;
     public List<DockVo> dockVo;
     public List<RepairDockVo> repairDockVo;

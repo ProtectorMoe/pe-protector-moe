@@ -6,8 +6,8 @@ android {
         applicationId "moe.protector.pe"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 15
-        versionName "1.0.6.4"
+        versionCode 16
+        versionName "1.0.6.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
